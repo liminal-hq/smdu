@@ -71,7 +71,7 @@ export const FileList: React.FC<FileListProps> = ({
                     backgroundColor={isSelected ? theme.colours.highlight : undefined}
                     color={isSelected ? theme.colours.selectedText : theme.colours.size}
                   >
-                    {filesize(file.size, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'jedec' })}
+                    {filesize(file.size, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' })}
                   </Text>
               </Box>
 

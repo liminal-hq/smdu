@@ -82,7 +82,7 @@ export const Settings: React.FC<SettingsProps> = ({
           const index = items.indexOf(item);
           const isSelected = index === selectedIndex;
           const isActive = item.value === currentUnits;
-          const label = item.value === 'iec' ? 'IEC (KiB, MiB)' : 'SI (kB, MB)';
+          const label = item.value === 'iec' ? 'IEC (KiB, GiB)' : 'SI (kB, GB)';
           return (
             <Box key={item.value}>
               <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
