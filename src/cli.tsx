@@ -1,33 +1,23 @@
 #!/usr/bin/env node
 import React from 'react';
 import { render } from 'ink';
-import meow from 'meow';
+import { Command } from 'commander';
 import { App } from './App.js';
 
-const cli = meow(
-  `
-	Usage
-	  $ smdu [path]
+const program = new Command();
 
-	Options
-	  --theme, -t  Theme (default, dracula)
+program
+  .name('smdu')
+  .description('See My Disk Usage - A clone of ncdu')
+  .version('1.0.0')
+  .argument('[path]', 'Path to scan', process.cwd())
+  .option('-t, --theme <theme>', 'Theme (default, dracula)', 'default')
+  .action((pathStr, options) => {
+    // When argument is optional and has default, pathStr is the value.
+    // If user provides a path, it's in pathStr.
+    // If not, it's process.cwd().
 
-	Examples
-	  $ smdu /var/log
-	  $ smdu --theme=dracula
-`,
-  {
-    importMeta: import.meta,
-    flags: {
-      theme: {
-        type: 'string',
-        shortFlag: 't',
-        default: 'default',
-      },
-    },
-  }
-);
+    render(<App startPath={pathStr} themeName={options.theme} />);
+  });
 
-const startPath = cli.input[0] || process.cwd();
-
-render(<App startPath={startPath} themeName={cli.flags.theme} />);
+program.parse(process.argv);

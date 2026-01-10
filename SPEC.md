@@ -10,6 +10,7 @@ SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScrip
 - **Sorting:** Sort files by name or size.
 - **Deletion:** Delete files or directories with a confirmation modal.
 - **Theming:** Support for multiple colour themes (Default, Dracula).
+- **Settings:** Persistent configuration for themes.
 
 ## Architecture
 
@@ -48,8 +49,12 @@ SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScrip
         -   Calculates bars relative to the largest item in the directory.
     -   `Footer`: Shows key hints and total size.
     -   `ConfirmDelete`: Modal for deletion.
+    -   `Settings`: Screen for selecting themes.
 
-4.  **Theming (`src/themes.ts`)**
+4.  **Configuration (`src/config.ts`)**
+    -   Uses `conf` to store settings (theme).
+
+5.  **Theming (`src/themes.ts`)**
     -   Interface `Theme` with properties for `text`, `highlight`, `bar`, `background`.
     -   Context provider to supply the theme to components.
 
@@ -58,7 +63,7 @@ SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScrip
 -   **List:**
     -   `[--#-------]  80%  src/` (Selected item highlighted)
     -   `[----------]  20%  package.json`
--   **Footer:** `Delete: d | Quit: q | Navigation: Arrows`
+-   **Footer:** `Delete: d | Settings: S | Quit: q | Navigation: Arrows`
 
 ## Theming
 -   **Default:** Standard terminal colours (Green bars, White text).

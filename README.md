@@ -43,9 +43,13 @@ smdu /var/log
 
 ### Options
 
--   `--theme <name>`: Choose a theme (default, dracula).
+-   `--theme <name>`: Choose a theme (default, dracula). This overrides the configuration file.
 -   `--help`: Show help.
 -   `--version`: Show version.
+
+## Configuration
+
+SMDU stores configuration (like the selected theme) using the system's standard configuration directory (e.g., `~/.config/smdu/config.json` on Linux).
 
 ## Keybindings
 
@@ -53,6 +57,7 @@ smdu /var/log
 -   **Right / Enter / l**: Enter directory.
 -   **Left / Backspace / h**: Go up a directory.
 -   **d**: Delete selected file/directory.
+-   **S**: Open Settings (Theme selection).
 -   **q / Esc**: Quit.
 
 ## Development

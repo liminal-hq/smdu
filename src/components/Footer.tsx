@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = ({ totalSize, itemCount, theme }) =
       </Box>
       <Box>
         <Text color={theme.colours.footer}>
-          Delete: d | Quit: q | Nav: Arrows/Enter/Back
+          Delete: d | Settings: S | Quit: q | Nav: Arrows/Enter/Back
         </Text>
       </Box>
     </Box>

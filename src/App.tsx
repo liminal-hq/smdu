@@ -4,20 +4,29 @@ import { Header } from './components/Header.js';
 import { Footer } from './components/Footer.js';
 import { FileList } from './components/FileList.js';
 import { ConfirmDelete } from './components/ConfirmDelete.js';
+import { Settings } from './components/Settings.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
+import { getThemeFromConfig, setThemeInConfig } from './config.js';
 import { scanDirectory, FileNode } from './scanner.js';
 import path from 'path';
 
 interface AppProps {
   startPath: string;
-  themeName?: string;
+  themeName?: string; // Flag overrides config
 }
 
-export const App: React.FC<AppProps> = ({ startPath, themeName = 'default' }) => {
-  const { exit } = useApp();
-  const theme = getTheme(themeName);
+type ViewState = 'filelist' | 'settings';
 
+export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName }) => {
+  const { exit } = useApp();
+
+  // Determine initial theme: CLI arg > Config > Default
+  const configTheme = getThemeFromConfig();
+  const [currentThemeName, setCurrentThemeName] = useState(initialThemeName !== 'default' ? initialThemeName : configTheme);
+  const theme = getTheme(currentThemeName || 'default');
+
+  const [view, setView] = useState<ViewState>('filelist');
   const [loading, setLoading] = useState(true);
   const [rootNode, setRootNode] = useState<FileNode | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -52,6 +61,12 @@ export const App: React.FC<AppProps> = ({ startPath, themeName = 'default' }) =>
   useInput((input, key) => {
     if (loading) return;
 
+    // If Settings is active, input is handled by Settings component usually,
+    // but here we are mounting components conditionally.
+    // However, useInput runs even if component is not rendering? No, only mounted components.
+    // But App is always mounted. So we must gate input based on View.
+    if (view === 'settings') return;
+
     if (showConfirmDelete) {
       if (input === 'y') {
         deleteSelected();
@@ -59,6 +74,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName = 'default' }) =>
       } else {
         setShowConfirmDelete(false);
       }
+      return;
+    }
+
+    if (input === 'S') { // Shift+s for Settings
+      setView('settings');
       return;
     }
 
@@ -99,6 +119,20 @@ export const App: React.FC<AppProps> = ({ startPath, themeName = 'default' }) =>
 
   if (loading || !currentNode) {
     return <Text color={theme.colours.text}>Scanning {startPath}...</Text>;
+  }
+
+  if (view === 'settings') {
+    return (
+      <Settings
+        currentTheme={currentThemeName || 'default'}
+        theme={theme}
+        onSelectTheme={(name) => {
+          setCurrentThemeName(name);
+          setThemeInConfig(name);
+        }}
+        onBack={() => setView('filelist')}
+      />
+    );
   }
 
   if (showConfirmDelete) {
