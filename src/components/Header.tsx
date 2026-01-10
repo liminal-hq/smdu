@@ -11,11 +11,11 @@ export const Header: React.FC<HeaderProps> = ({ path, theme }) => {
   return (
     <Box
       borderStyle="single"
-      borderColor={theme.colors.header}
+      borderColor={theme.colours.header}
       paddingX={1}
       width="100%"
     >
-      <Text color={theme.colors.header} bold>
+      <Text color={theme.colours.header} bold>
         {path}
       </Text>
     </Box>

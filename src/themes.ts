@@ -1,6 +1,6 @@
 export interface Theme {
   name: string;
-  colors: {
+  colours: {
     text: string;
     selectedText: string;
     background: string;
@@ -16,7 +16,7 @@ export interface Theme {
 export const themes: Record<string, Theme> = {
   default: {
     name: 'default',
-    colors: {
+    colours: {
       text: 'white',
       selectedText: 'black',
       background: 'black',
@@ -30,7 +30,7 @@ export const themes: Record<string, Theme> = {
   },
   dracula: {
     name: 'dracula',
-    colors: {
+    colours: {
       text: '#f8f8f2',
       selectedText: '#282a36',
       background: '#282a36',

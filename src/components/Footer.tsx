@@ -14,18 +14,18 @@ export const Footer: React.FC<FooterProps> = ({ totalSize, itemCount, theme }) =
   return (
     <Box
       borderStyle="single"
-      borderColor={theme.colors.footer}
+      borderColor={theme.colours.footer}
       paddingX={1}
       width="100%"
       justifyContent="space-between"
     >
       <Box>
-        <Text color={theme.colors.footer}>
+        <Text color={theme.colours.footer}>
           Total: {filesize(totalSize)} ({itemCount} items)
         </Text>
       </Box>
       <Box>
-        <Text color={theme.colors.footer}>
+        <Text color={theme.colours.footer}>
           Delete: d | Quit: q | Nav: Arrows/Enter/Back
         </Text>
       </Box>

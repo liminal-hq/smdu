@@ -92,32 +92,21 @@ export const useFileSystem = (initialNode: FileNode | null) => {
         // Actual deletion
         await fs.promises.rm(fileToDelete.path, { recursive: true, force: true });
 
-        // State update
-        const newChildren = currentNode.children.filter(c => c !== fileToDelete);
+        // State update - Mutate in place to preserve tree consistency
+        const index = currentNode.children.indexOf(fileToDelete);
+        if (index > -1) {
+            currentNode.children.splice(index, 1);
+        }
 
         // Propagate size change
-        // We need to update currentNode size and all parents
         const sizeDiff = -fileToDelete.size;
-
-        // We mutate the nodes because recreating the whole tree is complex
-        // and we rely on 'currentNode' state update to trigger re-render
         updateSizeUpwards(currentNode, sizeDiff);
 
-        // Update children reference in currentNode to trigger memo
-        // But since we mutated 'currentNode' already (by updateSizeUpwards modifying size),
-        // we should create a new object for currentNode to be safe for React
-        const newNode = { ...currentNode, children: newChildren };
+        // Force re-render by creating a shallow copy
+        setCurrentNode({ ...currentNode });
 
-        // We also need to ensure 'parent' references in children point to this new node?
-        // Not strictly necessary if we don't rely on strict referential integrity for 'parent' in children immediately.
-        // But 'goUp' uses 'currentNode.parent'.
-        // The mutation of 'size' on 'currentNode' (which is 'newNode') and 'currentNode.parent' works.
-
-        // NOTE: React state update
-        setCurrentNode(newNode);
-
-        if (selectionIndex >= newChildren.length) {
-            setSelectionIndex(Math.max(0, newChildren.length - 1));
+        if (selectionIndex >= currentNode.children.length) {
+            setSelectionIndex(Math.max(0, currentNode.children.length - 1));
         }
       } catch (err: any) {
         setError(`Failed to delete: ${err.message}`);

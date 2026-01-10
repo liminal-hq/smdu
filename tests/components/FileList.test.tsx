@@ -7,7 +7,7 @@ import { describe, it, expect } from '@jest/globals';
 
 const mockTheme: Theme = {
   name: 'test',
-  colors: {
+  colours: {
     text: 'white',
     selectedText: 'black',
     background: 'black',

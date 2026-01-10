@@ -56,8 +56,8 @@ export const FileList: React.FC<FileListProps> = ({
             >
               <Box width="50%">
                 <Text
-                    backgroundColor={isSelected ? theme.colors.highlight : undefined}
-                    color={isSelected ? theme.colors.selectedText : theme.colors.text}
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : theme.colours.text}
                     wrap="truncate-end"
                 >
                   {file.isDirectory ? '/' : ' '} {file.name}
@@ -66,8 +66,8 @@ export const FileList: React.FC<FileListProps> = ({
 
               <Box width="15%">
                   <Text
-                    backgroundColor={isSelected ? theme.colors.highlight : undefined}
-                    color={isSelected ? theme.colors.selectedText : theme.colors.size}
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : theme.colours.size}
                   >
                     {filesize(file.size)}
                   </Text>
@@ -75,8 +75,8 @@ export const FileList: React.FC<FileListProps> = ({
 
               <Box width="10%">
                   <Text
-                    backgroundColor={isSelected ? theme.colors.highlight : undefined}
-                    color={isSelected ? theme.colors.selectedText : theme.colors.percentage}
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : theme.colours.percentage}
                   >
                     {percentage.toFixed(1)}%
                   </Text>
@@ -84,8 +84,8 @@ export const FileList: React.FC<FileListProps> = ({
 
               <Box>
                 <Text
-                    backgroundColor={isSelected ? theme.colors.highlight : undefined}
-                    color={isSelected ? theme.colors.selectedText : theme.colors.bar}
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : theme.colours.bar}
                 >
                     [{barStr}]
                 </Text>

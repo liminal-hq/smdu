@@ -20,7 +20,7 @@ export const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({ fileName, theme })
         Delete {fileName}?
       </Text>
       <Box marginTop={1}>
-        <Text color={theme.colors.text}>
+        <Text color={theme.colours.text}>
           Press <Text bold color="red">y</Text> to confirm, or any other key to cancel.
         </Text>
       </Box>

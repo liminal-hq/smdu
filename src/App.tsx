@@ -98,7 +98,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName = 'default' }) =>
   }
 
   if (loading || !currentNode) {
-    return <Text color={theme.colors.text}>Scanning {startPath}...</Text>;
+    return <Text color={theme.colours.text}>Scanning {startPath}...</Text>;
   }
 
   if (showConfirmDelete) {
