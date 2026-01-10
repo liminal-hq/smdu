@@ -67,13 +67,31 @@ Settings available:
 
 ## Development
 
-```bash
-# Run in watch mode
-pnpm run watch
+To start the project in development mode:
 
-# Run tests
-pnpm test
-```
+1.  **Install dependencies**:
+    ```bash
+    pnpm install
+    ```
+
+2.  **Start the TypeScript compiler in watch mode** (in a separate terminal):
+    ```bash
+    pnpm run watch
+    ```
+
+3.  **Run the application**:
+    ```bash
+    pnpm start
+    # or to scan a specific directory
+    pnpm start -- /path/to/scan
+    ```
+
+    Note: `pnpm start` runs `node dist/cli.js`, so you need to have the code built (which `pnpm run watch` does automatically).
+
+4.  **Run tests**:
+    ```bash
+    pnpm test
+    ```
 
 ## License
 

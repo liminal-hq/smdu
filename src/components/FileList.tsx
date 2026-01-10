@@ -21,7 +21,7 @@ export const FileList: React.FC<FileListProps> = ({
   theme,
   units,
 }) => {
-  const WINDOW_SIZE = process.stdout.rows ? process.stdout.rows - 7 : 20;
+  const WINDOW_SIZE = process.stdout.rows ? process.stdout.rows - 10 : 20;
 
   let start = 0;
   if (selectedIndex >= WINDOW_SIZE / 2) {

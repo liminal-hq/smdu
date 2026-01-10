@@ -167,7 +167,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
 
   return (
-    <Box flexDirection="column" height="100%" marginTop={1}>
+    <Box flexDirection="column" height="100%">
       <Header path={currentNode.path} theme={theme} />
 
       <Box flexGrow={1} overflowY="hidden">
