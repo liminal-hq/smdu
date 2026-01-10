@@ -45,7 +45,7 @@ describe('useFileSystem', () => {
         const { result } = renderHook(() => useFileSystem(root));
         expect(result.current.currentNode).toBe(root);
         expect(result.current.selectionIndex).toBe(0);
-        expect(result.current.files).toHaveLength(3);
+        expect(result.current.files).toHaveLength(2);
         expect(result.current.files[0].name).toBe('dir1'); // 300
     });
     it('should move selection', () => {
@@ -61,7 +61,7 @@ describe('useFileSystem', () => {
             result.current.toggleSort('name');
         });
         expect(result.current.sortBy).toBe('name');
-        // Default to desc, so file2.txt > file1.txt > dir1
+        // Default to desc, so file2.txt > file1.txt > dir1 (tree order)
         expect(result.current.files[0].name).toBe('file2.txt');
     });
     it('should enter directory and go up', () => {
@@ -89,7 +89,7 @@ describe('useFileSystem', () => {
             await result.current.deleteSelected();
         });
         expect(mockRm).toHaveBeenCalledWith('/file2.txt', { recursive: true, force: true });
-        expect(result.current.files).toHaveLength(2);
+        expect(result.current.files).toHaveLength(3);
         expect(result.current.files.find((f) => f.name === 'file2.txt')).toBeUndefined();
         // Size should update for currentNode (root)
         expect(result.current.currentNode?.size).toBe(400); // 600 - 200

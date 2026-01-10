@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { Theme, themes } from '../themes.js';
 import { ACTIONS, checkInput } from '../keys.js';
+import { Modal } from './Modal.js';
 
 interface SettingsProps {
   currentTheme: string;
@@ -54,12 +55,8 @@ export const Settings: React.FC<SettingsProps> = ({
   });
 
   return (
-    <Box flexDirection="column" padding={1} borderStyle="single" borderColor={theme.colours.header}>
-      <Text bold underline color={theme.colours.header}>
-        Settings
-      </Text>
-
-      <Box marginTop={1} flexDirection="column">
+    <Modal theme={theme} title="Settings" hint="Close: Esc or Left">
+      <Box flexDirection="column">
         <Text color={theme.colours.header} underline>Themes:</Text>
         {items.filter(i => i.type === 'theme').map((item) => {
           const index = items.indexOf(item);
@@ -96,9 +93,9 @@ export const Settings: React.FC<SettingsProps> = ({
 
       <Box marginTop={1}>
         <Text color={theme.colours.footer}>
-          Press Enter to select, Esc to go back.
+          Press Enter to select.
         </Text>
       </Box>
-    </Box>
+    </Modal>
   );
 };

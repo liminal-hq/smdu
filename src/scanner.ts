@@ -11,12 +11,43 @@ export interface FileNode {
   mtime: Date;
 }
 
+export interface ScanProgress {
+  currentPath: string;
+  directories: number;
+  files: number;
+  bytes: number;
+  errors: number;
+}
+
+export type ScanProgressCallback = (progress: ScanProgress) => void;
+
+export class ScanCancelledError extends Error {
+  constructor() {
+    super('Scan cancelled');
+    this.name = 'ScanCancelledError';
+  }
+}
+
 export async function scanDirectory(
   dirPath: string,
-  parent?: FileNode
+  parent?: FileNode,
+  onProgress?: ScanProgressCallback,
+  progress?: ScanProgress,
+  signal?: AbortSignal
 ): Promise<FileNode> {
+  if (signal?.aborted) {
+    throw new ScanCancelledError();
+  }
+
   const stats = await fs.promises.lstat(dirPath);
   const name = path.basename(dirPath) || dirPath;
+  const activeProgress: ScanProgress = progress ?? {
+    currentPath: dirPath,
+    directories: 0,
+    files: 0,
+    bytes: 0,
+    errors: 0,
+  };
 
   const node: FileNode = {
     name,
@@ -27,20 +58,40 @@ export async function scanDirectory(
     parent,
   };
 
+  activeProgress.currentPath = dirPath;
+  if (node.isDirectory) {
+    activeProgress.directories += 1;
+  } else {
+    activeProgress.files += 1;
+    activeProgress.bytes += stats.size;
+  }
+  onProgress?.({ ...activeProgress });
+
   if (node.isDirectory) {
     try {
       const entries = await fs.promises.readdir(dirPath);
-      const childrenPromises = entries.map((entry) =>
-        scanDirectory(path.join(dirPath, entry), node)
-      );
-      node.children = await Promise.all(childrenPromises);
+      const children: FileNode[] = [];
+      for (const entry of entries) {
+        if (signal?.aborted) {
+          throw new ScanCancelledError();
+        }
+        const child = await scanDirectory(path.join(dirPath, entry), node, onProgress, activeProgress, signal);
+        children.push(child);
+      }
+      node.children = children;
 
       // Accumulate size from children
       node.size = node.children.reduce((acc, child) => acc + child.size, 0);
     } catch (error) {
+      if (error instanceof ScanCancelledError) {
+        throw error;
+      }
       // Handle permission errors or other access issues gracefully
       // console.error(`Could not read directory ${dirPath}:`, error);
       node.children = [];
+      activeProgress.errors += 1;
+      activeProgress.currentPath = dirPath;
+      onProgress?.({ ...activeProgress });
     }
   }
 

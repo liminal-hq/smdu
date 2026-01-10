@@ -4,6 +4,7 @@ import fs from 'fs';
 
 export type SortField = 'name' | 'size';
 export type SortOrder = 'asc' | 'desc';
+export type ViewMode = 'tree' | 'flat';
 
 export interface FileSystemState {
   currentPath: string;
@@ -11,6 +12,7 @@ export interface FileSystemState {
   selectionIndex: number;
   sortBy: SortField;
   sortOrder: SortOrder;
+  viewMode: ViewMode;
   files: FileNode[];
 }
 
@@ -19,27 +21,61 @@ export const useFileSystem = (initialNode: FileNode | null) => {
   const [selectionIndex, setSelectionIndex] = useState(0);
   const [sortBy, setSortBy] = useState<SortField>('size');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [viewMode, setViewMode] = useState<ViewMode>('flat');
   const [error, setError] = useState<string | null>(null);
 
   if (initialNode && !currentNode) {
     setCurrentNode(initialNode);
   }
 
-  const files = useMemo(() => {
-    if (!currentNode || !currentNode.children) return [];
+  const compareNodes = useCallback((a: FileNode, b: FileNode) => {
+    let comparison = 0;
+    if (sortBy === 'name') {
+      comparison = a.name.localeCompare(b.name);
+    } else {
+      comparison = a.size - b.size;
+    }
+    return sortOrder === 'asc' ? comparison : -comparison;
+  }, [sortBy, sortOrder]);
 
-    const sorted = [...currentNode.children].sort((a, b) => {
-      let comparison = 0;
-      if (sortBy === 'name') {
-        comparison = a.name.localeCompare(b.name);
-      } else {
-        comparison = a.size - b.size;
+  const flattenTree = useCallback((node: FileNode): FileNode[] => {
+    if (!node.children) return [];
+    const collected: FileNode[] = [];
+    const stack: Array<{ children: FileNode[]; index: number }> = [
+      { children: [...node.children].sort(compareNodes), index: 0 },
+    ];
+
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1];
+      if (frame.index >= frame.children.length) {
+        stack.pop();
+        continue;
       }
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
 
-    return sorted;
-  }, [currentNode, sortBy, sortOrder]);
+      const child = frame.children[frame.index++];
+      collected.push(child);
+
+      if (child.isDirectory && child.children && child.children.length > 0) {
+        stack.push({ children: [...child.children].sort(compareNodes), index: 0 });
+      }
+    }
+
+    return collected;
+  }, [compareNodes]);
+
+  const files = useMemo(() => {
+    if (!currentNode) return [];
+
+    if (viewMode === 'flat') {
+      const list = currentNode.children ? [...currentNode.children] : [];
+      return list.sort(compareNodes);
+    }
+
+    if (viewMode === 'tree') {
+      return flattenTree(currentNode);
+    }
+    return [];
+  }, [currentNode, sortBy, sortOrder, viewMode, flattenTree, compareNodes]);
 
   const moveSelection = useCallback((delta: number) => {
     setSelectionIndex((prev) => {
@@ -74,6 +110,16 @@ export const useFileSystem = (initialNode: FileNode | null) => {
     }
   }, [sortBy]);
 
+  const toggleViewMode = useCallback(() => {
+    const order: ViewMode[] = ['flat', 'tree'];
+    setViewMode((prev) => {
+      const index = order.indexOf(prev);
+      const next = order[(index + 1) % order.length];
+      return next ?? 'flat';
+    });
+    setSelectionIndex(0);
+  }, []);
+
   const updateSizeUpwards = (node: FileNode, delta: number) => {
     let curr: FileNode | undefined = node;
     while (curr) {
@@ -92,22 +138,23 @@ export const useFileSystem = (initialNode: FileNode | null) => {
         // Actual deletion
         await fs.promises.rm(fileToDelete.path, { recursive: true, force: true });
 
+        const parentNode = fileToDelete.parent ?? currentNode;
+        if (!parentNode.children) return;
+
         // State update - Mutate in place to preserve tree consistency
-        const index = currentNode.children.indexOf(fileToDelete);
+        const index = parentNode.children.indexOf(fileToDelete);
         if (index > -1) {
-            currentNode.children.splice(index, 1);
+            parentNode.children.splice(index, 1);
         }
 
         // Propagate size change
         const sizeDiff = -fileToDelete.size;
-        updateSizeUpwards(currentNode, sizeDiff);
+        updateSizeUpwards(parentNode, sizeDiff);
 
         // Force re-render by creating a shallow copy
         setCurrentNode({ ...currentNode });
 
-        if (selectionIndex >= currentNode.children.length) {
-            setSelectionIndex(Math.max(0, currentNode.children.length - 1));
-        }
+        setSelectionIndex((prev) => Math.max(0, Math.min(prev, files.length - 2)));
       } catch (err: any) {
         setError(`Failed to delete: ${err.message}`);
       }
@@ -120,11 +167,13 @@ export const useFileSystem = (initialNode: FileNode | null) => {
     selectionIndex,
     sortBy,
     sortOrder,
+    viewMode,
     error,
     moveSelection,
     enterDirectory,
     goUp,
     toggleSort,
+    toggleViewMode,
     deleteSelected
   };
 };

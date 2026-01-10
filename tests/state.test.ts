@@ -72,7 +72,7 @@ describe('useFileSystem', () => {
       result.current.toggleSort('name');
     });
     expect(result.current.sortBy).toBe('name');
-    // Default to desc, so file2.txt > file1.txt > dir1
+    // Default to desc, so file2.txt > file1.txt > dir1 (tree order)
     expect(result.current.files[0].name).toBe('file2.txt');
   });
 

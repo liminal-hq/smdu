@@ -34,7 +34,7 @@ const mockFiles = [
 ];
 describe('FileList', () => {
     it('renders list of files correctly', () => {
-        const { lastFrame } = render(_jsx(FileList, { files: mockFiles, selectedIndex: 0, maxSize: 1000, theme: mockTheme }));
+    const { lastFrame } = render(_jsx(FileList, { files: mockFiles, selectedIndex: 0, maxSize: 1000, theme: mockTheme, units: "iec", viewMode: "tree", rootPath: "/root", scanRootPath: "/root" }));
         const output = lastFrame();
         expect(output).toContain('dir1');
         expect(output).toContain('file1.txt');

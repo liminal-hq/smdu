@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { Header } from './components/Header.js';
 import { Footer } from './components/Footer.js';
 import { FileList } from './components/FileList.js';
 import { ConfirmDelete } from './components/ConfirmDelete.js';
 import { Settings } from './components/Settings.js';
+import { HelpModal } from './components/HelpModal.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import { getThemeFromConfig, setThemeInConfig, getUnitsFromConfig, setUnitsInConfig } from './config.js';
-import { scanDirectory, FileNode } from './scanner.js';
+import { scanDirectory, FileNode, ScanProgress, ScanCancelledError } from './scanner.js';
 import { ACTIONS, checkInput } from './keys.js';
 import path from 'path';
+import { filesize } from 'filesize';
 
 interface AppProps {
   startPath: string;
@@ -43,9 +45,19 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [loading, setLoading] = useState(true);
   const [rootNode, setRootNode] = useState<FileNode | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [spinnerIndex, setSpinnerIndex] = useState(0);
   const spinnerFrames = ['|', '/', '-', '\\'];
+  const [scanStatus, setScanStatus] = useState<ScanProgress>({
+    currentPath: startPath,
+    directories: 0,
+    files: 0,
+    bytes: 0,
+    errors: 0,
+  });
+  const lastProgressUpdateRef = useRef(0);
+  const scanAbortRef = useRef<AbortController | null>(null);
 
   const {
     currentNode,
@@ -53,26 +65,53 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     selectionIndex,
     sortBy,
     sortOrder,
+    viewMode,
     moveSelection,
     enterDirectory,
     goUp,
     toggleSort,
+    toggleViewMode,
     deleteSelected,
   } = useFileSystem(rootNode);
+
+  const handleScanProgress = useCallback((progress: ScanProgress) => {
+    const now = Date.now();
+    if (now - lastProgressUpdateRef.current < 80) return;
+    lastProgressUpdateRef.current = now;
+    setScanStatus({ ...progress });
+  }, []);
 
   useEffect(() => {
     const runScan = async () => {
       try {
         const absolutePath = path.resolve(startPath);
-        const root = await scanDirectory(absolutePath);
+        const controller = new AbortController();
+        scanAbortRef.current = controller;
+        const progressState: ScanProgress = {
+          currentPath: absolutePath,
+          directories: 0,
+          files: 0,
+          bytes: 0,
+          errors: 0,
+        };
+        setScanStatus(progressState);
+        const root = await scanDirectory(absolutePath, undefined, handleScanProgress, progressState, controller.signal);
         setRootNode(root);
         setLoading(false);
       } catch (err: any) {
+        if (err instanceof ScanCancelledError) {
+          setLoading(false);
+          exit();
+          return;
+        }
         setError(err.message);
         setLoading(false);
       }
     };
     runScan();
+    return () => {
+      scanAbortRef.current?.abort();
+    };
   }, [startPath]);
 
   useEffect(() => {
@@ -83,6 +122,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
     return () => clearInterval(timer);
   }, [loading]);
+
 
   useEffect(() => {
     const updateRows = () => {
@@ -102,7 +142,25 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   }, [stdout]);
 
   useInput((input, key) => {
-    if (loading) return;
+    if (showHelp) {
+      if (checkInput(input, key, ACTIONS.HELP) || key.escape) {
+        setShowHelp(false);
+      }
+      return;
+    }
+
+    if (checkInput(input, key, ACTIONS.HELP)) {
+      setShowHelp(true);
+      return;
+    }
+
+    if (loading) {
+      if (checkInput(input, key, ACTIONS.QUIT)) {
+        scanAbortRef.current?.abort();
+        exit();
+      }
+      return;
+    }
 
     // If Settings is active, input is handled by Settings component usually,
     // but here we are mounting components conditionally.
@@ -154,7 +212,26 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
     if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
     if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
+    if (checkInput(input, key, ACTIONS.VIEW_MODE)) toggleViewMode();
   });
+
+  const helpOverlay = showHelp ? <HelpModal theme={theme} /> : null;
+  const settingsOverlay = view === ViewState.Settings ? (
+    <Settings
+      currentTheme={currentThemeName || 'default'}
+      currentUnits={currentUnits}
+      theme={theme}
+      onSelectTheme={(name) => {
+        setCurrentThemeName(name);
+        setThemeInConfig(name);
+      }}
+      onSelectUnits={(units) => {
+        setCurrentUnits(units);
+        setUnitsInConfig(units);
+      }}
+      onBack={() => setView(ViewState.FileList)}
+    />
+  ) : null;
 
   if (error) {
     return (
@@ -165,32 +242,43 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   }
 
   if (loading || !currentNode) {
-    return (
-      <Box height={totalRows} width="100%">
-        <Text color={theme.colours.text}>
-          Scanning {startPath}... {spinnerFrames[spinnerIndex]}
-        </Text>
-      </Box>
-    );
-  }
+    const sizeLabel = currentUnits === 'si'
+      ? filesize(scanStatus.bytes, { base: 10, standard: 'si', output: 'string' })
+      : filesize(scanStatus.bytes, { base: 2, standard: 'iec', output: 'string' });
 
-  if (view === ViewState.Settings) {
     return (
-      <Box height={totalRows} width="100%" justifyContent="center" alignItems="flex-start">
-        <Settings
-          currentTheme={currentThemeName || 'default'}
-          currentUnits={currentUnits}
+      <Box height={totalRows} width="100%" flexDirection="column">
+        <Header
+          path={startPath}
           theme={theme}
-          onSelectTheme={(name) => {
-            setCurrentThemeName(name);
-            setThemeInConfig(name);
-          }}
-          onSelectUnits={(units) => {
-            setCurrentUnits(units);
-            setUnitsInConfig(units);
-          }}
-          onBack={() => setView(ViewState.FileList)}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          viewMode={viewMode}
         />
+        <Box flexGrow={1} paddingX={1} paddingY={1} borderStyle="single">
+          <Box flexDirection="column">
+            <Text color={theme.colours.text}>
+              Scanning {startPath}... {spinnerFrames[spinnerIndex]}
+            </Text>
+            <Text color={theme.colours.text} wrap="truncate-end">
+              Current: {scanStatus.currentPath}
+            </Text>
+            <Text color={theme.colours.text}>
+              Progress: {scanStatus.directories} directories, {scanStatus.files} files, {sizeLabel}
+            </Text>
+            {scanStatus.errors > 0 ? (
+              <Text color="yellow">Errors: {scanStatus.errors}</Text>
+            ) : null}
+          </Box>
+        </Box>
+        <Footer
+          totalSize={scanStatus.bytes}
+          itemCount={scanStatus.files}
+          theme={theme}
+          units={currentUnits}
+        />
+        {helpOverlay}
+        {settingsOverlay}
       </Box>
     );
   }
@@ -199,7 +287,13 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       const selectedFile = files[selectionIndex];
       return (
           <Box flexDirection="column" height={totalRows} width="100%">
-              <Header path={currentNode.path} theme={theme} />
+              <Header
+                path={currentNode.path}
+                theme={theme}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                viewMode={viewMode}
+              />
               <Box flexGrow={1} justifyContent="center" alignItems="center">
                   <ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
               </Box>
@@ -207,19 +301,24 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 totalSize={currentNode.size}
                 itemCount={files.length}
                 theme={theme}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
                 units={currentUnits}
               />
+              {helpOverlay}
+              {settingsOverlay}
           </Box>
       );
   }
 
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
-
   return (
     <Box flexDirection="column" height={totalRows} width="100%">
-      <Header path={currentNode.path} theme={theme} />
+      <Header
+        path={currentNode.path}
+        theme={theme}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        viewMode={viewMode}
+      />
 
       <Box flexGrow={1} overflowY="hidden">
         <FileList
@@ -228,6 +327,9 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             maxSize={maxSize}
             theme={theme}
             units={currentUnits}
+            viewMode={viewMode}
+            rootPath={currentNode.path}
+            scanRootPath={rootNode?.path ?? currentNode.path}
         />
       </Box>
 
@@ -235,10 +337,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         totalSize={currentNode.size}
         itemCount={files.length}
         theme={theme}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
         units={currentUnits}
       />
+      {helpOverlay}
+      {settingsOverlay}
     </Box>
   );
 };
