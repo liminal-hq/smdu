@@ -2,6 +2,7 @@ import Conf from 'conf';
 
 export interface ConfigSchema {
   theme: string;
+  units: 'iec' | 'si';
 }
 
 // Create a new configuration instance
@@ -10,6 +11,7 @@ const config = new Conf<ConfigSchema>({
   projectName: 'smdu',
   defaults: {
     theme: 'default',
+    units: 'iec',
   },
 });
 
@@ -19,6 +21,14 @@ export const getThemeFromConfig = (): string => {
 
 export const setThemeInConfig = (theme: string): void => {
   config.set('theme', theme);
+};
+
+export const getUnitsFromConfig = (): 'iec' | 'si' => {
+  return config.get('units');
+};
+
+export const setUnitsInConfig = (units: 'iec' | 'si'): void => {
+  config.set('units', units);
 };
 
 export const getConfigPath = (): string => {

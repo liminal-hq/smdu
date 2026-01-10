@@ -72,4 +72,4 @@ pnpm test
 
 ## License
 
-ISC
+GPL-3.0

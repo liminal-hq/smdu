@@ -7,8 +7,9 @@ import { ConfirmDelete } from './components/ConfirmDelete.js';
 import { Settings } from './components/Settings.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
-import { getThemeFromConfig, setThemeInConfig } from './config.js';
+import { getThemeFromConfig, setThemeInConfig, getUnitsFromConfig, setUnitsInConfig } from './config.js';
 import { scanDirectory, FileNode } from './scanner.js';
+import { KEYS } from './keys.js';
 import path from 'path';
 
 interface AppProps {
@@ -16,7 +17,10 @@ interface AppProps {
   themeName?: string; // Flag overrides config
 }
 
-type ViewState = 'filelist' | 'settings';
+enum ViewState {
+  FILELIST = 'filelist',
+  SETTINGS = 'settings',
+}
 
 export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName }) => {
   const { exit } = useApp();
@@ -26,7 +30,9 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [currentThemeName, setCurrentThemeName] = useState(initialThemeName !== 'default' ? initialThemeName : configTheme);
   const theme = getTheme(currentThemeName || 'default');
 
-  const [view, setView] = useState<ViewState>('filelist');
+  const [currentUnits, setCurrentUnits] = useState<'iec' | 'si'>(getUnitsFromConfig());
+
+  const [view, setView] = useState<ViewState>(ViewState.FILELIST);
   const [loading, setLoading] = useState(true);
   const [rootNode, setRootNode] = useState<FileNode | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -65,10 +71,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     // but here we are mounting components conditionally.
     // However, useInput runs even if component is not rendering? No, only mounted components.
     // But App is always mounted. So we must gate input based on View.
-    if (view === 'settings') return;
+    if (view === ViewState.SETTINGS) return;
 
     if (showConfirmDelete) {
-      if (input === 'y') {
+      if (input === KEYS.CONFIRM) {
         deleteSelected();
         setShowConfirmDelete(false);
       } else {
@@ -77,40 +83,40 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return;
     }
 
-    if (input === 'S') { // Shift+s for Settings
-      setView('settings');
+    if (input === KEYS.SETTINGS) { // Shift+s for Settings
+      setView(ViewState.SETTINGS);
       return;
     }
 
-    if (input === 'q' || key.escape) {
+    if (input === KEYS.QUIT || key.escape) {
       exit();
       return;
     }
 
-    if (key.upArrow || input === 'k') {
+    if (key.upArrow || input === KEYS.UP) {
       moveSelection(-1);
     }
 
-    if (key.downArrow || input === 'j') {
+    if (key.downArrow || input === KEYS.DOWN) {
       moveSelection(1);
     }
 
-    if (key.rightArrow || input === 'l' || key.return) {
+    if (key.rightArrow || input === KEYS.RIGHT || key.return) {
       enterDirectory();
     }
 
-    if (key.leftArrow || input === 'h' || key.backspace) {
+    if (key.leftArrow || input === KEYS.LEFT || key.backspace) {
       goUp();
     }
 
-    if (input === 'd') {
+    if (input === KEYS.DELETE) {
         if (files[selectionIndex]) {
             setShowConfirmDelete(true);
         }
     }
 
-    if (input === 'n') toggleSort('name');
-    if (input === 's') toggleSort('size');
+    if (input === KEYS.SORT_NAME) toggleSort('name');
+    if (input === KEYS.SORT_SIZE) toggleSort('size');
   });
 
   if (error) {
@@ -121,16 +127,21 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     return <Text color={theme.colours.text}>Scanning {startPath}...</Text>;
   }
 
-  if (view === 'settings') {
+  if (view === ViewState.SETTINGS) {
     return (
       <Settings
         currentTheme={currentThemeName || 'default'}
+        currentUnits={currentUnits}
         theme={theme}
         onSelectTheme={(name) => {
           setCurrentThemeName(name);
           setThemeInConfig(name);
         }}
-        onBack={() => setView('filelist')}
+        onSelectUnits={(units) => {
+          setCurrentUnits(units);
+          setUnitsInConfig(units);
+        }}
+        onBack={() => setView(ViewState.FILELIST)}
       />
     );
   }
@@ -160,6 +171,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             selectedIndex={selectionIndex}
             maxSize={maxSize}
             theme={theme}
+            units={currentUnits}
         />
       </Box>
 

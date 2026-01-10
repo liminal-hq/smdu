@@ -45,6 +45,7 @@ describe('FileList', () => {
         selectedIndex={0}
         maxSize={1000}
         theme={mockTheme}
+        units="iec"
       />
     );
 

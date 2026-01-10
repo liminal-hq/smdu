@@ -9,6 +9,7 @@ interface FileListProps {
   selectedIndex: number;
   maxSize: number; // Size of the largest file in the list, for bar calculation
   theme: Theme;
+  units: 'iec' | 'si';
 }
 
 const BAR_WIDTH = 20;
@@ -18,6 +19,7 @@ export const FileList: React.FC<FileListProps> = ({
   selectedIndex,
   maxSize,
   theme,
+  units,
 }) => {
   const WINDOW_SIZE = process.stdout.rows ? process.stdout.rows - 7 : 20;
 
@@ -69,7 +71,7 @@ export const FileList: React.FC<FileListProps> = ({
                     backgroundColor={isSelected ? theme.colours.highlight : undefined}
                     color={isSelected ? theme.colours.selectedText : theme.colours.size}
                   >
-                    {filesize(file.size)}
+                    {filesize(file.size, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'jedec' })}
                   </Text>
               </Box>
 

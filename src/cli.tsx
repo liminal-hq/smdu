@@ -11,7 +11,7 @@ program
   .description('See My Disk Usage - A clone of ncdu')
   .version('1.0.0')
   .argument('[path]', 'Path to scan', process.cwd())
-  .option('-t, --theme <theme>', 'Theme (default, dracula)', 'default')
+  .option('-t, --theme <theme>', 'Theme (default, dracula)')
   .action((pathStr, options) => {
     // When argument is optional and has default, pathStr is the value.
     // If user provides a path, it's in pathStr.
