@@ -1,7 +1,7 @@
 # SMDU (See My Disk Usage) Specification
 
 ## Overview
-SMDU is a terminal-based disk usage analyzer inspired by `ncdu`. It is built with TypeScript, React, and Ink.
+SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScript, React, and Ink.
 
 ## Features
 - **Directory Scanning:** Recursively scans directories to calculate file sizes.

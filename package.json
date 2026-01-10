@@ -2,42 +2,45 @@
   "name": "smdu",
   "version": "1.0.0",
   "description": "See My Disk Usage - A clone of ncdu",
-  "main": "dist/src/cli.js",
+  "main": "dist/cli.js",
   "type": "module",
   "bin": {
-    "smdu": "dist/src/cli.js"
+    "smdu": "dist/cli.js"
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "build": "tsc",
     "watch": "tsc -w",
-    "start": "node dist/src/cli.js"
+    "start": "node dist/cli.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "dependencies": {
     "chalk": "^5.2.0",
     "filesize": "^10.0.0",
-    "ink": "^4.1.0",
-    "meow": "^11.0.0",
-    "react": "^18.2.0",
+    "ink": "^6.6.0",
+    "meow": "^14.0.0",
+    "react": "^19.2.3",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@jest/globals": "^29.4.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.1",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.14.0",
-    "@types/react": "^18.0.0",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
     "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "ink-testing-library": "^3.0.0",
+    "ink-testing-library": "^4.0.0",
     "jest": "^29.4.3",
     "jest-environment-jsdom": "^29.4.0",
-    "prettier": "^2.8.4",
+    "prettier": "^3.7.4",
+    "react-dom": "^19.2.3",
     "ts-jest": "^29.0.5"
   }
 }
