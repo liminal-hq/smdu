@@ -9,7 +9,7 @@ import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import { getThemeFromConfig, setThemeInConfig, getUnitsFromConfig, setUnitsInConfig } from './config.js';
 import { scanDirectory, FileNode } from './scanner.js';
-import { KEYS } from './keys.js';
+import { ACTIONS, checkInput } from './keys.js';
 import path from 'path';
 
 interface AppProps {
@@ -74,7 +74,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     if (view === ViewState.SETTINGS) return;
 
     if (showConfirmDelete) {
-      if (input === KEYS.CONFIRM) {
+      if (checkInput(input, key, ACTIONS.CONFIRM)) {
         deleteSelected();
         setShowConfirmDelete(false);
       } else {
@@ -83,40 +83,40 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return;
     }
 
-    if (input === KEYS.SETTINGS) { // Shift+s for Settings
+    if (checkInput(input, key, ACTIONS.SETTINGS)) {
       setView(ViewState.SETTINGS);
       return;
     }
 
-    if (input === KEYS.QUIT || key.escape) {
+    if (checkInput(input, key, ACTIONS.QUIT)) {
       exit();
       return;
     }
 
-    if (key.upArrow || input === KEYS.UP) {
+    if (checkInput(input, key, ACTIONS.MOVE_UP)) {
       moveSelection(-1);
     }
 
-    if (key.downArrow || input === KEYS.DOWN) {
+    if (checkInput(input, key, ACTIONS.MOVE_DOWN)) {
       moveSelection(1);
     }
 
-    if (key.rightArrow || input === KEYS.RIGHT || key.return) {
+    if (checkInput(input, key, ACTIONS.MOVE_RIGHT)) {
       enterDirectory();
     }
 
-    if (key.leftArrow || input === KEYS.LEFT || key.backspace) {
+    if (checkInput(input, key, ACTIONS.MOVE_LEFT)) {
       goUp();
     }
 
-    if (input === KEYS.DELETE) {
+    if (checkInput(input, key, ACTIONS.DELETE)) {
         if (files[selectionIndex]) {
             setShowConfirmDelete(true);
         }
     }
 
-    if (input === KEYS.SORT_NAME) toggleSort('name');
-    if (input === KEYS.SORT_SIZE) toggleSort('size');
+    if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
+    if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
   });
 
   if (error) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { Theme, themes } from '../themes.js';
-import { KEYS } from '../keys.js';
+import { ACTIONS, checkInput } from '../keys.js';
 
 interface SettingsProps {
   currentTheme: string;
@@ -34,13 +34,13 @@ export const Settings: React.FC<SettingsProps> = ({
   // Set initial selection logic if needed, but 0 is fine.
 
   useInput((input, key) => {
-    if (key.upArrow || input === KEYS.UP) {
+    if (checkInput(input, key, ACTIONS.MOVE_UP)) {
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
     }
-    if (key.downArrow || input === KEYS.DOWN) {
+    if (checkInput(input, key, ACTIONS.MOVE_DOWN)) {
       setSelectedIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
     }
-    if (key.return || input === KEYS.SPACE) {
+    if (checkInput(input, key, ACTIONS.SELECT)) {
       const item = items[selectedIndex];
       if (item.type === 'theme') {
         onSelectTheme(item.value);
@@ -48,7 +48,7 @@ export const Settings: React.FC<SettingsProps> = ({
         onSelectUnits(item.value as 'iec' | 'si');
       }
     }
-    if (key.escape || input === KEYS.QUIT || input === KEYS.LEFT || key.leftArrow) {
+    if (checkInput(input, key, ACTIONS.QUIT) || checkInput(input, key, ACTIONS.MOVE_LEFT)) {
       onBack();
     }
   });
