@@ -46,6 +46,9 @@ describe('FileList', () => {
         maxSize={1000}
         theme={mockTheme}
         units="iec"
+        viewMode="tree"
+        rootPath="/root"
+        scanRootPath="/root"
       />
     );
 

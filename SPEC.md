@@ -8,12 +8,14 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Visual Interface:** Displays a file tree with size bars and percentages.
 - **Navigation:** Navigate through directories using arrow keys (Up/Down to move, Right/Enter to enter, Left/Backspace to go up).
 - **Sorting:** Sort files by name or size.
+- **View Modes:** Toggle between flat (ncdu-style, default) and tree. List mode (name-only entries) is planned but currently disabled.
+- **Help Modal:** Display keybindings with `?`.
 - **Deletion:** Delete files or directories with a confirmation modal.
 - **Theming:** Support for multiple colour themes (Default, Dracula).
 - **Settings:** Persistent configuration for themes and units.
 - **Fullscreen:** Uses the alternate screen buffer by default; `--no-fullscreen` opts out.
 - **Adaptive Layout:** Column widths and the graph adjust to terminal size.
-- **Feedback:** Footer shows totals, sort, and units; a spinner displays during scanning.
+- **Feedback:** Footer shows totals and units; live scan feedback shows the current path and counts.
 
 ## Architecture
 
@@ -27,7 +29,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 ### Modules
 
 1.  **Scanner (`src/scanner.ts`)**
-    -   Function `scanDirectory(path: string): Promise<FileNode>`
+    -   Function `scanDirectory(path: string, parent?: FileNode, onProgress?: ScanProgressCallback, progress?: ScanProgress): Promise<FileNode>`
     -   Returns a tree structure:
         ```typescript
         interface FileNode {
@@ -37,6 +39,16 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
           isDirectory: boolean;
           children?: FileNode[];
           parent?: FileNode; // Optional, helpful for navigation
+        }
+        ```
+    -   Scan feedback:
+        ```typescript
+        interface ScanProgress {
+          currentPath: string;
+          directories: number;
+          files: number;
+          bytes: number;
+          errors: number;
         }
         ```
 
@@ -62,10 +74,14 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     -   Context provider to supply the theme to components.
 
 ## UI/UX
--   **Header:** `/home/user/projects/smdu` (Yellow/Bold)
+-   **Header:** `/home/user/projects/smdu` (Yellow/Bold) with sort and view mode indicators.
+-   **Help:** `?` opens the keybinding modal.
+-   **Scan:** `q` cancels the scan and exits.
 -   **List:**
     -   `[--#-------]  80%  src/` (Selected item highlighted)
     -   `[----------]  20%  package.json`
+    -   Tree mode indents nested items.
+    -   Flat mode shows full relative paths (ncdu-style).
 -   **Footer:** `Total: 101.21 MiB (15 items) | Sort: Size (desc) | Units: IEC | Delete: d | Settings: S | Quit: q | Navigation: Arrows`
 
 ## Theming

@@ -2,7 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';
 import { FileNode } from '../scanner.js';
+import { ViewMode } from '../state.js';
 import { filesize } from 'filesize';
+import path from 'path';
 
 interface FileListProps {
   files: FileNode[];
@@ -10,6 +12,9 @@ interface FileListProps {
   maxSize: number; // Size of the largest file in the list, for bar calculation
   theme: Theme;
   units: 'iec' | 'si';
+  viewMode: ViewMode;
+  rootPath: string;
+  scanRootPath: string;
 }
 
 const APP_HEADER_ROWS = 3;
@@ -27,6 +32,9 @@ export const FileList: React.FC<FileListProps> = ({
   maxSize,
   theme,
   units,
+  viewMode,
+  rootPath,
+  scanRootPath,
 }) => {
   const { stdout } = useStdout();
   const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
@@ -95,7 +103,9 @@ export const FileList: React.FC<FileListProps> = ({
   return (
     <Box flexDirection="column" width="100%">
       <Box paddingX={1} borderStyle="single">
-          <Box width={columnLayout.nameColumns}><Text underline>Name</Text></Box>
+          <Box width={columnLayout.nameColumns}>
+            <Text underline>{viewMode === 'flat' ? 'Path' : 'Name'}</Text>
+          </Box>
           <Box width={columnLayout.sizeColumns}><Text underline>Size</Text></Box>
           <Box width={columnLayout.percentColumns}><Text underline>%</Text></Box>
           {columnLayout.showGraph ? (
@@ -111,6 +121,19 @@ export const FileList: React.FC<FileListProps> = ({
 
         const barStr = '#'.repeat(barFilled) + '-'.repeat(barEmpty);
 
+        const basePath = viewMode === 'flat' ? scanRootPath : rootPath;
+        const relativePath = path.relative(basePath, file.path) || file.name;
+        const pathSegments = relativePath.split(path.sep).filter(Boolean);
+        const depth = Math.max(0, pathSegments.length - 1);
+        const indent = viewMode === 'tree'
+          ? '  '.repeat(depth)
+          : '';
+        const baseName = viewMode === 'flat' ? relativePath : file.name;
+        const displayName = file.isDirectory
+          ? `${baseName}/`
+          : baseName;
+        const entryLabel = `${indent}${file.isDirectory ? '/' : ' '} ${displayName}`;
+
         return (
           <Box key={file.path} width="100%">
             <Box
@@ -123,7 +146,7 @@ export const FileList: React.FC<FileListProps> = ({
                     color={isSelected ? theme.colours.selectedText : theme.colours.text}
                     wrap="truncate-end"
                 >
-                  {file.isDirectory ? '/' : ' '} {file.name}
+                  {entryLabel}
                 </Text>
               </Box>
 

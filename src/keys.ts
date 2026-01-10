@@ -5,6 +5,11 @@ export interface ActionDefinition {
   key?: Array<keyof Key>;
 }
 
+export interface HelpItem {
+  label: string;
+  keys: string;
+}
+
 export const ACTIONS: Record<string, ActionDefinition> = {
   MOVE_UP: { input: ['k'], key: ['upArrow'] },
   MOVE_DOWN: { input: ['j'], key: ['downArrow'] },
@@ -18,7 +23,19 @@ export const ACTIONS: Record<string, ActionDefinition> = {
   CONFIRM: { input: ['y'] },
   SORT_NAME: { input: ['n'] },
   SORT_SIZE: { input: ['s'] },
+  VIEW_MODE: { input: ['v'] },
+  HELP: { input: ['?'] },
   SELECT: { input: [' '], key: ['return'] }, // For settings selection
+};
+
+const KEY_LABELS: Partial<Record<keyof Key, string>> = {
+  upArrow: 'Up',
+  downArrow: 'Down',
+  leftArrow: 'Left',
+  rightArrow: 'Right',
+  return: 'Enter',
+  backspace: 'Backspace',
+  escape: 'Esc',
 };
 
 export const checkInput = (input: string, key: Key, action: ActionDefinition): boolean => {
@@ -30,3 +47,36 @@ export const checkInput = (input: string, key: Key, action: ActionDefinition): b
   }
   return false;
 };
+
+const formatActionTokens = (action: ActionDefinition): string[] => {
+  const tokens: string[] = [];
+  if (action.input) {
+    for (const entry of action.input) {
+      tokens.push(entry === ' ' ? 'Space' : entry);
+    }
+  }
+  if (action.key) {
+    for (const entry of action.key) {
+      tokens.push(KEY_LABELS[entry] ?? entry);
+    }
+  }
+  return tokens;
+};
+
+const formatActions = (actionNames: Array<keyof typeof ACTIONS>): string => {
+  const tokens = actionNames.flatMap((name) => formatActionTokens(ACTIONS[name]));
+  return Array.from(new Set(tokens)).join('/');
+};
+
+export const HELP_ITEMS: HelpItem[] = [
+  { label: 'Move selection', keys: formatActions(['MOVE_UP', 'MOVE_DOWN']) },
+  { label: 'Enter directory', keys: formatActions(['MOVE_RIGHT']) },
+  { label: 'Go up', keys: formatActions(['MOVE_LEFT']) },
+  { label: 'Sort by name', keys: formatActions(['SORT_NAME']) },
+  { label: 'Sort by size', keys: formatActions(['SORT_SIZE']) },
+  { label: 'Toggle view mode', keys: formatActions(['VIEW_MODE']) },
+  { label: 'Delete item', keys: formatActions(['DELETE']) },
+  { label: 'Settings', keys: formatActions(['SETTINGS']) },
+  { label: 'Help', keys: formatActions(['HELP']) },
+  { label: 'Quit', keys: formatActions(['QUIT']) },
+];

@@ -7,6 +7,7 @@
 ## Testing
 - **Mandatory Testing:** Make sure the unit tests are run after changes to the code.
 - **Verification:** Always verify code changes by running relevant tests.
+- **Build Check:** Run `pnpm build` to surface any TypeScript errors.
 
 ## Documentation
 - **Updates:** When user-facing behaviour, CLI options, or features change, update `README.md` and `SPEC.md`.
