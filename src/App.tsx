@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Text, useInput, useApp } from 'ink';
+import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { Header } from './components/Header.js';
 import { Footer } from './components/Footer.js';
 import { FileList } from './components/FileList.js';
@@ -25,6 +25,8 @@ enum ViewState {
 
 export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName, units: initialUnits }) => {
   const { exit } = useApp();
+  const { stdout } = useStdout();
+  const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
 
   // Determine initial theme: CLI arg > Config > Default
   const configTheme = getThemeFromConfig();
@@ -42,11 +44,15 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [rootNode, setRootNode] = useState<FileNode | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [spinnerIndex, setSpinnerIndex] = useState(0);
+  const spinnerFrames = ['|', '/', '-', '\\'];
 
   const {
     currentNode,
     files,
     selectionIndex,
+    sortBy,
+    sortOrder,
     moveSelection,
     enterDirectory,
     goUp,
@@ -68,6 +74,32 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     };
     runScan();
   }, [startPath]);
+
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setInterval(() => {
+      setSpinnerIndex((prev) => (prev + 1) % spinnerFrames.length);
+    }, 120);
+
+    return () => clearInterval(timer);
+  }, [loading]);
+
+  useEffect(() => {
+    const updateRows = () => {
+      setTotalRows(stdout?.rows ?? process.stdout.rows ?? 24);
+    };
+
+    updateRows();
+    const immediateTimer = setTimeout(updateRows, 0);
+    const settleTimer = setTimeout(updateRows, 100);
+    stdout?.on('resize', updateRows);
+
+    return () => {
+      stdout?.off('resize', updateRows);
+      clearTimeout(immediateTimer);
+      clearTimeout(settleTimer);
+    };
+  }, [stdout]);
 
   useInput((input, key) => {
     if (loading) return;
@@ -125,41 +157,60 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   });
 
   if (error) {
-    return <Text color="red">Error: {error}</Text>;
+    return (
+      <Box height={totalRows} width="100%">
+        <Text color="red">Error: {error}</Text>
+      </Box>
+    );
   }
 
   if (loading || !currentNode) {
-    return <Text color={theme.colours.text}>Scanning {startPath}...</Text>;
+    return (
+      <Box height={totalRows} width="100%">
+        <Text color={theme.colours.text}>
+          Scanning {startPath}... {spinnerFrames[spinnerIndex]}
+        </Text>
+      </Box>
+    );
   }
 
   if (view === ViewState.Settings) {
     return (
-      <Settings
-        currentTheme={currentThemeName || 'default'}
-        currentUnits={currentUnits}
-        theme={theme}
-        onSelectTheme={(name) => {
-          setCurrentThemeName(name);
-          setThemeInConfig(name);
-        }}
-        onSelectUnits={(units) => {
-          setCurrentUnits(units);
-          setUnitsInConfig(units);
-        }}
-        onBack={() => setView(ViewState.FileList)}
-      />
+      <Box height={totalRows} width="100%" justifyContent="center" alignItems="flex-start">
+        <Settings
+          currentTheme={currentThemeName || 'default'}
+          currentUnits={currentUnits}
+          theme={theme}
+          onSelectTheme={(name) => {
+            setCurrentThemeName(name);
+            setThemeInConfig(name);
+          }}
+          onSelectUnits={(units) => {
+            setCurrentUnits(units);
+            setUnitsInConfig(units);
+          }}
+          onBack={() => setView(ViewState.FileList)}
+        />
+      </Box>
     );
   }
 
   if (showConfirmDelete) {
       const selectedFile = files[selectionIndex];
       return (
-          <Box flexDirection="column" height="100%">
+          <Box flexDirection="column" height={totalRows} width="100%">
               <Header path={currentNode.path} theme={theme} />
               <Box flexGrow={1} justifyContent="center" alignItems="center">
                   <ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
               </Box>
-              <Footer totalSize={currentNode.size} itemCount={files.length} theme={theme} />
+              <Footer
+                totalSize={currentNode.size}
+                itemCount={files.length}
+                theme={theme}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                units={currentUnits}
+              />
           </Box>
       );
   }
@@ -167,7 +218,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
 
   return (
-    <Box flexDirection="column" height="100%">
+    <Box flexDirection="column" height={totalRows} width="100%">
       <Header path={currentNode.path} theme={theme} />
 
       <Box flexGrow={1} overflowY="hidden">
@@ -180,7 +231,14 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         />
       </Box>
 
-      <Footer totalSize={currentNode.size} itemCount={files.length} theme={theme} />
+      <Footer
+        totalSize={currentNode.size}
+        itemCount={files.length}
+        theme={theme}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        units={currentUnits}
+      />
     </Box>
   );
 };
