@@ -15,14 +15,15 @@ import path from 'path';
 interface AppProps {
   startPath: string;
   themeName?: string; // Flag overrides config
+  units?: string; // Flag overrides config
 }
 
 enum ViewState {
-  FILELIST = 'filelist',
-  SETTINGS = 'settings',
+  FileList = 'filelist',
+  Settings = 'settings',
 }
 
-export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName }) => {
+export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName, units: initialUnits }) => {
   const { exit } = useApp();
 
   // Determine initial theme: CLI arg > Config > Default
@@ -30,9 +31,13 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [currentThemeName, setCurrentThemeName] = useState(initialThemeName !== 'default' ? initialThemeName : configTheme);
   const theme = getTheme(currentThemeName || 'default');
 
-  const [currentUnits, setCurrentUnits] = useState<'iec' | 'si'>(getUnitsFromConfig());
+  // Determine initial units
+  const configUnits = getUnitsFromConfig();
+  const [currentUnits, setCurrentUnits] = useState<'iec' | 'si'>(
+    (initialUnits === 'iec' || initialUnits === 'si') ? initialUnits : configUnits
+  );
 
-  const [view, setView] = useState<ViewState>(ViewState.FILELIST);
+  const [view, setView] = useState<ViewState>(ViewState.FileList);
   const [loading, setLoading] = useState(true);
   const [rootNode, setRootNode] = useState<FileNode | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -71,7 +76,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     // but here we are mounting components conditionally.
     // However, useInput runs even if component is not rendering? No, only mounted components.
     // But App is always mounted. So we must gate input based on View.
-    if (view === ViewState.SETTINGS) return;
+    if (view === ViewState.Settings) return;
 
     if (showConfirmDelete) {
       if (checkInput(input, key, ACTIONS.CONFIRM)) {
@@ -84,7 +89,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     }
 
     if (checkInput(input, key, ACTIONS.SETTINGS)) {
-      setView(ViewState.SETTINGS);
+      setView(ViewState.Settings);
       return;
     }
 
@@ -127,7 +132,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     return <Text color={theme.colours.text}>Scanning {startPath}...</Text>;
   }
 
-  if (view === ViewState.SETTINGS) {
+  if (view === ViewState.Settings) {
     return (
       <Settings
         currentTheme={currentThemeName || 'default'}
@@ -141,7 +146,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           setCurrentUnits(units);
           setUnitsInConfig(units);
         }}
-        onBack={() => setView(ViewState.FILELIST)}
+        onBack={() => setView(ViewState.FileList)}
       />
     );
   }
@@ -162,7 +167,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
 
   return (
-    <Box flexDirection="column" height="100%">
+    <Box flexDirection="column" height="100%" marginTop={1}>
       <Header path={currentNode.path} theme={theme} />
 
       <Box flexGrow={1} overflowY="hidden">

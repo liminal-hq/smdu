@@ -44,12 +44,17 @@ smdu /var/log
 ### Options
 
 -   `--theme <name>`: Choose a theme (default, dracula). This overrides the configuration file.
+-   `--units <units>`: Display units (iec, si). This overrides the configuration file.
 -   `--help`: Show help.
 -   `--version`: Show version.
 
 ## Configuration
 
-SMDU stores configuration (like the selected theme) using the system's standard configuration directory (e.g., `~/.config/smdu/config.json` on Linux).
+SMDU stores configuration using the system's standard configuration directory (e.g., `~/.config/smdu/config.json` on Linux).
+
+Settings available:
+- `theme`: The selected UI theme.
+- `units`: The display units (`iec` or `si`).
 
 ## Keybindings
 
@@ -57,7 +62,7 @@ SMDU stores configuration (like the selected theme) using the system's standard 
 -   **Right / Enter / l**: Enter directory.
 -   **Left / Backspace / h**: Go up a directory.
 -   **d**: Delete selected file/directory.
--   **S**: Open Settings (Theme selection).
+-   **S**: Open Settings.
 -   **q / Esc**: Quit.
 
 ## Development
