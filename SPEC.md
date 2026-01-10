@@ -1,7 +1,7 @@
 # SMDU (See My Disk Usage) Specification
 
 ## Overview
-SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScript, React, and Ink.
+SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScript, React, and Ink.
 
 ## Features
 - **Directory Scanning:** Recursively scans directories to calculate file sizes.
@@ -10,7 +10,10 @@ SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScrip
 - **Sorting:** Sort files by name or size.
 - **Deletion:** Delete files or directories with a confirmation modal.
 - **Theming:** Support for multiple colour themes (Default, Dracula).
-- **Settings:** Persistent configuration for themes.
+- **Settings:** Persistent configuration for themes and units.
+- **Fullscreen:** Uses the alternate screen buffer by default; `--no-fullscreen` opts out.
+- **Adaptive Layout:** Column widths and the graph adjust to terminal size.
+- **Feedback:** Footer shows totals, sort, and units; a spinner displays during scanning.
 
 ## Architecture
 
@@ -52,7 +55,7 @@ SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScrip
     -   `Settings`: Screen for selecting themes.
 
 4.  **Configuration (`src/config.ts`)**
-    -   Uses `conf` to store settings (theme).
+    -   Uses `conf` to store settings (theme, units).
 
 5.  **Theming (`src/themes.ts`)**
     -   Interface `Theme` with properties for `text`, `highlight`, `bar`, `background`.
@@ -63,11 +66,11 @@ SMDU is a TUI disk usage analyzer inspired by `ncdu`. It is built with TypeScrip
 -   **List:**
     -   `[--#-------]  80%  src/` (Selected item highlighted)
     -   `[----------]  20%  package.json`
--   **Footer:** `Delete: d | Settings: S | Quit: q | Navigation: Arrows`
+-   **Footer:** `Total: 101.21 MiB (15 items) | Sort: Size (desc) | Units: IEC | Delete: d | Settings: S | Quit: q | Navigation: Arrows`
 
 ## Theming
 -   **Default:** Standard terminal colours (Green bars, White text).
--   **Dracula:** Purple/Pink accents, dark background optimized.
+-   **Dracula:** Purple/Pink accents, dark background optimised.
 
 ## Testing Strategy
 -   Unit tests for `scanner` logic (mocking `fs`).

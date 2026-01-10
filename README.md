@@ -1,6 +1,6 @@
 # SMDU (See My Disk Usage)
 
-SMDU is a modern, terminal-based disk usage analyzer inspired by `ncdu`, built with TypeScript and Ink.
+SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built with TypeScript and Ink.
 
 ## Features
 
@@ -8,6 +8,8 @@ SMDU is a modern, terminal-based disk usage analyzer inspired by `ncdu`, built w
 -   **Interactive UI:** Navigate through your file system with ease.
 -   **Visual Feedback:** Size bars and percentages help identify large files quickly.
 -   **Theming:** Includes built-in themes (Default, Dracula).
+-   **Fullscreen TUI:** Uses the alternate screen buffer by default to keep scrollback intact after exit.
+-   **Adaptive Layout:** Columns adjust to terminal size and keep totals, sort, and units visible.
 -   **Cross-Platform:** Works on Linux, macOS, and Windows (best on POSIX).
 
 ## Installation
@@ -45,6 +47,7 @@ smdu /var/log
 
 -   `--theme <name>`: Choose a theme (default, dracula). This overrides the configuration file.
 -   `--units <units>`: Display units (iec, si). This overrides the configuration file.
+-   `--no-fullscreen`: Disable the alternate screen buffer.
 -   `--help`: Show help.
 -   `--version`: Show version.
 

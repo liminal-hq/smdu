@@ -8,6 +8,9 @@
 - **Mandatory Testing:** Make sure the unit tests are run after changes to the code.
 - **Verification:** Always verify code changes by running relevant tests.
 
+## Documentation
+- **Updates:** When user-facing behaviour, CLI options, or features change, update `README.md` and `SPEC.md`.
+
 ## Project Structure
 - This is a TypeScript project using Ink for the CLI UI.
 - Use `pnpm` as the package manager.
