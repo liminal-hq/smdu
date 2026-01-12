@@ -7,7 +7,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **Fast Scanning:** Efficiently scans directories to visualize disk usage.
 -   **Interactive UI:** Navigate through your file system with ease.
 -   **Visual Feedback:** Size bars and percentages help identify large files quickly.
--   **Theming:** Includes built-in themes (Default, Dracula).
+-   **Theming:** Includes built-in themes (Default, Classic, Dracula) with a sleek default palette.
 -   **Fullscreen TUI:** Uses the alternate screen buffer by default to keep scrollback intact after exit.
 -   **Adaptive Layout:** Columns adjust to terminal size and keep totals and units visible.
 -   **Status Panel:** Right-side panel for sort/view/flag state and key hints (toggle with `p`).
@@ -16,7 +16,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **File Type Colours:** Colour-codes files by category with an optional legend.
 -   **Heatmap Size Bars:** Green-to-red gradient for size bars (toggle with `H`).
 -   **Hidden Files Toggle:** Show or hide dotfiles with `.`.
--   **Header Title:** Shows `smdu` centred in the header bar.
+-   **Header:** Shows the current path with a subtle divider and a right-aligned `smdu` label.
 -   **Planned:** List view (name-only entries).
 -   **View Modes:** Flat (ncdu-style, default) and Tree.
 -   **Help Modal:** Press `?` to view keybindings.
@@ -57,7 +57,7 @@ smdu /var/log
 
 ### Options
 
--   `--theme <name>`: Choose a theme (default, dracula). This overrides the configuration file.
+-   `--theme <name>`: Choose a theme (default, classic, dracula). This overrides the configuration file.
 -   `--units <units>`: Display units (iec, si). This overrides the configuration file.
 -   `--no-fullscreen`: Disable the alternate screen buffer.
 -   `--help`: Show help.

@@ -13,7 +13,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Information Panel:** Display details for the selected item with `i`.
 - **Deletion:** Delete files or directories with a confirmation modal.
 - **Focus Timer:** Start a 5/10/15/30 minute timer with session stats and completion alert.
-- **Theming:** Support for multiple colour themes (Default, Dracula).
+- **Theming:** Support for multiple colour themes (Default, Classic, Dracula) with a sleek default palette.
 - **File Type Colours:** Colour-coded file entries by category with an optional legend toggle.
 - **Heatmap Bars:** Green-to-red heatmap colours for size bars with `H` (default on).
 - **Status Panel:** Toggle a right-side panel with `p` for sort/view/flag state.
@@ -89,7 +89,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     -   Context provider to supply the theme to components.
 
 ## UI/UX
--   **Header:** `/home/user/projects/smdu` (Yellow/Bold) with `smdu` centred in the border title.
+-   **Header:** `/home/user/projects/smdu` with a subtle divider and right-aligned `smdu` label.
 -   **Status Panel:** Right-side panel shows sort/view/hidden/heatmap/legend state and key hints.
 -   **Footer:** Shows totals with a partial scan indicator while scanning.
 -   **Scan Status:** Displays live progress above the footer while scanning.
@@ -110,7 +110,8 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 -   **Footer:** `Total: 101.21 MiB (15 items) | Scan: Partial` + `Help: ? | Info: i | Panel: p | Timer: T`
 
 ## Theming
--   **Default:** Standard terminal colours (Green bars, White text).
+-   **Default:** Sleek charcoal palette with muted dividers and green bars.
+-   **Classic:** Original terminal colours with bright accents.
 -   **Dracula:** Purple/Pink accents, dark background optimised.
 
 ## Testing Strategy
