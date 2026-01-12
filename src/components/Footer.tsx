@@ -10,6 +10,7 @@ interface FooterProps {
   units: 'iec' | 'si';
   fileTypeColoursEnabled: boolean;
   showLegend: boolean;
+  heatmapEnabled: boolean;
   isScanning?: boolean;
 }
 
@@ -20,6 +21,7 @@ export const Footer: React.FC<FooterProps> = ({
   units,
   fileTypeColoursEnabled,
   showLegend,
+  heatmapEnabled,
   isScanning = false,
 }) => {
   const { stdout } = useStdout();
@@ -31,7 +33,8 @@ export const Footer: React.FC<FooterProps> = ({
   const scanLabel = isScanning ? ' | Scan: Partial' : '';
   const leftText = `Total: ${sizeLabel} (${itemCount} items) | Units: ${unitsLabel}${scanLabel}`;
   const legendText = fileTypeColoursEnabled ? ` | Legend: L${showLegend ? ' (on)' : ' (off)'}` : '';
-  const rightText = `Help: ? | Info: i${legendText}`;
+  const heatmapText = ` | Heatmap: H${heatmapEnabled ? ' (on)' : ' (off)'}`;
+  const rightText = `Help: ? | Info: i${heatmapText}${legendText}`;
 
   return (
     <Box

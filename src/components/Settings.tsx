@@ -8,9 +8,11 @@ interface SettingsProps {
   currentTheme: string;
   currentUnits: 'iec' | 'si';
   fileTypeColoursEnabled: boolean;
+  heatmapEnabled: boolean;
   onSelectTheme: (themeName: string) => void;
   onSelectUnits: (units: 'iec' | 'si') => void;
   onSelectFileTypeColours: (enabled: boolean) => void;
+  onSelectHeatmap: (enabled: boolean) => void;
   onBack: () => void;
   theme: Theme;
 }
@@ -18,15 +20,18 @@ interface SettingsProps {
 type SettingItem =
   | { type: 'theme'; value: string }
   | { type: 'units'; value: string }
-  | { type: 'fileTypeColours'; value: 'on' | 'off' };
+  | { type: 'fileTypeColours'; value: 'on' | 'off' }
+  | { type: 'heatmap'; value: 'on' | 'off' };
 
 export const Settings: React.FC<SettingsProps> = ({
   currentTheme,
   currentUnits,
   fileTypeColoursEnabled,
+  heatmapEnabled,
   onSelectTheme,
   onSelectUnits,
   onSelectFileTypeColours,
+  onSelectHeatmap,
   onBack,
   theme,
 }) => {
@@ -37,6 +42,8 @@ export const Settings: React.FC<SettingsProps> = ({
     { type: 'units' as const, value: 'si' },
     { type: 'fileTypeColours' as const, value: 'on' },
     { type: 'fileTypeColours' as const, value: 'off' },
+    { type: 'heatmap' as const, value: 'on' },
+    { type: 'heatmap' as const, value: 'off' },
   ];
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -58,6 +65,8 @@ export const Settings: React.FC<SettingsProps> = ({
         onSelectUnits(item.value as 'iec' | 'si');
       } else if (item.type === 'fileTypeColours') {
         onSelectFileTypeColours(item.value === 'on');
+      } else if (item.type === 'heatmap') {
+        onSelectHeatmap(item.value === 'on');
       }
     }
     if (checkInput(input, key, ACTIONS.QUIT) || checkInput(input, key, ACTIONS.MOVE_LEFT)) {
@@ -108,6 +117,24 @@ export const Settings: React.FC<SettingsProps> = ({
           const index = items.indexOf(item);
           const isSelected = index === selectedIndex;
           const isActive = (item.value === 'on') === fileTypeColoursEnabled;
+          const label = item.value === 'on' ? 'On' : 'Off';
+          return (
+            <Box key={item.value}>
+              <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
+                {isSelected ? '> ' : '  '}
+                {label} {isActive ? '(current)' : ''}
+              </Text>
+            </Box>
+          );
+        })}
+      </Box>
+
+      <Box marginTop={1} flexDirection="column">
+        <Text color={theme.colours.header} underline>Heatmap colours:</Text>
+        {items.filter(i => i.type === 'heatmap').map((item) => {
+          const index = items.indexOf(item);
+          const isSelected = index === selectedIndex;
+          const isActive = (item.value === 'on') === heatmapEnabled;
           const label = item.value === 'on' ? 'On' : 'Off';
           return (
             <Box key={item.value}>

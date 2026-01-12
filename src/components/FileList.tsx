@@ -18,6 +18,7 @@ interface FileListProps {
   scanRootPath: string;
   fileTypeColoursEnabled: boolean;
   showLegend: boolean;
+  heatmapEnabled: boolean;
   extraBottomRows?: number;
 }
 
@@ -27,6 +28,53 @@ const MIN_NAME_COL = 16;
 const SIZE_COL = 12;
 const PERCENT_COL = 7;
 const MIN_GRAPH_COL = 8;
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const hslToHex = (h: number, s: number, l: number): string => {
+  const normalisedS = clamp(s, 0, 100) / 100;
+  const normalisedL = clamp(l, 0, 100) / 100;
+  const chroma = (1 - Math.abs(2 * normalisedL - 1)) * normalisedS;
+  const hueSegment = (((h % 360) + 360) % 360) / 60;
+  const secondComponent = chroma * (1 - Math.abs((hueSegment % 2) - 1));
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+
+  if (hueSegment >= 0 && hueSegment < 1) {
+    red = chroma;
+    green = secondComponent;
+  } else if (hueSegment >= 1 && hueSegment < 2) {
+    red = secondComponent;
+    green = chroma;
+  } else if (hueSegment >= 2 && hueSegment < 3) {
+    green = chroma;
+    blue = secondComponent;
+  } else if (hueSegment >= 3 && hueSegment < 4) {
+    green = secondComponent;
+    blue = chroma;
+  } else if (hueSegment >= 4 && hueSegment < 5) {
+    red = secondComponent;
+    blue = chroma;
+  } else if (hueSegment >= 5 && hueSegment < 6) {
+    red = chroma;
+    blue = secondComponent;
+  }
+
+  const match = normalisedL - chroma / 2;
+  const toHex = (value: number) => {
+    const scaled = Math.round((value + match) * 255);
+    return scaled.toString(16).padStart(2, '0');
+  };
+
+  return `#${toHex(red)}${toHex(green)}${toHex(blue)}`;
+};
+
+const getHeatmapColour = (ratio: number): string => {
+  const clamped = clamp(ratio, 0, 1);
+  const hue = 120 - 120 * clamped;
+  return hslToHex(hue, 80, 50);
+};
 
 export const FileList: React.FC<FileListProps> = ({
   files,
@@ -39,6 +87,7 @@ export const FileList: React.FC<FileListProps> = ({
   scanRootPath,
   fileTypeColoursEnabled,
   showLegend,
+  heatmapEnabled,
   extraBottomRows = 0,
 }) => {
   const { stdout } = useStdout();
@@ -140,6 +189,8 @@ export const FileList: React.FC<FileListProps> = ({
         const percentage = maxSize > 0 ? (file.size / maxSize) * 100 : 0;
         const barFilled = Math.round((percentage / 100) * columnLayout.barWidth);
         const barEmpty = Math.max(0, columnLayout.barWidth - barFilled);
+        const heatmapColour = getHeatmapColour(maxSize > 0 ? file.size / maxSize : 0);
+        const barColour = heatmapEnabled ? heatmapColour : theme.colours.bar;
 
         const barStr = '#'.repeat(barFilled) + '-'.repeat(barEmpty);
 
@@ -198,7 +249,7 @@ export const FileList: React.FC<FileListProps> = ({
                 <Box width={columnLayout.graphColumns}>
                   <Text
                       backgroundColor={isSelected ? theme.colours.highlight : undefined}
-                      color={isSelected ? theme.colours.selectedText : theme.colours.bar}
+                      color={isSelected ? theme.colours.selectedText : barColour}
                   >
                       [{barStr}]
                   </Text>

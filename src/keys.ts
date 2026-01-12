@@ -23,6 +23,7 @@ export const ACTIONS: Record<string, ActionDefinition> = {
   CONFIRM: { input: ['y'] },
   INFO: { input: ['i'] },
   LEGEND: { input: ['L'] },
+  HEATMAP: { input: ['H'] },
   SORT_NAME: { input: ['n'] },
   SORT_SIZE: { input: ['s'] },
   VIEW_MODE: { input: ['v'] },
@@ -83,6 +84,7 @@ export const HELP_ITEMS: HelpItem[] = [
   { label: 'Settings', keys: formatActions(['SETTINGS']) },
   { label: 'Information panel', keys: formatActions(['INFO']) },
   { label: 'Toggle legend', keys: formatActions(['LEGEND']) },
+  { label: 'Toggle heatmap', keys: formatActions(['HEATMAP']) },
   { label: 'Help', keys: formatActions(['HELP']) },
   { label: 'Quit', keys: formatActions(['QUIT']) },
 ];

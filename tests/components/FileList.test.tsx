@@ -58,6 +58,7 @@ describe('FileList', () => {
         scanRootPath="/root"
         fileTypeColoursEnabled={true}
         showLegend={false}
+        heatmapEnabled={false}
       />
     );
 

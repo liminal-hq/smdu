@@ -19,6 +19,8 @@ import {
   setFileTypeColoursEnabledInConfig,
   getShowHiddenFilesFromConfig,
   setShowHiddenFilesInConfig,
+  getHeatmapEnabledFromConfig,
+  setHeatmapEnabledInConfig,
 } from './config.js';
 import { scanDirectory, FileNode, ScanProgress, ScanCancelledError } from './scanner.js';
 import { ACTIONS, checkInput } from './keys.js';
@@ -55,6 +57,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [fileTypeColoursEnabled, setFileTypeColoursEnabled] = useState(configFileTypeColoursEnabled);
   const configShowHiddenFiles = getShowHiddenFilesFromConfig();
   const [showHiddenFiles, setShowHiddenFiles] = useState(configShowHiddenFiles);
+  const configHeatmapEnabled = getHeatmapEnabledFromConfig();
+  const [heatmapEnabled, setHeatmapEnabled] = useState(configHeatmapEnabled);
 
   const [view, setView] = useState<ViewState>(ViewState.FileList);
   const [loading, setLoading] = useState(true);
@@ -269,6 +273,15 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return;
     }
 
+    if (checkInput(input, key, ACTIONS.HEATMAP)) {
+      setHeatmapEnabled((prev) => {
+        const next = !prev;
+        setHeatmapEnabledInConfig(next);
+        return next;
+      });
+      return;
+    }
+
     if (checkInput(input, key, ACTIONS.SETTINGS)) {
       setView(ViewState.Settings);
       return;
@@ -334,6 +347,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         setFileTypeColoursEnabled(enabled);
         setFileTypeColoursEnabledInConfig(enabled);
       }}
+      heatmapEnabled={heatmapEnabled}
+      onSelectHeatmap={(enabled) => {
+        setHeatmapEnabled(enabled);
+        setHeatmapEnabledInConfig(enabled);
+      }}
       onBack={() => setView(ViewState.FileList)}
     />
   ) : null;
@@ -382,6 +400,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           units={currentUnits}
           fileTypeColoursEnabled={fileTypeColoursEnabled}
           showLegend={showLegend}
+          heatmapEnabled={heatmapEnabled}
           isScanning={loading || isScanning}
         />
         {helpOverlay}
@@ -413,6 +432,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 units={currentUnits}
                 fileTypeColoursEnabled={fileTypeColoursEnabled}
                 showLegend={showLegend}
+                heatmapEnabled={heatmapEnabled}
                 isScanning={isScanning}
               />
               {helpOverlay}
@@ -457,6 +477,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             scanRootPath={rootNode?.path ?? currentNode.path}
             fileTypeColoursEnabled={fileTypeColoursEnabled}
             showLegend={showLegend}
+            heatmapEnabled={heatmapEnabled}
             extraBottomRows={isScanning ? 3 : 0}
         />
       </Box>
@@ -470,6 +491,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         units={currentUnits}
         fileTypeColoursEnabled={fileTypeColoursEnabled}
         showLegend={showLegend}
+        heatmapEnabled={heatmapEnabled}
         isScanning={isScanning}
       />
       {helpOverlay}
