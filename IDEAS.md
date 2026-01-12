@@ -7,7 +7,7 @@ SMDU is growing beyond the Unix "do one thing well" principle - and that's okay!
 
 ## 🔥 High Priority (Quick Wins)
 
-### 1. Incremental/Real-Time Scanning Display
+### 1. Incremental/Real-Time Scanning Display ✅
 **Problem:** Large scans show no progress until complete  
 **Solution:** Update the file list as directories complete, sort in real-time  
 **Impact:** Massive UX improvement, users can start exploring immediately  
