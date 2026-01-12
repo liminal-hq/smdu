@@ -42,7 +42,7 @@ SMDU is growing beyond the Unix "do one thing well" principle - and that's okay!
 
 ---
 
-### 3. Information Panel (Press `i`)
+### 3. Information Panel (Press `i`) ✅
 **Problem:** Users need to leave SMDU to check file details  
 **Solution:** Modal showing full path, dates, permissions, file type  
 **Impact:** High  
