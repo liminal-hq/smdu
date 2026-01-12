@@ -5,6 +5,7 @@ import { FileNode } from '../scanner.js';
 import { ViewMode } from '../state.js';
 import { filesize } from 'filesize';
 import path from 'path';
+import { FILE_TYPE_LEGEND, getFileTypeCategory } from '../fileTypeColours.js';
 
 interface FileListProps {
   files: FileNode[];
@@ -15,12 +16,12 @@ interface FileListProps {
   viewMode: ViewMode;
   rootPath: string;
   scanRootPath: string;
+  fileTypeColoursEnabled: boolean;
+  showLegend: boolean;
 }
 
 const APP_HEADER_ROWS = 3;
-const LIST_HEADER_ROWS = 3;
 const APP_FOOTER_ROWS = 3;
-const RESERVED_ROWS = APP_HEADER_ROWS + LIST_HEADER_ROWS + APP_FOOTER_ROWS;
 const MIN_NAME_COL = 16;
 const SIZE_COL = 12;
 const PERCENT_COL = 7;
@@ -35,10 +36,15 @@ export const FileList: React.FC<FileListProps> = ({
   viewMode,
   rootPath,
   scanRootPath,
+  fileTypeColoursEnabled,
+  showLegend,
 }) => {
   const { stdout } = useStdout();
   const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
   const [totalColumns, setTotalColumns] = useState(() => stdout?.columns ?? process.stdout.columns ?? 80);
+  const showLegendRow = showLegend && fileTypeColoursEnabled;
+  const listHeaderRows = showLegendRow ? 4 : 3;
+  const reservedRows = APP_HEADER_ROWS + listHeaderRows + APP_FOOTER_ROWS;
 
   useEffect(() => {
     const updateRows = () => {
@@ -58,7 +64,7 @@ export const FileList: React.FC<FileListProps> = ({
     };
   }, [stdout]);
 
-  const windowSize = Math.max(1, totalRows - RESERVED_ROWS);
+  const windowSize = Math.max(1, totalRows - reservedRows);
   const columnLayout = useMemo(() => {
     const contentColumns = Math.max(0, totalColumns - 2); // paddingX=1
     const fixedColumns = SIZE_COL + PERCENT_COL;
@@ -102,7 +108,8 @@ export const FileList: React.FC<FileListProps> = ({
 
   return (
     <Box flexDirection="column" width="100%">
-      <Box paddingX={1} borderStyle="single">
+      <Box paddingX={1} borderStyle="single" flexDirection="column">
+        <Box>
           <Box width={columnLayout.nameColumns}>
             <Text underline>{viewMode === 'flat' ? 'Path' : 'Name'}</Text>
           </Box>
@@ -111,6 +118,19 @@ export const FileList: React.FC<FileListProps> = ({
           {columnLayout.showGraph ? (
             <Box width={columnLayout.graphColumns}><Text underline>Graph</Text></Box>
           ) : null}
+        </Box>
+        {showLegendRow ? (
+          <Box width="100%">
+            <Text wrap="truncate-end" color={theme.colours.text}>
+              Legend:{' '}
+              {FILE_TYPE_LEGEND.map((entry, entryIndex) => (
+                <Text key={entry.category} color={theme.colours.fileTypes[entry.category]}>
+                  {entry.label}{entryIndex < FILE_TYPE_LEGEND.length - 1 ? '  ' : ''}
+                </Text>
+              ))}
+            </Text>
+          </Box>
+        ) : null}
       </Box>
       {visibleFiles.map((file, index) => {
         const globalIndex = start + index;
@@ -133,6 +153,10 @@ export const FileList: React.FC<FileListProps> = ({
           ? `${baseName}/`
           : baseName;
         const entryLabel = `${indent}${file.isDirectory ? '/' : ' '} ${displayName}`;
+        const fileTypeCategory = getFileTypeCategory(file.name, file.isDirectory);
+        const entryColour = (fileTypeColoursEnabled && fileTypeCategory)
+          ? theme.colours.fileTypes[fileTypeCategory]
+          : theme.colours.text;
 
         return (
           <Box key={file.path} width="100%">
@@ -143,7 +167,7 @@ export const FileList: React.FC<FileListProps> = ({
               <Box width={columnLayout.nameColumns}>
                 <Text
                     backgroundColor={isSelected ? theme.colours.highlight : undefined}
-                    color={isSelected ? theme.colours.selectedText : theme.colours.text}
+                    color={isSelected ? theme.colours.selectedText : entryColour}
                     wrap="truncate-end"
                 >
                   {entryLabel}

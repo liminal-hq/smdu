@@ -10,6 +10,13 @@ export interface Theme {
     footer: string;
     size: string;
     percentage: string;
+    fileTypes: {
+      media: string;
+      documents: string;
+      code: string;
+      archives: string;
+      system: string;
+    };
   };
 }
 
@@ -26,6 +33,13 @@ export const themes: Record<string, Theme> = {
       footer: 'white',
       size: 'yellow',
       percentage: 'white',
+      fileTypes: {
+        media: 'red',
+        documents: 'yellow',
+        code: 'green',
+        archives: 'blue',
+        system: 'gray',
+      },
     },
   },
   dracula: {
@@ -40,6 +54,13 @@ export const themes: Record<string, Theme> = {
       footer: '#6272a4', // Comment
       size: '#8be9fd', // Cyan
       percentage: '#ffb86c', // Orange
+      fileTypes: {
+        media: '#ff5555', // Red
+        documents: '#f1fa8c', // Yellow
+        code: '#50fa7b', // Green
+        archives: '#8be9fd', // Cyan
+        system: '#6272a4', // Comment
+      },
     },
   },
 };

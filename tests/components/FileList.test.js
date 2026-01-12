@@ -14,6 +14,13 @@ const mockTheme = {
         footer: 'white',
         size: 'yellow',
         percentage: 'white',
+        fileTypes: {
+            media: 'red',
+            documents: 'yellow',
+            code: 'green',
+            archives: 'blue',
+            system: 'gray',
+        },
     },
 };
 const mockFiles = [
@@ -34,7 +41,7 @@ const mockFiles = [
 ];
 describe('FileList', () => {
     it('renders list of files correctly', () => {
-    const { lastFrame } = render(_jsx(FileList, { files: mockFiles, selectedIndex: 0, maxSize: 1000, theme: mockTheme, units: "iec", viewMode: "tree", rootPath: "/root", scanRootPath: "/root" }));
+    const { lastFrame } = render(_jsx(FileList, { files: mockFiles, selectedIndex: 0, maxSize: 1000, theme: mockTheme, units: "iec", viewMode: "tree", rootPath: "/root", scanRootPath: "/root", fileTypeColoursEnabled: true, showLegend: false }));
         const output = lastFrame();
         expect(output).toContain('dir1');
         expect(output).toContain('file1.txt');

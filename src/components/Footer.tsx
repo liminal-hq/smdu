@@ -8,9 +8,18 @@ interface FooterProps {
   itemCount: number;
   theme: Theme;
   units: 'iec' | 'si';
+  fileTypeColoursEnabled: boolean;
+  showLegend: boolean;
 }
 
-export const Footer: React.FC<FooterProps> = ({ totalSize, itemCount, theme, units }) => {
+export const Footer: React.FC<FooterProps> = ({
+  totalSize,
+  itemCount,
+  theme,
+  units,
+  fileTypeColoursEnabled,
+  showLegend,
+}) => {
   const { stdout } = useStdout();
   const totalColumns = stdout?.columns ?? process.stdout.columns ?? 80;
   const leftWidth = Math.max(20, Math.floor(totalColumns * 0.55));
@@ -18,7 +27,8 @@ export const Footer: React.FC<FooterProps> = ({ totalSize, itemCount, theme, uni
   const unitsLabel = units === 'iec' ? 'IEC' : 'SI';
   const sizeLabel = filesize(totalSize, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' });
   const leftText = `Total: ${sizeLabel} (${itemCount} items) | Units: ${unitsLabel}`;
-  const rightText = 'Help: ? | Info: i';
+  const legendText = fileTypeColoursEnabled ? ` | Legend: L${showLegend ? ' (on)' : ' (off)'}` : '';
+  const rightText = `Help: ? | Info: i${legendText}`;
 
   return (
     <Box

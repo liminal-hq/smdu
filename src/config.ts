@@ -3,6 +3,7 @@ import Conf from 'conf';
 export interface ConfigSchema {
   theme: string;
   units: 'iec' | 'si';
+  fileTypeColoursEnabled: boolean;
 }
 
 // Create a new configuration instance
@@ -12,6 +13,7 @@ const config = new Conf<ConfigSchema>({
   defaults: {
     theme: 'default',
     units: 'iec',
+    fileTypeColoursEnabled: true,
   },
 });
 
@@ -29,6 +31,14 @@ export const getUnitsFromConfig = (): 'iec' | 'si' => {
 
 export const setUnitsInConfig = (units: 'iec' | 'si'): void => {
   config.set('units', units);
+};
+
+export const getFileTypeColoursEnabledFromConfig = (): boolean => {
+  return config.get('fileTypeColoursEnabled');
+};
+
+export const setFileTypeColoursEnabledInConfig = (enabled: boolean): void => {
+  config.set('fileTypeColoursEnabled', enabled);
 };
 
 export const getConfigPath = (): string => {
