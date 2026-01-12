@@ -67,7 +67,7 @@ Settings available:
 - `theme`: The selected UI theme.
 - `units`: The display units (`iec` or `si`).
 - `fileTypeColoursEnabled`: Enable file type colours in the list.
-- `showHiddenFiles`: Show hidden files by default (dotfiles only on Windows).
+- `showHiddenFiles`: Show hidden files by default (dotfiles only on Windows, default on).
 
 ## Keybindings
 

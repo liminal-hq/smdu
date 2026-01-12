@@ -15,7 +15,7 @@ const config = new Conf<ConfigSchema>({
     theme: 'default',
     units: 'iec',
     fileTypeColoursEnabled: true,
-    showHiddenFiles: false,
+    showHiddenFiles: true,
   },
 });
 
