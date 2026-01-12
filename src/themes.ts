@@ -102,6 +102,13 @@ export const themes: Record<string, Theme> = {
   },
 };
 
+const baseThemeOrder = ['default', 'classic', 'dracula'];
+
+export const themeNames = [
+  ...baseThemeOrder,
+  ...Object.keys(themes).filter((name) => !baseThemeOrder.includes(name)),
+];
+
 export const getTheme = (name: string): Theme => {
   return themes[name.toLowerCase()] || themes.default;
 };

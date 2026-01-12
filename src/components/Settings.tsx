@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Text, useInput } from 'ink';
-import { Theme, themes } from '../themes.js';
+import { Box, Text, useInput, useStdout } from 'ink';
+import { Theme, themeNames } from '../themes.js';
 import { ACTIONS, checkInput } from '../keys.js';
 import { Modal } from './Modal.js';
 
@@ -35,9 +35,13 @@ export const Settings: React.FC<SettingsProps> = ({
   onBack,
   theme,
 }) => {
-  const themeNames = Object.keys(themes);
+  const { stdout } = useStdout();
+  const totalRows = stdout?.rows ?? process.stdout.rows ?? 24;
+  const modalHeight = Math.min(18, Math.max(10, totalRows - 6));
+  const contentRows = Math.max(3, modalHeight - 6);
+  const listRows = Math.max(1, contentRows - 1);
   const items: SettingItem[] = [
-    ...themeNames.map(t => ({ type: 'theme' as const, value: t })),
+    ...themeNames.map((themeName) => ({ type: 'theme' as const, value: themeName })),
     { type: 'units' as const, value: 'iec' },
     { type: 'units' as const, value: 'si' },
     { type: 'fileTypeColours' as const, value: 'on' },
@@ -74,73 +78,134 @@ export const Settings: React.FC<SettingsProps> = ({
     }
   });
 
+  type IndexedItem = { item: SettingItem; index: number };
+  const indexedItems: IndexedItem[] = items.map((item, index) => ({ item, index }));
+  const themeItems = indexedItems.filter(({ item }) => item.type === 'theme');
+  const unitItems = indexedItems.filter(({ item }) => item.type === 'units');
+  const fileTypeItems = indexedItems.filter(({ item }) => item.type === 'fileTypeColours');
+  const heatmapItems = indexedItems.filter(({ item }) => item.type === 'heatmap');
+
+  type Row =
+    | { kind: 'heading'; label: string }
+    | { kind: 'spacer' }
+    | { kind: 'item'; label: string; isActive: boolean; index: number };
+
+  const toItemRow = (item: SettingItem, index: number): Row => {
+    if (item.type === 'theme') {
+      return {
+        kind: 'item',
+        label: item.value,
+        isActive: item.value === currentTheme,
+        index,
+      };
+    }
+    if (item.type === 'units') {
+      return {
+        kind: 'item',
+        label: item.value === 'iec' ? 'IEC (KiB, GiB)' : 'SI (kB, GB)',
+        isActive: item.value === currentUnits,
+        index,
+      };
+    }
+    if (item.type === 'fileTypeColours') {
+      return {
+        kind: 'item',
+        label: item.value === 'on' ? 'On' : 'Off',
+        isActive: (item.value === 'on') === fileTypeColoursEnabled,
+        index,
+      };
+    }
+    return {
+      kind: 'item',
+      label: item.value === 'on' ? 'On' : 'Off',
+      isActive: (item.value === 'on') === heatmapEnabled,
+      index,
+    };
+  };
+
+  const sections: Array<{ title: string; items: IndexedItem[] }> = [
+    { title: 'Themes', items: themeItems },
+    { title: 'Units', items: unitItems },
+    { title: 'File type colours', items: fileTypeItems },
+    { title: 'Heatmap colours', items: heatmapItems },
+  ];
+
+  const rows: Row[] = [];
+  sections.forEach((section) => {
+    if (section.items.length === 0) return;
+    if (rows.length > 0) {
+      rows.push({ kind: 'spacer' });
+    }
+    rows.push({ kind: 'heading', label: `${section.title}:` });
+    section.items.forEach(({ item, index }) => {
+      rows.push(toItemRow(item, index));
+    });
+  });
+
+  const selectedRowIndex = Math.max(0, rows.findIndex(
+    (row) => row.kind === 'item' && row.index === selectedIndex
+  ));
+  const maxVisibleRows = Math.max(1, listRows);
+  const maxStart = Math.max(0, rows.length - maxVisibleRows);
+  let start = rows.length <= maxVisibleRows
+    ? 0
+    : Math.min(
+      Math.max(0, selectedRowIndex - Math.floor(maxVisibleRows / 2)),
+      maxStart
+    );
+  let end = Math.min(rows.length, start + maxVisibleRows);
+  let visibleRows = rows.slice(start, end);
+
+  while (visibleRows.length > 0 && visibleRows[0].kind === 'spacer') {
+    start = Math.min(rows.length, start + 1);
+    end = Math.min(rows.length, end + 1);
+    visibleRows = rows.slice(start, end);
+  }
+
+  let stickyHeading: Row | null = null;
+  if (visibleRows[0]?.kind !== 'heading') {
+    for (let index = start; index >= 0; index -= 1) {
+      if (rows[index]?.kind === 'heading') {
+        stickyHeading = rows[index];
+        break;
+      }
+    }
+  }
+
+  let displayRows = visibleRows;
+  if (stickyHeading) {
+    displayRows = [stickyHeading, ...visibleRows.slice(0, maxVisibleRows - 1)];
+  }
+
+  if (displayRows.length < maxVisibleRows) {
+    const filler = Array.from({ length: maxVisibleRows - displayRows.length }, () => ({ kind: 'spacer' as const }));
+    displayRows = [...displayRows, ...filler];
+  }
+
   return (
-    <Modal theme={theme} title="Settings" hint="Close: Esc or Left">
-      <Box flexDirection="column">
-        <Text color={theme.colours.header} underline>Themes:</Text>
-        {items.filter(i => i.type === 'theme').map((item) => {
-          const index = items.indexOf(item);
-          const isSelected = index === selectedIndex;
-          const isActive = item.value === currentTheme;
-          return (
-            <Box key={item.value}>
-              <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
-                {isSelected ? '> ' : '  '}
-                {item.value} {isActive ? '(current)' : ''}
+    <Modal theme={theme} title="Settings" hint="Close: Esc or Left" height={modalHeight}>
+      <Box flexDirection="column" height={listRows}>
+        {displayRows.map((row, rowIndex) => {
+          const key = `${row.kind}-${rowIndex}-${'label' in row ? row.label : ''}`;
+          if (row.kind === 'spacer') {
+            return (
+              <Text key={key}> </Text>
+            );
+          }
+          if (row.kind === 'heading') {
+            return (
+              <Text key={key} color={theme.colours.muted} underline>
+                {row.label}
               </Text>
-            </Box>
-          );
-        })}
-      </Box>
+            );
+          }
 
-      <Box marginTop={1} flexDirection="column">
-        <Text color={theme.colours.header} underline>Units:</Text>
-        {items.filter(i => i.type === 'units').map((item) => {
-          const index = items.indexOf(item);
-          const isSelected = index === selectedIndex;
-          const isActive = item.value === currentUnits;
-          const label = item.value === 'iec' ? 'IEC (KiB, GiB)' : 'SI (kB, GB)';
+          const isSelected = row.index === selectedIndex;
           return (
-            <Box key={item.value}>
-              <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
+            <Box key={key}>
+              <Text color={isSelected ? theme.colours.accent : theme.colours.text}>
                 {isSelected ? '> ' : '  '}
-                {label} {isActive ? '(current)' : ''}
-              </Text>
-            </Box>
-          );
-        })}
-      </Box>
-
-      <Box marginTop={1} flexDirection="column">
-        <Text color={theme.colours.header} underline>File type colours:</Text>
-        {items.filter(i => i.type === 'fileTypeColours').map((item) => {
-          const index = items.indexOf(item);
-          const isSelected = index === selectedIndex;
-          const isActive = (item.value === 'on') === fileTypeColoursEnabled;
-          const label = item.value === 'on' ? 'On' : 'Off';
-          return (
-            <Box key={item.value}>
-              <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
-                {isSelected ? '> ' : '  '}
-                {label} {isActive ? '(current)' : ''}
-              </Text>
-            </Box>
-          );
-        })}
-      </Box>
-
-      <Box marginTop={1} flexDirection="column">
-        <Text color={theme.colours.header} underline>Heatmap colours:</Text>
-        {items.filter(i => i.type === 'heatmap').map((item) => {
-          const index = items.indexOf(item);
-          const isSelected = index === selectedIndex;
-          const isActive = (item.value === 'on') === heatmapEnabled;
-          const label = item.value === 'on' ? 'On' : 'Off';
-          return (
-            <Box key={item.value}>
-              <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
-                {isSelected ? '> ' : '  '}
-                {label} {isActive ? '(current)' : ''}
+                {row.label} {row.isActive ? '(current)' : ''}
               </Text>
             </Box>
           );
@@ -148,7 +213,7 @@ export const Settings: React.FC<SettingsProps> = ({
       </Box>
 
       <Box marginTop={1}>
-        <Text color={theme.colours.footer}>
+        <Text color={theme.colours.muted}>
           Press Enter to select.
         </Text>
       </Box>
