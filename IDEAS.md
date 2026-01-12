@@ -86,7 +86,7 @@ SMDU is growing beyond the Unix "do one thing well" principle - and that's okay!
 
 ## 🎨 Visual Enhancements
 
-### 5. File Type Colour Coding
+### 5. File Type Colour Coding ✅
 **Problem:** All items look the same regardless of type  
 **Solution:** Colour-code by category with optional legend  
 **Impact:** Medium (helps pattern recognition)  
