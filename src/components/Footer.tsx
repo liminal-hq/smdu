@@ -10,6 +10,7 @@ interface FooterProps {
   units: 'iec' | 'si';
   fileTypeColoursEnabled: boolean;
   showLegend: boolean;
+  isScanning?: boolean;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -19,6 +20,7 @@ export const Footer: React.FC<FooterProps> = ({
   units,
   fileTypeColoursEnabled,
   showLegend,
+  isScanning = false,
 }) => {
   const { stdout } = useStdout();
   const totalColumns = stdout?.columns ?? process.stdout.columns ?? 80;
@@ -26,7 +28,8 @@ export const Footer: React.FC<FooterProps> = ({
   const rightWidth = Math.max(20, totalColumns - leftWidth - 2);
   const unitsLabel = units === 'iec' ? 'IEC' : 'SI';
   const sizeLabel = filesize(totalSize, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' });
-  const leftText = `Total: ${sizeLabel} (${itemCount} items) | Units: ${unitsLabel}`;
+  const scanLabel = isScanning ? ' | Scan: Partial' : '';
+  const leftText = `Total: ${sizeLabel} (${itemCount} items) | Units: ${unitsLabel}${scanLabel}`;
   const legendText = fileTypeColoursEnabled ? ` | Legend: L${showLegend ? ' (on)' : ' (off)'}` : '';
   const rightText = `Help: ? | Info: i${legendText}`;
 

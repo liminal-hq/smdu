@@ -57,6 +57,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
   const [view, setView] = useState<ViewState>(ViewState.FileList);
   const [loading, setLoading] = useState(true);
+  const [isScanning, setIsScanning] = useState(true);
   const [rootNode, setRootNode] = useState<FileNode | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -74,6 +75,9 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   });
   const lastProgressUpdateRef = useRef(0);
   const scanAbortRef = useRef<AbortController | null>(null);
+  const rootNodeRef = useRef<FileNode | null>(null);
+  const pendingRootRef = useRef<FileNode | null>(null);
+  const partialUpdateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     currentNode,
@@ -90,6 +94,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     deleteSelected,
   } = useFileSystem(rootNode, showHiddenFiles);
 
+  const updateRootNode = useCallback((root: FileNode) => {
+    rootNodeRef.current = root;
+    setRootNode({ ...root });
+  }, []);
+
   const handleScanProgress = useCallback((progress: ScanProgress) => {
     const now = Date.now();
     if (now - lastProgressUpdateRef.current < 80) return;
@@ -97,12 +106,33 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     setScanStatus({ ...progress });
   }, []);
 
+  const handlePartialUpdate = useCallback((root: FileNode) => {
+    if (!rootNodeRef.current) {
+      setLoading(false);
+      updateRootNode(root);
+      return;
+    }
+
+    pendingRootRef.current = root;
+    if (partialUpdateTimerRef.current) return;
+
+    partialUpdateTimerRef.current = setTimeout(() => {
+      if (pendingRootRef.current) {
+        updateRootNode(pendingRootRef.current);
+      }
+      partialUpdateTimerRef.current = null;
+    }, 100);
+  }, [updateRootNode]);
+
   useEffect(() => {
     const runScan = async () => {
       try {
         const absolutePath = path.resolve(startPath);
         const controller = new AbortController();
         scanAbortRef.current = controller;
+        setIsScanning(true);
+        setLoading(true);
+        rootNodeRef.current = null;
         const progressState: ScanProgress = {
           currentPath: absolutePath,
           directories: 0,
@@ -111,24 +141,43 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           errors: 0,
         };
         setScanStatus(progressState);
-        const root = await scanDirectory(absolutePath, undefined, handleScanProgress, progressState, controller.signal);
-        setRootNode(root);
+        const root = await scanDirectory(
+          absolutePath,
+          undefined,
+          handleScanProgress,
+          progressState,
+          controller.signal,
+          handlePartialUpdate
+        );
+        if (partialUpdateTimerRef.current) {
+          clearTimeout(partialUpdateTimerRef.current);
+          partialUpdateTimerRef.current = null;
+        }
+        pendingRootRef.current = null;
+        updateRootNode(root);
         setLoading(false);
+        setIsScanning(false);
       } catch (err: any) {
         if (err instanceof ScanCancelledError) {
           setLoading(false);
+          setIsScanning(false);
           exit();
           return;
         }
         setError(err.message);
         setLoading(false);
+        setIsScanning(false);
       }
     };
     runScan();
     return () => {
       scanAbortRef.current?.abort();
+      if (partialUpdateTimerRef.current) {
+        clearTimeout(partialUpdateTimerRef.current);
+        partialUpdateTimerRef.current = null;
+      }
     };
-  }, [startPath]);
+  }, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
 
   useEffect(() => {
     if (!loading) return;
@@ -290,7 +339,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     );
   }
 
-  if (loading || !currentNode) {
+  if (!currentNode) {
     const sizeLabel = currentUnits === 'si'
       ? filesize(scanStatus.bytes, { base: 10, standard: 'si', output: 'string' })
       : filesize(scanStatus.bytes, { base: 2, standard: 'iec', output: 'string' });
@@ -328,6 +377,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           units={currentUnits}
           fileTypeColoursEnabled={fileTypeColoursEnabled}
           showLegend={showLegend}
+          isScanning={loading || isScanning}
         />
         {helpOverlay}
         {infoOverlay}
@@ -358,6 +408,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 units={currentUnits}
                 fileTypeColoursEnabled={fileTypeColoursEnabled}
                 showLegend={showLegend}
+                isScanning={isScanning}
               />
               {helpOverlay}
               {infoOverlay}
@@ -400,6 +451,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         units={currentUnits}
         fileTypeColoursEnabled={fileTypeColoursEnabled}
         showLegend={showLegend}
+        isScanning={isScanning}
       />
       {helpOverlay}
       {infoOverlay}

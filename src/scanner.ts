@@ -21,6 +21,7 @@ export interface ScanProgress {
 }
 
 export type ScanProgressCallback = (progress: ScanProgress) => void;
+export type ScanPartialCallback = (root: FileNode) => void;
 
 export class ScanCancelledError extends Error {
   constructor() {
@@ -34,13 +35,15 @@ const isHiddenName = (name: string): boolean => {
   return name.startsWith('.');
 };
 
-export async function scanDirectory(
+const scanDirectoryInternal = async (
   dirPath: string,
   parent?: FileNode,
   onProgress?: ScanProgressCallback,
   progress?: ScanProgress,
-  signal?: AbortSignal
-): Promise<FileNode> {
+  signal?: AbortSignal,
+  onPartial?: ScanPartialCallback,
+  root?: FileNode
+): Promise<FileNode> => {
   if (signal?.aborted) {
     throw new ScanCancelledError();
   }
@@ -64,6 +67,7 @@ export async function scanDirectory(
     mtime: stats.mtime,
     parent,
   };
+  const activeRoot = root ?? node;
 
   activeProgress.currentPath = dirPath;
   if (node.isDirectory) {
@@ -73,22 +77,33 @@ export async function scanDirectory(
     activeProgress.bytes += stats.size;
   }
   onProgress?.({ ...activeProgress });
+  if (!root) {
+    onPartial?.(activeRoot);
+  }
 
   if (node.isDirectory) {
     try {
       const entries = await fs.promises.readdir(dirPath);
       const children: FileNode[] = [];
+      node.size = 0;
       for (const entry of entries) {
         if (signal?.aborted) {
           throw new ScanCancelledError();
         }
-        const child = await scanDirectory(path.join(dirPath, entry), node, onProgress, activeProgress, signal);
+        const child = await scanDirectoryInternal(
+          path.join(dirPath, entry),
+          node,
+          onProgress,
+          activeProgress,
+          signal,
+          onPartial,
+          activeRoot
+        );
         children.push(child);
+        node.size += child.size;
+        onPartial?.(activeRoot);
       }
       node.children = children;
-
-      // Accumulate size from children
-      node.size = node.children.reduce((acc, child) => acc + child.size, 0);
     } catch (error) {
       if (error instanceof ScanCancelledError) {
         throw error;
@@ -99,8 +114,20 @@ export async function scanDirectory(
       activeProgress.errors += 1;
       activeProgress.currentPath = dirPath;
       onProgress?.({ ...activeProgress });
+      onPartial?.(activeRoot);
     }
   }
 
   return node;
+};
+
+export async function scanDirectory(
+  dirPath: string,
+  parent?: FileNode,
+  onProgress?: ScanProgressCallback,
+  progress?: ScanProgress,
+  signal?: AbortSignal,
+  onPartial?: ScanPartialCallback
+): Promise<FileNode> {
+  return scanDirectoryInternal(dirPath, parent, onProgress, progress, signal, onPartial);
 }
