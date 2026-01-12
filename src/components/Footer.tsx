@@ -25,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({
   const sizeLabel = filesize(totalSize, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' });
   const scanLabel = isScanning ? ' | Scan: Partial' : '';
   const leftText = `Total: ${sizeLabel} (${itemCount} items)${scanLabel}`;
-  const rightText = 'Help: ? | Info: i | Panel: p';
+  const rightText = 'Help: ? | Info: i | Panel: p | Timer: T';
 
   return (
     <Box

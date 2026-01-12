@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Text } from 'ink';
+import { Text } from 'ink';
 import { Theme } from '../themes.js';
+import { StatusBanner } from './StatusBanner.js';
 
 interface ScanStatusProps {
   theme: Theme;
@@ -15,19 +16,12 @@ export const ScanStatus: React.FC<ScanStatusProps> = ({
   currentPath,
   spinnerFrame,
 }) => (
-  <Box
-    paddingX={1}
-    paddingY={0}
-    borderStyle="round"
-    borderColor={theme.colours.footer}
-    flexDirection="column"
-    width="100%"
-  >
-    <Text color={theme.colours.text}>
+  <StatusBanner theme={theme}>
+    <Text color={theme.colours.footer}>
       {summary} {spinnerFrame}
     </Text>
-    <Text color={theme.colours.text} wrap="truncate-end">
+    <Text color={theme.colours.footer} wrap="truncate-end">
       Current: {currentPath}
     </Text>
-  </Box>
+  </StatusBanner>
 );

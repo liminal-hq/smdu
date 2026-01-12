@@ -29,6 +29,9 @@ export const ACTIONS: Record<string, ActionDefinition> = {
   SORT_SIZE: { input: ['s'] },
   VIEW_MODE: { input: ['v'] },
   TOGGLE_HIDDEN: { input: ['.'] },
+  TIMER: { input: ['T'] },
+  TIMER_TOGGLE: { input: ['t'] },
+  TIMER_CANCEL: { input: ['c'] },
   HELP: { input: ['?'] },
   SELECT: { input: [' '], key: ['return'] }, // For settings selection
 };
@@ -81,6 +84,9 @@ export const HELP_ITEMS: HelpItem[] = [
   { label: 'Sort by size', keys: formatActions(['SORT_SIZE']) },
   { label: 'Toggle view mode', keys: formatActions(['VIEW_MODE']) },
   { label: 'Toggle hidden files', keys: formatActions(['TOGGLE_HIDDEN']) },
+  { label: 'Start focus timer', keys: formatActions(['TIMER']) },
+  { label: 'Toggle focus timer display', keys: formatActions(['TIMER_TOGGLE']) },
+  { label: 'Cancel focus timer', keys: formatActions(['TIMER_CANCEL']) },
   { label: 'Delete item', keys: formatActions(['DELETE']) },
   { label: 'Settings', keys: formatActions(['SETTINGS']) },
   { label: 'Information panel', keys: formatActions(['INFO']) },
