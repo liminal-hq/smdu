@@ -6,6 +6,7 @@ import { FileList } from './components/FileList.js';
 import { ConfirmDelete } from './components/ConfirmDelete.js';
 import { Settings } from './components/Settings.js';
 import { HelpModal } from './components/HelpModal.js';
+import { InfoModal } from './components/InfoModal.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import { getThemeFromConfig, setThemeInConfig, getUnitsFromConfig, setUnitsInConfig } from './config.js';
@@ -46,6 +47,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [rootNode, setRootNode] = useState<FileNode | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [spinnerIndex, setSpinnerIndex] = useState(0);
   const spinnerFrames = ['|', '/', '-', '\\'];
@@ -149,6 +151,13 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return;
     }
 
+    if (showInfo) {
+      if (checkInput(input, key, ACTIONS.INFO) || key.escape) {
+        setShowInfo(false);
+      }
+      return;
+    }
+
     if (checkInput(input, key, ACTIONS.HELP)) {
       setShowHelp(true);
       return;
@@ -174,6 +183,13 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         setShowConfirmDelete(false);
       } else {
         setShowConfirmDelete(false);
+      }
+      return;
+    }
+
+    if (checkInput(input, key, ACTIONS.INFO)) {
+      if (files[selectionIndex]) {
+        setShowInfo(true);
       }
       return;
     }
@@ -215,7 +231,9 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     if (checkInput(input, key, ACTIONS.VIEW_MODE)) toggleViewMode();
   });
 
+  const selectedFile = files[selectionIndex];
   const helpOverlay = showHelp ? <HelpModal theme={theme} /> : null;
+  const infoOverlay = showInfo && selectedFile ? <InfoModal theme={theme} node={selectedFile} /> : null;
   const settingsOverlay = view === ViewState.Settings ? (
     <Settings
       currentTheme={currentThemeName || 'default'}
@@ -278,6 +296,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           units={currentUnits}
         />
         {helpOverlay}
+        {infoOverlay}
         {settingsOverlay}
       </Box>
     );
@@ -304,6 +323,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 units={currentUnits}
               />
               {helpOverlay}
+              {infoOverlay}
               {settingsOverlay}
           </Box>
       );
@@ -340,6 +360,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         units={currentUnits}
       />
       {helpOverlay}
+      {infoOverlay}
       {settingsOverlay}
     </Box>
   );
