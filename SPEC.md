@@ -19,6 +19,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Fullscreen:** Uses the alternate screen buffer by default; `--no-fullscreen` opts out.
 - **Adaptive Layout:** Column widths and the graph adjust to terminal size.
 - **Feedback:** Footer shows totals and units; live scan feedback shows the current path and counts.
+- **Incremental Results:** File list refreshes as directories finish, with a partial scan indicator and live scan stats above the footer.
 
 ## Architecture
 
@@ -32,7 +33,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 ### Modules
 
 1.  **Scanner (`src/scanner.ts`)**
-    -   Function `scanDirectory(path: string, parent?: FileNode, onProgress?: ScanProgressCallback, progress?: ScanProgress): Promise<FileNode>`
+    -   Function `scanDirectory(path: string, parent?: FileNode, onProgress?: ScanProgressCallback, progress?: ScanProgress, signal?: AbortSignal, onPartial?: ScanPartialCallback): Promise<FileNode>`
     -   Returns a tree structure:
         ```typescript
         interface FileNode {
@@ -54,6 +55,10 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
           bytes: number;
           errors: number;
         }
+        ```
+    -   Partial scan updates:
+        ```typescript
+        type ScanPartialCallback = (root: FileNode) => void;
         ```
 
 2.  **State Management (`src/state.ts` or Hooks)**
@@ -81,6 +86,8 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 ## UI/UX
 -   **Header:** `/home/user/projects/smdu` (Yellow/Bold) with sort and view mode indicators.
 -   **Header:** Hidden files indicator appears when enabled.
+-   **Footer:** Shows a partial scan indicator while scanning.
+-   **Scan Status:** Displays live progress above the footer while scanning.
 -   **Help:** `?` opens the keybinding modal.
 -   **Info Panel:** `i` opens the information panel for the selected item.
 -   **Scan:** `q` cancels the scan and exits.
