@@ -14,6 +14,7 @@ interface StatusPanelProps {
   showLegend: boolean;
   units: 'iec' | 'si';
   width?: number;
+  height?: number;
 }
 
 export const StatusPanel: React.FC<StatusPanelProps> = ({
@@ -27,9 +28,11 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
   showLegend,
   units,
   width,
+  height,
 }) => {
   const { stdout } = useStdout();
   const panelWidth = Math.max(10, width ?? stdout?.columns ?? process.stdout.columns ?? 30);
+  const panelHeight = Math.max(3, height ?? stdout?.rows ?? process.stdout.rows ?? 10);
   const contentWidth = Math.max(0, panelWidth - 2);
   const sortLabel = sortBy === 'name' ? 'Name' : 'Size';
   const orderLabel = sortOrder === 'asc' ? 'asc' : 'desc';
@@ -56,11 +59,16 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
     const trimmed = item.length > contentWidth ? item.slice(0, contentWidth) : item;
     return `│${trimmed}${' '.repeat(Math.max(0, contentWidth - trimmed.length))}│`;
   });
+  const emptyLine = `│${' '.repeat(contentWidth)}│`;
+  const innerHeight = Math.max(0, panelHeight - 2);
+  const paddedLines = contentLines.length >= innerHeight
+    ? contentLines.slice(0, innerHeight)
+    : [...contentLines, ...Array(innerHeight - contentLines.length).fill(emptyLine)];
 
   return (
-    <Box flexDirection="column" width="100%">
+    <Box flexDirection="column" width="100%" height={panelHeight}>
       <Text color={theme.colours.footer}>{topLine}</Text>
-      {contentLines.map((line, index) => (
+      {paddedLines.map((line, index) => (
         <Text key={`${line}-${index}`} color={theme.colours.text}>
           {line}
         </Text>

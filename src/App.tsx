@@ -449,12 +449,16 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   ) : null;
 
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
+  const headerRows = 3;
+  const footerRows = 3;
+  const scanRows = isScanning ? 3 : 0;
   const panelWidth = showStatusPanel
     ? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
     : 0;
   const listWidth = showStatusPanel
     ? Math.max(20, totalColumns - panelWidth)
     : totalColumns;
+  const panelHeight = Math.max(3, totalRows - headerRows - footerRows - scanRows);
   return (
     <Box flexDirection="column" height={totalRows} width="100%">
       <Header
@@ -494,6 +498,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 showLegend={showLegend}
                 units={currentUnits}
                 width={panelWidth}
+                height={panelHeight}
               />
             </Box>
           ) : null}
