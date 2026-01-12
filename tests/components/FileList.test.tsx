@@ -17,6 +17,13 @@ const mockTheme: Theme = {
     footer: 'white',
     size: 'yellow',
     percentage: 'white',
+    fileTypes: {
+      media: 'red',
+      documents: 'yellow',
+      code: 'green',
+      archives: 'blue',
+      system: 'gray',
+    },
   },
 };
 
@@ -49,6 +56,8 @@ describe('FileList', () => {
         viewMode="tree"
         rootPath="/root"
         scanRootPath="/root"
+        fileTypeColoursEnabled={true}
+        showLegend={false}
       />
     );
 

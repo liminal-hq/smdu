@@ -11,6 +11,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **Fullscreen TUI:** Uses the alternate screen buffer by default to keep scrollback intact after exit.
 -   **Adaptive Layout:** Columns adjust to terminal size and keep totals and units visible.
 -   **Live Scan Feedback:** Shows the current scan location with running totals.
+-   **File Type Colours:** Colour-codes files by category with an optional legend.
 -   **Planned:** List view (name-only entries).
 -   **View Modes:** Flat (ncdu-style, default) and Tree.
 -   **Planned:** List view (name-only entries).
@@ -64,6 +65,7 @@ SMDU stores configuration using the system's standard configuration directory (e
 Settings available:
 - `theme`: The selected UI theme.
 - `units`: The display units (`iec` or `si`).
+- `fileTypeColoursEnabled`: Enable file type colours in the list.
 
 ## Keybindings
 
@@ -76,6 +78,7 @@ Settings available:
 -   **n**: Sort by name.
 -   **s**: Sort by size.
 -   **v**: Toggle view mode (flat/tree).
+-   **L**: Toggle the file type legend.
 -   **?**: Toggle help.
 -   **q / Esc**: Quit (during scan, cancels).
 

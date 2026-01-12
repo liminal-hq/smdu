@@ -9,7 +9,14 @@ import { HelpModal } from './components/HelpModal.js';
 import { InfoModal } from './components/InfoModal.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
-import { getThemeFromConfig, setThemeInConfig, getUnitsFromConfig, setUnitsInConfig } from './config.js';
+import {
+  getThemeFromConfig,
+  setThemeInConfig,
+  getUnitsFromConfig,
+  setUnitsInConfig,
+  getFileTypeColoursEnabledFromConfig,
+  setFileTypeColoursEnabledInConfig,
+} from './config.js';
 import { scanDirectory, FileNode, ScanProgress, ScanCancelledError } from './scanner.js';
 import { ACTIONS, checkInput } from './keys.js';
 import path from 'path';
@@ -41,6 +48,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [currentUnits, setCurrentUnits] = useState<'iec' | 'si'>(
     (initialUnits === 'iec' || initialUnits === 'si') ? initialUnits : configUnits
   );
+  const configFileTypeColoursEnabled = getFileTypeColoursEnabledFromConfig();
+  const [fileTypeColoursEnabled, setFileTypeColoursEnabled] = useState(configFileTypeColoursEnabled);
 
   const [view, setView] = useState<ViewState>(ViewState.FileList);
   const [loading, setLoading] = useState(true);
@@ -48,6 +57,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showLegend, setShowLegend] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [spinnerIndex, setSpinnerIndex] = useState(0);
   const spinnerFrames = ['|', '/', '-', '\\'];
@@ -194,6 +204,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return;
     }
 
+    if (checkInput(input, key, ACTIONS.LEGEND)) {
+      setShowLegend((prev) => !prev);
+      return;
+    }
+
     if (checkInput(input, key, ACTIONS.SETTINGS)) {
       setView(ViewState.Settings);
       return;
@@ -247,6 +262,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         setCurrentUnits(units);
         setUnitsInConfig(units);
       }}
+      fileTypeColoursEnabled={fileTypeColoursEnabled}
+      onSelectFileTypeColours={(enabled) => {
+        setFileTypeColoursEnabled(enabled);
+        setFileTypeColoursEnabledInConfig(enabled);
+      }}
       onBack={() => setView(ViewState.FileList)}
     />
   ) : null;
@@ -294,6 +314,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           itemCount={scanStatus.files}
           theme={theme}
           units={currentUnits}
+          fileTypeColoursEnabled={fileTypeColoursEnabled}
+          showLegend={showLegend}
         />
         {helpOverlay}
         {infoOverlay}
@@ -321,6 +343,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 itemCount={files.length}
                 theme={theme}
                 units={currentUnits}
+                fileTypeColoursEnabled={fileTypeColoursEnabled}
+                showLegend={showLegend}
               />
               {helpOverlay}
               {infoOverlay}
@@ -350,6 +374,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             viewMode={viewMode}
             rootPath={currentNode.path}
             scanRootPath={rootNode?.path ?? currentNode.path}
+            fileTypeColoursEnabled={fileTypeColoursEnabled}
+            showLegend={showLegend}
         />
       </Box>
 
@@ -358,6 +384,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         itemCount={files.length}
         theme={theme}
         units={currentUnits}
+        fileTypeColoursEnabled={fileTypeColoursEnabled}
+        showLegend={showLegend}
       />
       {helpOverlay}
       {infoOverlay}

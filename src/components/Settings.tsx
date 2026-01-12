@@ -7,19 +7,26 @@ import { Modal } from './Modal.js';
 interface SettingsProps {
   currentTheme: string;
   currentUnits: 'iec' | 'si';
+  fileTypeColoursEnabled: boolean;
   onSelectTheme: (themeName: string) => void;
   onSelectUnits: (units: 'iec' | 'si') => void;
+  onSelectFileTypeColours: (enabled: boolean) => void;
   onBack: () => void;
   theme: Theme;
 }
 
-type SettingItem = { type: 'theme', value: string } | { type: 'units', value: string };
+type SettingItem =
+  | { type: 'theme'; value: string }
+  | { type: 'units'; value: string }
+  | { type: 'fileTypeColours'; value: 'on' | 'off' };
 
 export const Settings: React.FC<SettingsProps> = ({
   currentTheme,
   currentUnits,
+  fileTypeColoursEnabled,
   onSelectTheme,
   onSelectUnits,
+  onSelectFileTypeColours,
   onBack,
   theme,
 }) => {
@@ -27,7 +34,9 @@ export const Settings: React.FC<SettingsProps> = ({
   const items: SettingItem[] = [
     ...themeNames.map(t => ({ type: 'theme' as const, value: t })),
     { type: 'units' as const, value: 'iec' },
-    { type: 'units' as const, value: 'si' }
+    { type: 'units' as const, value: 'si' },
+    { type: 'fileTypeColours' as const, value: 'on' },
+    { type: 'fileTypeColours' as const, value: 'off' },
   ];
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -47,6 +56,8 @@ export const Settings: React.FC<SettingsProps> = ({
         onSelectTheme(item.value);
       } else if (item.type === 'units') {
         onSelectUnits(item.value as 'iec' | 'si');
+      } else if (item.type === 'fileTypeColours') {
+        onSelectFileTypeColours(item.value === 'on');
       }
     }
     if (checkInput(input, key, ACTIONS.QUIT) || checkInput(input, key, ACTIONS.MOVE_LEFT)) {
@@ -80,6 +91,24 @@ export const Settings: React.FC<SettingsProps> = ({
           const isSelected = index === selectedIndex;
           const isActive = item.value === currentUnits;
           const label = item.value === 'iec' ? 'IEC (KiB, GiB)' : 'SI (kB, GB)';
+          return (
+            <Box key={item.value}>
+              <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
+                {isSelected ? '> ' : '  '}
+                {label} {isActive ? '(current)' : ''}
+              </Text>
+            </Box>
+          );
+        })}
+      </Box>
+
+      <Box marginTop={1} flexDirection="column">
+        <Text color={theme.colours.header} underline>File type colours:</Text>
+        {items.filter(i => i.type === 'fileTypeColours').map((item) => {
+          const index = items.indexOf(item);
+          const isSelected = index === selectedIndex;
+          const isActive = (item.value === 'on') === fileTypeColoursEnabled;
+          const label = item.value === 'on' ? 'On' : 'Off';
           return (
             <Box key={item.value}>
               <Text color={isSelected ? theme.colours.highlight : theme.colours.text}>
