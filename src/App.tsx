@@ -16,6 +16,8 @@ import {
   setUnitsInConfig,
   getFileTypeColoursEnabledFromConfig,
   setFileTypeColoursEnabledInConfig,
+  getShowHiddenFilesFromConfig,
+  setShowHiddenFilesInConfig,
 } from './config.js';
 import { scanDirectory, FileNode, ScanProgress, ScanCancelledError } from './scanner.js';
 import { ACTIONS, checkInput } from './keys.js';
@@ -50,6 +52,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   );
   const configFileTypeColoursEnabled = getFileTypeColoursEnabledFromConfig();
   const [fileTypeColoursEnabled, setFileTypeColoursEnabled] = useState(configFileTypeColoursEnabled);
+  const configShowHiddenFiles = getShowHiddenFilesFromConfig();
+  const [showHiddenFiles, setShowHiddenFiles] = useState(configShowHiddenFiles);
 
   const [view, setView] = useState<ViewState>(ViewState.FileList);
   const [loading, setLoading] = useState(true);
@@ -84,7 +88,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     toggleSort,
     toggleViewMode,
     deleteSelected,
-  } = useFileSystem(rootNode);
+  } = useFileSystem(rootNode, showHiddenFiles);
 
   const handleScanProgress = useCallback((progress: ScanProgress) => {
     const now = Date.now();
@@ -244,6 +248,13 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
     if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
     if (checkInput(input, key, ACTIONS.VIEW_MODE)) toggleViewMode();
+    if (checkInput(input, key, ACTIONS.TOGGLE_HIDDEN)) {
+      setShowHiddenFiles((prev) => {
+        const next = !prev;
+        setShowHiddenFilesInConfig(next);
+        return next;
+      });
+    }
   });
 
   const selectedFile = files[selectionIndex];
@@ -292,6 +303,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           sortBy={sortBy}
           sortOrder={sortOrder}
           viewMode={viewMode}
+          showHiddenFiles={showHiddenFiles}
         />
         <Box flexGrow={1} paddingX={1} paddingY={1} borderStyle="single">
           <Box flexDirection="column">
@@ -334,6 +346,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 sortBy={sortBy}
                 sortOrder={sortOrder}
                 viewMode={viewMode}
+                showHiddenFiles={showHiddenFiles}
               />
               <Box flexGrow={1} justifyContent="center" alignItems="center">
                   <ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
@@ -362,6 +375,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         sortBy={sortBy}
         sortOrder={sortOrder}
         viewMode={viewMode}
+        showHiddenFiles={showHiddenFiles}
       />
 
       <Box flexGrow={1} overflowY="hidden">

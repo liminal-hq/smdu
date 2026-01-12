@@ -344,7 +344,7 @@ SMDU is growing beyond the Unix "do one thing well" principle - and that's okay!
 
 ---
 
-### 17. Hidden Files Toggle
+### 17. Hidden Files Toggle ✅
 **Problem:** Hidden files clutter view or are needed selectively  
 **Solution:** Quick toggle  
 **Impact:** Medium  
@@ -930,7 +930,7 @@ High Impact, High Complexity:
 
 Medium Impact, Low Complexity (POLISH):
 - Heatmap Mode
-- Hidden Files Toggle
+- Hidden Files Toggle ✅
 - Persistent Context Bar
 - Exclude Patterns
 

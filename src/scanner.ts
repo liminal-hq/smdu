@@ -6,6 +6,7 @@ export interface FileNode {
   path: string;
   size: number;
   isDirectory: boolean;
+  isHidden: boolean;
   children?: FileNode[];
   parent?: FileNode;
   mtime: Date;
@@ -27,6 +28,11 @@ export class ScanCancelledError extends Error {
     this.name = 'ScanCancelledError';
   }
 }
+
+const isHiddenName = (name: string): boolean => {
+  if (name === '.' || name === '..') return false;
+  return name.startsWith('.');
+};
 
 export async function scanDirectory(
   dirPath: string,
@@ -54,6 +60,7 @@ export async function scanDirectory(
     path: dirPath,
     size: stats.size,
     isDirectory: stats.isDirectory(),
+    isHidden: isHiddenName(name),
     mtime: stats.mtime,
     parent,
   };

@@ -26,6 +26,7 @@ export const ACTIONS: Record<string, ActionDefinition> = {
   SORT_NAME: { input: ['n'] },
   SORT_SIZE: { input: ['s'] },
   VIEW_MODE: { input: ['v'] },
+  TOGGLE_HIDDEN: { input: ['.'] },
   HELP: { input: ['?'] },
   SELECT: { input: [' '], key: ['return'] }, // For settings selection
 };
@@ -77,6 +78,7 @@ export const HELP_ITEMS: HelpItem[] = [
   { label: 'Sort by name', keys: formatActions(['SORT_NAME']) },
   { label: 'Sort by size', keys: formatActions(['SORT_SIZE']) },
   { label: 'Toggle view mode', keys: formatActions(['VIEW_MODE']) },
+  { label: 'Toggle hidden files', keys: formatActions(['TOGGLE_HIDDEN']) },
   { label: 'Delete item', keys: formatActions(['DELETE']) },
   { label: 'Settings', keys: formatActions(['SETTINGS']) },
   { label: 'Information panel', keys: formatActions(['INFO']) },

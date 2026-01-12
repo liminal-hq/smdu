@@ -29,13 +29,24 @@ describe('scanDirectory', () => {
             size: 100,
             mtime: mockDate,
         });
-        const node = await scanDirectory('/test/file.txt');
-        expect(node.name).toBe('file.txt');
-        expect(node.path).toBe('/test/file.txt');
-        expect(node.size).toBe(100);
-        expect(node.isDirectory).toBe(false);
-        expect(node.children).toBeUndefined();
+    const node = await scanDirectory('/test/file.txt');
+    expect(node.name).toBe('file.txt');
+    expect(node.path).toBe('/test/file.txt');
+    expect(node.size).toBe(100);
+    expect(node.isDirectory).toBe(false);
+    expect(node.isHidden).toBe(false);
+    expect(node.children).toBeUndefined();
+  });
+  it('should mark dotfiles as hidden', async () => {
+    mockLstat.mockResolvedValue({
+      isDirectory: () => false,
+      size: 50,
+      mtime: mockDate,
     });
+    const node = await scanDirectory('/test/.env');
+    expect(node.name).toBe('.env');
+    expect(node.isHidden).toBe(true);
+  });
     it('should scan a directory with children correctly', async () => {
         // Mock for root dir
         mockLstat.mockImplementation(async (p) => {

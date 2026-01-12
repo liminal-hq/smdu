@@ -28,6 +28,7 @@ const createNode = (name: string, size: number, isDirectory: boolean, children: 
     path: `/${name}`,
     size,
     isDirectory,
+    isHidden: name.startsWith('.'),
     children,
     mtime: new Date(),
     parent: undefined,
@@ -54,6 +55,21 @@ describe('useFileSystem', () => {
     expect(result.current.selectionIndex).toBe(0);
     expect(result.current.files).toHaveLength(3);
     expect(result.current.files[0].name).toBe('dir1'); // 300
+  });
+
+  it('should hide dotfiles by default and include them when enabled', () => {
+    const hiddenFile = createNode('.env', 10, false);
+    const rootWithHidden = createNode('root', 610, true, [hiddenFile, ...root.children]);
+
+    const { result, rerender } = renderHook(({ showHidden }) => useFileSystem(rootWithHidden, showHidden), {
+      initialProps: { showHidden: false },
+    });
+
+    expect(result.current.files.find((entry: any) => entry.name === '.env')).toBeUndefined();
+
+    rerender({ showHidden: true });
+
+    expect(result.current.files.find((entry: any) => entry.name === '.env')).toBeDefined();
   });
 
   it('should move selection', () => {

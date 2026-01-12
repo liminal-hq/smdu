@@ -9,9 +9,10 @@ interface HeaderProps {
   sortBy: SortField;
   sortOrder: SortOrder;
   viewMode: ViewMode;
+  showHiddenFiles: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ path, theme, sortBy, sortOrder, viewMode }) => {
+export const Header: React.FC<HeaderProps> = ({ path, theme, sortBy, sortOrder, viewMode, showHiddenFiles }) => {
   const { stdout } = useStdout();
   const totalColumns = stdout?.columns ?? process.stdout.columns ?? 80;
   const leftWidth = Math.max(20, Math.floor(totalColumns * 0.6));
@@ -21,7 +22,8 @@ export const Header: React.FC<HeaderProps> = ({ path, theme, sortBy, sortOrder, 
   const viewLabel = viewMode === 'tree'
     ? 'Tree'
     : 'Flat';
-  const rightText = `Sort: ${sortLabel} (${orderLabel}) | View: ${viewLabel}`;
+  const hiddenLabel = showHiddenFiles ? ' | Hidden: On' : '';
+  const rightText = `Sort: ${sortLabel} (${orderLabel}) | View: ${viewLabel}${hiddenLabel}`;
 
   return (
     <Box

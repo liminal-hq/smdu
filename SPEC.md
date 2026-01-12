@@ -14,7 +14,8 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Deletion:** Delete files or directories with a confirmation modal.
 - **Theming:** Support for multiple colour themes (Default, Dracula).
 - **File Type Colours:** Colour-coded file entries by category with an optional legend toggle.
-- **Settings:** Persistent configuration for themes, units, and file type colours.
+- **Hidden Files:** Toggle dotfiles with `.` (Windows hidden attributes are not detected, default on).
+- **Settings:** Persistent configuration for themes, units, file type colours, and hidden files.
 - **Fullscreen:** Uses the alternate screen buffer by default; `--no-fullscreen` opts out.
 - **Adaptive Layout:** Column widths and the graph adjust to terminal size.
 - **Feedback:** Footer shows totals and units; live scan feedback shows the current path and counts.
@@ -39,6 +40,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
           path: string;
           size: number;
           isDirectory: boolean;
+          isHidden: boolean;
           children?: FileNode[];
           parent?: FileNode; // Optional, helpful for navigation
         }
@@ -70,7 +72,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     -   `Settings`: Screen for selecting themes.
 
 4.  **Configuration (`src/config.ts`)**
-    -   Uses `conf` to store settings (theme, units, file type colours).
+    -   Uses `conf` to store settings (theme, units, file type colours, hidden files).
 
 5.  **Theming (`src/themes.ts`)**
     -   Interface `Theme` with properties for `text`, `highlight`, `bar`, `background`.
@@ -78,6 +80,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 
 ## UI/UX
 -   **Header:** `/home/user/projects/smdu` (Yellow/Bold) with sort and view mode indicators.
+-   **Header:** Hidden files indicator appears when enabled.
 -   **Help:** `?` opens the keybinding modal.
 -   **Info Panel:** `i` opens the information panel for the selected item.
 -   **Scan:** `q` cancels the scan and exits.
@@ -87,6 +90,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     -   Tree mode indents nested items.
     -   Flat mode shows full relative paths (ncdu-style).
 -   **Legend:** `L` toggles the file type legend in the list header.
+-   **Hidden Files:** `.` toggles dotfiles in the list.
 -   **Footer:** `Total: 101.21 MiB (15 items) | Sort: Size (desc) | Units: IEC | Delete: d | Settings: S | Quit: q | Navigation: Arrows`
 
 ## Theming

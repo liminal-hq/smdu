@@ -4,6 +4,7 @@ export interface ConfigSchema {
   theme: string;
   units: 'iec' | 'si';
   fileTypeColoursEnabled: boolean;
+  showHiddenFiles: boolean;
 }
 
 // Create a new configuration instance
@@ -14,6 +15,7 @@ const config = new Conf<ConfigSchema>({
     theme: 'default',
     units: 'iec',
     fileTypeColoursEnabled: true,
+    showHiddenFiles: true,
   },
 });
 
@@ -39,6 +41,14 @@ export const getFileTypeColoursEnabledFromConfig = (): boolean => {
 
 export const setFileTypeColoursEnabledInConfig = (enabled: boolean): void => {
   config.set('fileTypeColoursEnabled', enabled);
+};
+
+export const getShowHiddenFilesFromConfig = (): boolean => {
+  return config.get('showHiddenFiles');
+};
+
+export const setShowHiddenFilesInConfig = (enabled: boolean): void => {
+  config.set('showHiddenFiles', enabled);
 };
 
 export const getConfigPath = (): string => {
