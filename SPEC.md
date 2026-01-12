@@ -89,7 +89,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     -   Context provider to supply the theme to components.
 
 ## UI/UX
--   **Header:** `/home/user/projects/smdu` (Yellow/Bold).
+-   **Header:** `/home/user/projects/smdu` (Yellow/Bold) with `smdu` centred in the border title.
 -   **Status Panel:** Right-side panel shows sort/view/hidden/heatmap/legend state and key hints.
 -   **Footer:** Shows totals with a partial scan indicator while scanning.
 -   **Scan Status:** Displays live progress above the footer while scanning.

@@ -16,6 +16,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **File Type Colours:** Colour-codes files by category with an optional legend.
 -   **Heatmap Size Bars:** Green-to-red gradient for size bars (toggle with `H`).
 -   **Hidden Files Toggle:** Show or hide dotfiles with `.`.
+-   **Header Title:** Shows `smdu` centred in the header bar.
 -   **Planned:** List view (name-only entries).
 -   **View Modes:** Flat (ncdu-style, default) and Tree.
 -   **Help Modal:** Press `?` to view keybindings.
