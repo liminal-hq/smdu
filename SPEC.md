@@ -14,7 +14,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Deletion:** Delete files or directories with a confirmation modal.
 - **Theming:** Support for multiple colour themes (Default, Dracula).
 - **File Type Colours:** Colour-coded file entries by category with an optional legend toggle.
-- **Heatmap Bars:** Optional green-to-red heatmap colours for size bars with `H`.
+- **Heatmap Bars:** Green-to-red heatmap colours for size bars with `H` (default on).
 - **Hidden Files:** Toggle dotfiles with `.` (Windows hidden attributes are not detected, default on).
 - **Settings:** Persistent configuration for themes, units, file type colours, and hidden files.
 - **Settings:** Heatmap colours can be toggled for size bars.

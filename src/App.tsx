@@ -400,7 +400,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           units={currentUnits}
           fileTypeColoursEnabled={fileTypeColoursEnabled}
           showLegend={showLegend}
-          heatmapEnabled={heatmapEnabled}
           isScanning={loading || isScanning}
         />
         {helpOverlay}
@@ -432,7 +431,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 units={currentUnits}
                 fileTypeColoursEnabled={fileTypeColoursEnabled}
                 showLegend={showLegend}
-                heatmapEnabled={heatmapEnabled}
                 isScanning={isScanning}
               />
               {helpOverlay}
@@ -491,7 +489,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         units={currentUnits}
         fileTypeColoursEnabled={fileTypeColoursEnabled}
         showLegend={showLegend}
-        heatmapEnabled={heatmapEnabled}
         isScanning={isScanning}
       />
       {helpOverlay}

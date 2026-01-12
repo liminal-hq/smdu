@@ -17,7 +17,7 @@ const config = new Conf<ConfigSchema>({
     units: 'iec',
     fileTypeColoursEnabled: true,
     showHiddenFiles: true,
-    heatmapEnabled: false,
+    heatmapEnabled: true,
   },
 });
 

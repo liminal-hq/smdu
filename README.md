@@ -13,7 +13,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **Live Scan Feedback:** Shows the current scan location with running totals.
 -   **Incremental Scan Results:** File list updates as directories finish, with a partial scan indicator and live scan stats above the footer.
 -   **File Type Colours:** Colour-codes files by category with an optional legend.
--   **Heatmap Size Bars:** Optional green-to-red gradient for size bars (toggle with `H`).
+-   **Heatmap Size Bars:** Green-to-red gradient for size bars (toggle with `H`).
 -   **Hidden Files Toggle:** Show or hide dotfiles with `.`.
 -   **Planned:** List view (name-only entries).
 -   **View Modes:** Flat (ncdu-style, default) and Tree.
@@ -69,7 +69,7 @@ Settings available:
 - `theme`: The selected UI theme.
 - `units`: The display units (`iec` or `si`).
 - `fileTypeColoursEnabled`: Enable file type colours in the list.
-- `heatmapEnabled`: Enable heatmap colours for size bars.
+- `heatmapEnabled`: Enable heatmap colours for size bars (default on).
 - `showHiddenFiles`: Show hidden files by default (dotfiles only on Windows, default on).
 
 ## Keybindings
