@@ -180,17 +180,17 @@ export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
       height={modalHeight}
     >
       {loading ? (
-        <Text color={theme.colours.text}>Loading details...</Text>
+        <Text color={theme.colours.muted}>Loading details...</Text>
       ) : error ? (
         <Text color="red">{error}</Text>
       ) : (
         rows.map((row) => (
           <Box key={row.label} width="100%">
             <Box width={labelWidth}>
-              <Text color={theme.colours.text} wrap="truncate-end">{row.label}</Text>
+              <Text color={theme.colours.muted} wrap="truncate-end">{row.label}</Text>
             </Box>
             <Box width={valueWidth}>
-              <Text color={theme.colours.size} wrap="truncate-end">{row.value}</Text>
+              <Text color={theme.colours.text} wrap="truncate-end">{row.value}</Text>
             </Box>
           </Box>
         ))

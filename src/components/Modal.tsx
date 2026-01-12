@@ -34,8 +34,8 @@ export const Modal: React.FC<ModalProps> = ({
       alignItems="center"
     >
       <Box
-        borderStyle="double"
-        borderColor={theme.colours.header}
+        borderStyle="single"
+        borderColor={theme.colours.line}
         paddingX={2}
         paddingY={1}
         width={modalWidth}
@@ -44,8 +44,8 @@ export const Modal: React.FC<ModalProps> = ({
         backgroundColor={theme.colours.background}
       >
         <Box justifyContent="space-between">
-          <Text color={theme.colours.header} bold>{title}</Text>
-          {hint ? <Text color={theme.colours.text}>{hint}</Text> : null}
+          <Text color={theme.colours.text} bold>{title}</Text>
+          {hint ? <Text color={theme.colours.muted}>{hint}</Text> : null}
         </Box>
         <Box flexDirection="column" marginTop={1} flexGrow={1}>
           {children}

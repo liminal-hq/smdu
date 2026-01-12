@@ -28,10 +28,10 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme }) => {
       {HELP_ITEMS.filter((item) => item.label !== 'Help').map((item) => (
         <Box key={item.label} width="100%">
           <Box width={labelWidth}>
-            <Text color={theme.colours.text} wrap="truncate-end">{item.label}</Text>
+            <Text color={theme.colours.muted} wrap="truncate-end">{item.label}</Text>
           </Box>
           <Box width={keyWidth}>
-            <Text color={theme.colours.size} wrap="truncate-end">{item.keys}</Text>
+            <Text color={theme.colours.accent} wrap="truncate-end">{item.keys}</Text>
           </Box>
         </Box>
       ))}

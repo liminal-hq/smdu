@@ -10,27 +10,22 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ path, theme, width }) => {
   const { stdout } = useStdout();
   const totalColumns = width ?? stdout?.columns ?? process.stdout.columns ?? 80;
-  const contentWidth = Math.max(20, totalColumns - 2);
+  const divider = '-'.repeat(Math.max(0, totalColumns));
   const title = 'smdu';
-  const titleLabel = ` ${title} `;
 
   return (
-    <Box
-      borderStyle="single"
-      borderColor={theme.colours.header}
-      paddingX={1}
-      width={width ?? '100%'}
-    >
-      <Box position="absolute" marginTop={-1} width="100%" justifyContent="center">
-        <Text color={theme.colours.header} bold>
-          {titleLabel}
+    <Box flexDirection="column" width={width ?? '100%'}>
+      <Box paddingX={1}>
+        <Box flexGrow={1}>
+          <Text color={theme.colours.text} wrap="truncate-end">
+            {path}
+          </Text>
+        </Box>
+        <Text color={theme.colours.muted} bold>
+          {title}
         </Text>
       </Box>
-      <Box width={contentWidth}>
-        <Text color={theme.colours.header} bold wrap="truncate-end">
-          {path}
-        </Text>
-      </Box>
+      <Text color={theme.colours.line}>{divider}</Text>
     </Box>
   );
 };

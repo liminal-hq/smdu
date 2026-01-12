@@ -23,8 +23,8 @@ interface FileListProps {
   extraBottomRows?: number;
 }
 
-const APP_HEADER_ROWS = 3;
-const APP_FOOTER_ROWS = 3;
+const APP_HEADER_ROWS = 2;
+const APP_FOOTER_ROWS = 2;
 const MIN_NAME_COL = 16;
 const SIZE_COL = 12;
 const PERCENT_COL = 7;
@@ -96,7 +96,7 @@ export const FileList: React.FC<FileListProps> = ({
   const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
   const totalColumns = availableColumns ?? stdout?.columns ?? process.stdout.columns ?? 80;
   const showLegendRow = showLegend && fileTypeColoursEnabled;
-  const listHeaderRows = showLegendRow ? 4 : 3;
+  const listHeaderRows = showLegendRow ? 3 : 2;
   const reservedRows = APP_HEADER_ROWS + listHeaderRows + APP_FOOTER_ROWS + extraBottomRows;
 
   useEffect(() => {
@@ -157,23 +157,30 @@ export const FileList: React.FC<FileListProps> = ({
   }
 
   const visibleFiles = files.slice(start, start + windowSize);
+  const divider = '-'.repeat(Math.max(0, totalColumns));
 
   return (
     <Box flexDirection="column" width="100%">
-      <Box paddingX={1} borderStyle="single" flexDirection="column">
+      <Box paddingX={1} flexDirection="column">
         <Box>
           <Box width={columnLayout.nameColumns}>
-            <Text underline>{viewMode === 'flat' ? 'Path' : 'Name'}</Text>
+            <Text color={theme.colours.muted}>{viewMode === 'flat' ? 'Path' : 'Name'}</Text>
           </Box>
-          <Box width={columnLayout.sizeColumns}><Text underline>Size</Text></Box>
-          <Box width={columnLayout.percentColumns}><Text underline>%</Text></Box>
+          <Box width={columnLayout.sizeColumns}>
+            <Text color={theme.colours.muted}>Size</Text>
+          </Box>
+          <Box width={columnLayout.percentColumns}>
+            <Text color={theme.colours.muted}>{columnLayout.showGraph ? '' : 'Usage'}</Text>
+          </Box>
           {columnLayout.showGraph ? (
-            <Box width={columnLayout.graphColumns}><Text underline>Graph</Text></Box>
+            <Box width={columnLayout.graphColumns}>
+              <Text color={theme.colours.muted}>Usage</Text>
+            </Box>
           ) : null}
         </Box>
         {showLegendRow ? (
           <Box width="100%">
-            <Text wrap="truncate-end" color={theme.colours.text}>
+            <Text wrap="truncate-end" color={theme.colours.muted}>
               Legend:{' '}
               {FILE_TYPE_LEGEND.map((entry, entryIndex) => (
                 <Text key={entry.category} color={theme.colours.fileTypes[entry.category]}>
@@ -184,6 +191,7 @@ export const FileList: React.FC<FileListProps> = ({
           </Box>
         ) : null}
       </Box>
+      <Text color={theme.colours.line}>{divider}</Text>
       {visibleFiles.map((file, index) => {
         const globalIndex = start + index;
         const isSelected = globalIndex === selectedIndex;
@@ -192,8 +200,8 @@ export const FileList: React.FC<FileListProps> = ({
         const barEmpty = Math.max(0, columnLayout.barWidth - barFilled);
         const heatmapColour = getHeatmapColour(maxSize > 0 ? file.size / maxSize : 0);
         const barColour = heatmapEnabled ? heatmapColour : theme.colours.bar;
-
-        const barStr = '#'.repeat(barFilled) + '-'.repeat(barEmpty);
+        const barFilledStr = '#'.repeat(barFilled);
+        const barEmptyStr = '.'.repeat(barEmpty);
 
         const basePath = viewMode === 'flat' ? scanRootPath : rootPath;
         const relativePath = path.relative(basePath, file.path) || file.name;
@@ -249,10 +257,28 @@ export const FileList: React.FC<FileListProps> = ({
               {columnLayout.showGraph ? (
                 <Box width={columnLayout.graphColumns}>
                   <Text
-                      backgroundColor={isSelected ? theme.colours.highlight : undefined}
-                      color={isSelected ? theme.colours.selectedText : barColour}
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : theme.colours.line}
                   >
-                      [{barStr}]
+                    [
+                  </Text>
+                  <Text
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : barColour}
+                  >
+                    {barFilledStr}
+                  </Text>
+                  <Text
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : theme.colours.barEmpty}
+                  >
+                    {barEmptyStr}
+                  </Text>
+                  <Text
+                    backgroundColor={isSelected ? theme.colours.highlight : undefined}
+                    color={isSelected ? theme.colours.selectedText : theme.colours.line}
+                  >
+                    ]
                   </Text>
                 </Box>
               ) : null}

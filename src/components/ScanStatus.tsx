@@ -17,10 +17,10 @@ export const ScanStatus: React.FC<ScanStatusProps> = ({
   spinnerFrame,
 }) => (
   <StatusBanner theme={theme}>
-    <Text color={theme.colours.footer}>
+    <Text color={theme.colours.muted}>
       {summary} {spinnerFrame}
     </Text>
-    <Text color={theme.colours.footer} wrap="truncate-end">
+    <Text color={theme.colours.text} wrap="truncate-end">
       Current: {currentPath}
     </Text>
   </StatusBanner>

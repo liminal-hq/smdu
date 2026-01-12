@@ -480,6 +480,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
   if (!currentNode) {
     const sizeLabel = formatSize(scanStatus.bytes);
+    const divider = '-'.repeat(Math.max(0, totalColumns));
 
     return (
       <Box height={totalRows} width="100%" flexDirection="column">
@@ -487,12 +488,13 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           path={startPath}
           theme={theme}
         />
-        <Box flexGrow={1} paddingX={1} paddingY={1} borderStyle="single">
-          <Box flexDirection="column">
+        <Box flexGrow={1} flexDirection="column">
+          <Text color={theme.colours.line}>{divider}</Text>
+          <Box flexDirection="column" paddingX={1} paddingY={1}>
             <Text color={theme.colours.text}>
               Scanning {startPath}... {spinnerFrames[spinnerIndex]}
             </Text>
-            <Text color={theme.colours.text} wrap="truncate-end">
+            <Text color={theme.colours.muted} wrap="truncate-end">
               Current: {scanStatus.currentPath}
             </Text>
             <Text color={theme.colours.text}>
@@ -564,12 +566,12 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     />
   ) : null;
   const statusIndicator = timerIndicator ?? scanIndicator;
-  const STATUS_INDICATOR_ROWS = 4;
+  const STATUS_INDICATOR_ROWS = 3;
   const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
-  const headerRows = 3;
-  const footerRows = 3;
+  const headerRows = 2;
+  const footerRows = 2;
   const panelWidth = showStatusPanel
     ? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
     : 0;
