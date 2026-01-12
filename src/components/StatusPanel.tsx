@@ -34,14 +34,14 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
   const statusItems = [
     `Sort: ${sortLabel} (${orderLabel})`,
     `View: ${viewLabel}`,
-    `Hidden: ${hiddenLabel} [.]`,
-    `Heatmap: ${heatmapLabel} [H]`,
-    `Legend: ${legendLabel} [L]`,
-    'Panel: Toggle [p]',
-    'Settings: Open [S]',
-    'Help: Toggle [?]',
-    'Info: Toggle [i]',
-    'Quit: [q/Esc]',
+    `Hidden [.]: ${hiddenLabel}`,
+    `Heatmap [H]: ${heatmapLabel}`,
+    `Legend [L]: ${legendLabel}`,
+    'Panel [p]: Toggle',
+    'Settings [S]: Open',
+    'Help [?]: Toggle',
+    'Info [i]: Toggle',
+    'Quit [q/Esc]: Quit',
   ];
 
   return (
