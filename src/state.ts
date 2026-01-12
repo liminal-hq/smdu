@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { FileNode } from './scanner.js';
 import fs from 'fs';
 
@@ -16,7 +16,7 @@ export interface FileSystemState {
   files: FileNode[];
 }
 
-export const useFileSystem = (initialNode: FileNode | null) => {
+export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = false) => {
   const [currentNode, setCurrentNode] = useState<FileNode | null>(initialNode);
   const [selectionIndex, setSelectionIndex] = useState(0);
   const [sortBy, setSortBy] = useState<SortField>('size');
@@ -42,7 +42,12 @@ export const useFileSystem = (initialNode: FileNode | null) => {
     if (!node.children) return [];
     const collected: FileNode[] = [];
     const stack: Array<{ children: FileNode[]; index: number }> = [
-      { children: [...node.children].sort(compareNodes), index: 0 },
+      {
+        children: [...node.children]
+          .filter((child) => showHiddenFiles || !child.isHidden)
+          .sort(compareNodes),
+        index: 0,
+      },
     ];
 
     while (stack.length > 0) {
@@ -56,26 +61,32 @@ export const useFileSystem = (initialNode: FileNode | null) => {
       collected.push(child);
 
       if (child.isDirectory && child.children && child.children.length > 0) {
-        stack.push({ children: [...child.children].sort(compareNodes), index: 0 });
+        const visibleChildren = showHiddenFiles
+          ? child.children
+          : child.children.filter((entry) => !entry.isHidden);
+        if (visibleChildren.length > 0) {
+          stack.push({ children: [...visibleChildren].sort(compareNodes), index: 0 });
+        }
       }
     }
 
     return collected;
-  }, [compareNodes]);
+  }, [compareNodes, showHiddenFiles]);
 
   const files = useMemo(() => {
     if (!currentNode) return [];
 
     if (viewMode === 'flat') {
       const list = currentNode.children ? [...currentNode.children] : [];
-      return list.sort(compareNodes);
+      const visible = showHiddenFiles ? list : list.filter((entry) => !entry.isHidden);
+      return visible.sort(compareNodes);
     }
 
     if (viewMode === 'tree') {
       return flattenTree(currentNode);
     }
     return [];
-  }, [currentNode, sortBy, sortOrder, viewMode, flattenTree, compareNodes]);
+  }, [currentNode, sortBy, sortOrder, viewMode, flattenTree, compareNodes, showHiddenFiles]);
 
   const moveSelection = useCallback((delta: number) => {
     setSelectionIndex((prev) => {
@@ -160,6 +171,13 @@ export const useFileSystem = (initialNode: FileNode | null) => {
       }
 
   }, [currentNode, files, selectionIndex]);
+
+  useEffect(() => {
+    setSelectionIndex((prev) => {
+      if (files.length === 0) return 0;
+      return Math.min(prev, files.length - 1);
+    });
+  }, [files.length]);
 
   return {
     currentNode,
