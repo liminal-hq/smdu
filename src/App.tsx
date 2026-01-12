@@ -451,7 +451,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
   const headerRows = 3;
   const footerRows = 3;
-  const scanRows = isScanning ? 3 : 0;
+  const scanRows = isScanning ? 4 : 0;
   const panelWidth = showStatusPanel
     ? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
     : 0;
@@ -482,7 +482,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 showLegend={showLegend}
                 heatmapEnabled={heatmapEnabled}
                 availableColumns={listWidth}
-                extraBottomRows={isScanning ? 3 : 0}
+                extraBottomRows={scanRows}
             />
           </Box>
           {showStatusPanel ? (
