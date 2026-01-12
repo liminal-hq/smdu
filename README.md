@@ -18,9 +18,9 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **Hidden Files Toggle:** Show or hide dotfiles with `.`.
 -   **Planned:** List view (name-only entries).
 -   **View Modes:** Flat (ncdu-style, default) and Tree.
--   **Planned:** List view (name-only entries).
 -   **Help Modal:** Press `?` to view keybindings.
 -   **Information Panel:** Press `i` to view details for the selected item.
+-   **Focus Timer:** Press `T` to start a 5/10/15/30 minute focus timer with session stats and a completion bell.
 -   **Cross-Platform:** Works on Linux, macOS, and Windows (best on POSIX).
 
 ## Installation
@@ -88,6 +88,9 @@ Settings available:
 -   **L**: Toggle the file type legend.
 -   **H**: Toggle heatmap size bars.
 -   **p**: Toggle the status panel.
+-   **T**: Start a focus timer (cycles 5/10/15/30 minutes).
+-   **t**: Toggle focus timer display (shows the timer pane even when idle).
+-   **c**: Cancel the focus timer.
 -   **?**: Toggle help.
 -   **q / Esc**: Quit (during scan, cancels).
 

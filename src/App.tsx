@@ -9,6 +9,7 @@ import { HelpModal } from './components/HelpModal.js';
 import { InfoModal } from './components/InfoModal.js';
 import { ScanStatus } from './components/ScanStatus.js';
 import { StatusPanel } from './components/StatusPanel.js';
+import { TimerStatus } from './components/TimerStatus.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import {
@@ -38,6 +39,8 @@ enum ViewState {
   FileList = 'filelist',
   Settings = 'settings',
 }
+
+const TIMER_MINUTES = [5, 10, 15, 30];
 
 export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName, units: initialUnits }) => {
   const { exit } = useApp();
@@ -71,6 +74,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [showInfo, setShowInfo] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [showStatusPanel, setShowStatusPanel] = useState(false);
+  const [showTimerStatus, setShowTimerStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [spinnerIndex, setSpinnerIndex] = useState(0);
   const spinnerFrames = ['|', '/', '-', '\\'];
@@ -86,6 +90,19 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const rootNodeRef = useRef<FileNode | null>(null);
   const pendingRootRef = useRef<FileNode | null>(null);
   const partialUpdateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerAlertedRef = useRef(false);
+
+  const [timerIndex, setTimerIndex] = useState(-1);
+  const [timerState, setTimerState] = useState({
+    status: 'idle' as 'idle' | 'running' | 'completed',
+    durationSeconds: 0,
+    remainingSeconds: 0,
+    endsAt: 0,
+  });
+  const [timerStats, setTimerStats] = useState({
+    deletedItems: 0,
+    freedBytes: 0,
+  });
 
   const {
     currentNode,
@@ -111,6 +128,22 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const updateRootNode = useCallback((root: FileNode) => {
     rootNodeRef.current = root;
     setRootNode({ ...root });
+  }, []);
+
+  const startTimer = useCallback((durationMinutes: number) => {
+    const durationSeconds = durationMinutes * 60;
+    setTimerState({
+      status: 'running',
+      durationSeconds,
+      remainingSeconds: durationSeconds,
+      endsAt: Date.now() + durationSeconds * 1000,
+    });
+    setTimerStats({
+      deletedItems: 0,
+      freedBytes: 0,
+    });
+    timerAlertedRef.current = false;
+    setShowTimerStatus(true);
   }, []);
 
   const handleScanProgress = useCallback((progress: ScanProgress) => {
@@ -202,6 +235,38 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     return () => clearInterval(timer);
   }, [isScanning]);
 
+  useEffect(() => {
+    if (timerState.status !== 'running') return;
+    const tick = () => {
+      const remainingSeconds = Math.max(0, Math.ceil((timerState.endsAt - Date.now()) / 1000));
+      setTimerState((prev) => {
+        if (prev.status !== 'running') return prev;
+        if (remainingSeconds <= 0) {
+          return {
+            ...prev,
+            status: 'completed',
+            remainingSeconds: 0,
+          };
+        }
+        return {
+          ...prev,
+          remainingSeconds,
+        };
+      });
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [timerState.endsAt, timerState.status]);
+
+  useEffect(() => {
+    if (timerState.status !== 'completed' || timerAlertedRef.current) return;
+    if (process.stdout.isTTY) {
+      process.stdout.write('\u0007');
+    }
+    timerAlertedRef.current = true;
+  }, [timerState.status]);
+
 
   useEffect(() => {
     const updateRows = () => {
@@ -257,7 +322,15 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
     if (showConfirmDelete) {
       if (checkInput(input, key, ACTIONS.CONFIRM)) {
-        deleteSelected();
+        void deleteSelected().then((deletedNode) => {
+          if (!deletedNode) return;
+          if (timerState.status === 'running') {
+            setTimerStats((prev) => ({
+              deletedItems: prev.deletedItems + 1,
+              freedBytes: prev.freedBytes + deletedNode.size,
+            }));
+          }
+        });
         setShowConfirmDelete(false);
       } else {
         setShowConfirmDelete(false);
@@ -291,8 +364,40 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return;
     }
 
+    if (checkInput(input, key, ACTIONS.TIMER_TOGGLE)) {
+      setShowTimerStatus((prev) => !prev);
+      return;
+    }
+
+    if (checkInput(input, key, ACTIONS.TIMER_CANCEL)) {
+      if (timerState.status !== 'idle') {
+        setTimerState({
+          status: 'idle',
+          durationSeconds: 0,
+          remainingSeconds: 0,
+          endsAt: 0,
+        });
+        setTimerIndex(-1);
+        setTimerStats({
+          deletedItems: 0,
+          freedBytes: 0,
+        });
+        timerAlertedRef.current = false;
+      }
+      return;
+    }
+
     if (checkInput(input, key, ACTIONS.SETTINGS)) {
       setView(ViewState.Settings);
+      return;
+    }
+
+    if (checkInput(input, key, ACTIONS.TIMER)) {
+      setTimerIndex((prev) => {
+        const nextIndex = (prev + 1) % TIMER_MINUTES.length;
+        startTimer(TIMER_MINUTES[nextIndex]);
+        return nextIndex;
+      });
       return;
     }
 
@@ -447,18 +552,31 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       spinnerFrame={spinnerFrames[spinnerIndex]}
     />
   ) : null;
+  const timerIndicator = showTimerStatus ? (
+    <TimerStatus
+      theme={theme}
+      status={timerState.status}
+      remainingSeconds={timerState.remainingSeconds}
+      durationSeconds={timerState.durationSeconds}
+      deletedItems={timerStats.deletedItems}
+      freedBytes={timerStats.freedBytes}
+      formatSize={formatSize}
+    />
+  ) : null;
+  const statusIndicator = timerIndicator ?? scanIndicator;
+  const STATUS_INDICATOR_ROWS = 4;
+  const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
   const headerRows = 3;
   const footerRows = 3;
-  const scanRows = isScanning ? 4 : 0;
   const panelWidth = showStatusPanel
     ? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
     : 0;
   const listWidth = showStatusPanel
     ? Math.max(20, totalColumns - panelWidth)
     : totalColumns;
-  const panelHeight = Math.max(3, totalRows - headerRows - footerRows - scanRows);
+  const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
   return (
     <Box flexDirection="column" height={totalRows} width="100%">
       <Header
@@ -470,19 +588,19 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         <Box flexDirection="row" width="100%">
           <Box width={showStatusPanel ? listWidth : '100%'}>
             <FileList
-                files={files}
-                selectedIndex={selectionIndex}
-                maxSize={maxSize}
-                theme={theme}
-                units={currentUnits}
-                viewMode={viewMode}
-                rootPath={currentNode.path}
-                scanRootPath={rootNode?.path ?? currentNode.path}
-                fileTypeColoursEnabled={fileTypeColoursEnabled}
-                showLegend={showLegend}
-                heatmapEnabled={heatmapEnabled}
-                availableColumns={listWidth}
-                extraBottomRows={scanRows}
+              files={files}
+              selectedIndex={selectionIndex}
+              maxSize={maxSize}
+              theme={theme}
+              units={currentUnits}
+              viewMode={viewMode}
+              rootPath={currentNode.path}
+              scanRootPath={rootNode?.path ?? currentNode.path}
+              fileTypeColoursEnabled={fileTypeColoursEnabled}
+              showLegend={showLegend}
+              heatmapEnabled={heatmapEnabled}
+              availableColumns={showStatusPanel ? listWidth : undefined}
+              extraBottomRows={statusIndicatorRows}
             />
           </Box>
           {showStatusPanel ? (
@@ -505,7 +623,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         </Box>
       </Box>
 
-      {scanIndicator}
+      {statusIndicator}
 
       <Footer
         totalSize={currentNode.size}

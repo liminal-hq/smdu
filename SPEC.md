@@ -12,6 +12,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Help Modal:** Display keybindings with `?`.
 - **Information Panel:** Display details for the selected item with `i`.
 - **Deletion:** Delete files or directories with a confirmation modal.
+- **Focus Timer:** Start a 5/10/15/30 minute timer with session stats and completion alert.
 - **Theming:** Support for multiple colour themes (Default, Dracula).
 - **File Type Colours:** Colour-coded file entries by category with an optional legend toggle.
 - **Heatmap Bars:** Green-to-red heatmap colours for size bars with `H` (default on).
@@ -78,6 +79,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     -   `ConfirmDelete`: Modal for deletion.
     -   `InfoModal`: Modal for file and directory details.
     -   `Settings`: Screen for selecting themes.
+    -   `TimerStatus`: Shows focus timer countdown and session stats.
 
 4.  **Configuration (`src/config.ts`)**
     -   Uses `conf` to store settings (theme, units, file type colours, heatmap, hidden files).
@@ -89,8 +91,10 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 ## UI/UX
 -   **Header:** `/home/user/projects/smdu` (Yellow/Bold).
 -   **Status Panel:** Right-side panel shows sort/view/hidden/heatmap/legend state and key hints.
--   **Footer:** Shows a partial scan indicator while scanning.
+-   **Footer:** Shows totals with a partial scan indicator while scanning.
 -   **Scan Status:** Displays live progress above the footer while scanning.
+-   **Timer:** `T` starts a focus timer and shows a countdown or completion message above the footer, with a bell on completion.
+-   **Timer Controls:** `t` toggles the timer display (even when idle), `c` cancels the timer.
 -   **Help:** `?` opens the keybinding modal.
 -   **Info Panel:** `i` opens the information panel for the selected item.
 -   **Scan:** `q` cancels the scan and exits.
@@ -103,7 +107,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 -   **Heatmap:** `H` toggles heatmap colours for size bars.
 -   **Status Panel:** `p` toggles the right-side status panel.
 -   **Hidden Files:** `.` toggles dotfiles in the list.
--   **Footer:** `Total: 101.21 MiB (15 items) | Sort: Size (desc) | Units: IEC | Delete: d | Settings: S | Quit: q | Navigation: Arrows`
+-   **Footer:** `Total: 101.21 MiB (15 items) | Scan: Partial` + `Help: ? | Info: i | Panel: p | Timer: T`
 
 ## Theming
 -   **Default:** Standard terminal colours (Green bars, White text).

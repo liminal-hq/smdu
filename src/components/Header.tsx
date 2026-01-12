@@ -4,11 +4,12 @@ import { Theme } from '../themes.js';
 interface HeaderProps {
   path: string;
   theme: Theme;
+  width?: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ path, theme }) => {
+export const Header: React.FC<HeaderProps> = ({ path, theme, width }) => {
   const { stdout } = useStdout();
-  const totalColumns = stdout?.columns ?? process.stdout.columns ?? 80;
+  const totalColumns = width ?? stdout?.columns ?? process.stdout.columns ?? 80;
   const contentWidth = Math.max(20, totalColumns - 2);
 
   return (
@@ -16,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({ path, theme }) => {
       borderStyle="single"
       borderColor={theme.colours.header}
       paddingX={1}
-      width="100%"
+      width={width ?? '100%'}
     >
       <Box width={contentWidth}>
         <Text color={theme.colours.header} bold wrap="truncate-end">

@@ -161,18 +161,18 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
     }
   };
 
-  const deleteSelected = useCallback(async () => {
-      if (!currentNode || !currentNode.children) return;
+  const deleteSelected = useCallback(async (): Promise<FileNode | null> => {
+      if (!currentNode || !currentNode.children) return null;
 
       const fileToDelete = files[selectionIndex];
-      if (!fileToDelete) return;
+      if (!fileToDelete) return null;
 
       try {
         // Actual deletion
         await fs.promises.rm(fileToDelete.path, { recursive: true, force: true });
 
         const parentNode = fileToDelete.parent ?? currentNode;
-        if (!parentNode.children) return;
+        if (!parentNode.children) return null;
 
         // State update - Mutate in place to preserve tree consistency
         const index = parentNode.children.indexOf(fileToDelete);
@@ -188,10 +188,12 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
         setCurrentNode({ ...currentNode });
 
         setSelectionIndex((prev) => Math.max(0, Math.min(prev, files.length - 2)));
+        return fileToDelete;
       } catch (err: any) {
         setError(`Failed to delete: ${err.message}`);
       }
 
+      return null;
   }, [currentNode, files, selectionIndex]);
 
   useEffect(() => {
