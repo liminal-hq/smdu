@@ -7,6 +7,7 @@ import { ConfirmDelete } from './components/ConfirmDelete.js';
 import { Settings } from './components/Settings.js';
 import { HelpModal } from './components/HelpModal.js';
 import { InfoModal } from './components/InfoModal.js';
+import { ScanStatus } from './components/ScanStatus.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import {
@@ -424,21 +425,12 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const scanErrorsLabel = scanStatus.errors > 0 ? ` | Errors: ${scanStatus.errors}` : '';
   const scanSummary = `Scan: ${scanStatus.directories} directories, ${scanStatus.files} files, ${formatSize(scanStatus.bytes)}${scanErrorsLabel}`;
   const scanIndicator = isScanning ? (
-    <Box
-      paddingX={1}
-      paddingY={0}
-      borderStyle="round"
-      borderColor={theme.colours.footer}
-      flexDirection="column"
-      width="100%"
-    >
-      <Text color={theme.colours.text}>
-        {scanSummary} {spinnerFrames[spinnerIndex]}
-      </Text>
-      <Text color={theme.colours.text} wrap="truncate-end">
-        Current: {scanStatus.currentPath}
-      </Text>
-    </Box>
+    <ScanStatus
+      theme={theme}
+      summary={scanSummary}
+      currentPath={scanStatus.currentPath}
+      spinnerFrame={spinnerFrames[spinnerIndex]}
+    />
   ) : null;
 
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
