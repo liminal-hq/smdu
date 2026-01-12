@@ -94,6 +94,12 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     deleteSelected,
   } = useFileSystem(rootNode, showHiddenFiles);
 
+  const formatSize = useCallback((bytes: number) => {
+    return currentUnits === 'si'
+      ? filesize(bytes, { base: 10, standard: 'si', output: 'string' })
+      : filesize(bytes, { base: 2, standard: 'iec', output: 'string' });
+  }, [currentUnits]);
+
   const updateRootNode = useCallback((root: FileNode) => {
     rootNodeRef.current = root;
     setRootNode({ ...root });
@@ -180,13 +186,13 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   }, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
 
   useEffect(() => {
-    if (!loading) return;
+    if (!isScanning) return;
     const timer = setInterval(() => {
       setSpinnerIndex((prev) => (prev + 1) % spinnerFrames.length);
     }, 120);
 
     return () => clearInterval(timer);
-  }, [loading]);
+  }, [isScanning]);
 
 
   useEffect(() => {
@@ -340,9 +346,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   }
 
   if (!currentNode) {
-    const sizeLabel = currentUnits === 'si'
-      ? filesize(scanStatus.bytes, { base: 10, standard: 'si', output: 'string' })
-      : filesize(scanStatus.bytes, { base: 2, standard: 'iec', output: 'string' });
+    const sizeLabel = formatSize(scanStatus.bytes);
 
     return (
       <Box height={totalRows} width="100%" flexDirection="column">
@@ -417,6 +421,19 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       );
   }
 
+  const scanErrorsLabel = scanStatus.errors > 0 ? ` | Errors: ${scanStatus.errors}` : '';
+  const scanSummary = `Scan: ${scanStatus.directories} directories, ${scanStatus.files} files, ${formatSize(scanStatus.bytes)}${scanErrorsLabel}`;
+  const scanIndicator = isScanning ? (
+    <Box paddingX={1} flexDirection="column">
+      <Text color={theme.colours.text}>
+        {scanSummary} {spinnerFrames[spinnerIndex]}
+      </Text>
+      <Text color={theme.colours.text} wrap="truncate-end">
+        Current: {scanStatus.currentPath}
+      </Text>
+    </Box>
+  ) : null;
+
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
   return (
     <Box flexDirection="column" height={totalRows} width="100%">
@@ -428,6 +445,8 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         viewMode={viewMode}
         showHiddenFiles={showHiddenFiles}
       />
+
+      {scanIndicator}
 
       <Box flexGrow={1} overflowY="hidden">
         <FileList
@@ -441,6 +460,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             scanRootPath={rootNode?.path ?? currentNode.path}
             fileTypeColoursEnabled={fileTypeColoursEnabled}
             showLegend={showLegend}
+            extraTopRows={isScanning ? 2 : 0}
         />
       </Box>
 

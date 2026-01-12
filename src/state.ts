@@ -24,9 +24,31 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
   const [viewMode, setViewMode] = useState<ViewMode>('flat');
   const [error, setError] = useState<string | null>(null);
 
-  if (initialNode && !currentNode) {
-    setCurrentNode(initialNode);
-  }
+  const findNodeByPath = useCallback((root: FileNode, targetPath: string): FileNode | null => {
+    const stack = [root];
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (!node) continue;
+      if (node.path === targetPath) return node;
+      if (node.children) {
+        stack.push(...node.children);
+      }
+    }
+    return null;
+  }, []);
+
+  useEffect(() => {
+    if (!initialNode) return;
+    if (!currentNode) {
+      setCurrentNode(initialNode);
+      return;
+    }
+
+    const updatedNode = findNodeByPath(initialNode, currentNode.path);
+    if (updatedNode && updatedNode !== currentNode) {
+      setCurrentNode(updatedNode);
+    }
+  }, [currentNode, findNodeByPath, initialNode]);
 
   const compareNodes = useCallback((a: FileNode, b: FileNode) => {
     let comparison = 0;
