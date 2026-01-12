@@ -11,6 +11,8 @@ export const Header: React.FC<HeaderProps> = ({ path, theme, width }) => {
   const { stdout } = useStdout();
   const totalColumns = width ?? stdout?.columns ?? process.stdout.columns ?? 80;
   const contentWidth = Math.max(20, totalColumns - 2);
+  const title = 'smdu';
+  const titleLabel = ` ${title} `;
 
   return (
     <Box
@@ -19,6 +21,11 @@ export const Header: React.FC<HeaderProps> = ({ path, theme, width }) => {
       paddingX={1}
       width={width ?? '100%'}
     >
+      <Box position="absolute" marginTop={-1} width="100%" justifyContent="center">
+        <Text color={theme.colours.header} bold>
+          {titleLabel}
+        </Text>
+      </Box>
       <Box width={contentWidth}>
         <Text color={theme.colours.header} bold wrap="truncate-end">
           {path}
