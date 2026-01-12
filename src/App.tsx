@@ -424,7 +424,14 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const scanErrorsLabel = scanStatus.errors > 0 ? ` | Errors: ${scanStatus.errors}` : '';
   const scanSummary = `Scan: ${scanStatus.directories} directories, ${scanStatus.files} files, ${formatSize(scanStatus.bytes)}${scanErrorsLabel}`;
   const scanIndicator = isScanning ? (
-    <Box paddingX={1} flexDirection="column">
+    <Box
+      paddingX={1}
+      paddingY={0}
+      borderStyle="round"
+      borderColor={theme.colours.footer}
+      flexDirection="column"
+      width="100%"
+    >
       <Text color={theme.colours.text}>
         {scanSummary} {spinnerFrames[spinnerIndex]}
       </Text>
@@ -446,8 +453,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         showHiddenFiles={showHiddenFiles}
       />
 
-      {scanIndicator}
-
       <Box flexGrow={1} overflowY="hidden">
         <FileList
             files={files}
@@ -460,9 +465,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             scanRootPath={rootNode?.path ?? currentNode.path}
             fileTypeColoursEnabled={fileTypeColoursEnabled}
             showLegend={showLegend}
-            extraTopRows={isScanning ? 2 : 0}
+            extraBottomRows={isScanning ? 3 : 0}
         />
       </Box>
+
+      {scanIndicator}
 
       <Footer
         totalSize={currentNode.size}

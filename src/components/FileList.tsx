@@ -18,7 +18,7 @@ interface FileListProps {
   scanRootPath: string;
   fileTypeColoursEnabled: boolean;
   showLegend: boolean;
-  extraTopRows?: number;
+  extraBottomRows?: number;
 }
 
 const APP_HEADER_ROWS = 3;
@@ -39,14 +39,14 @@ export const FileList: React.FC<FileListProps> = ({
   scanRootPath,
   fileTypeColoursEnabled,
   showLegend,
-  extraTopRows = 0,
+  extraBottomRows = 0,
 }) => {
   const { stdout } = useStdout();
   const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
   const [totalColumns, setTotalColumns] = useState(() => stdout?.columns ?? process.stdout.columns ?? 80);
   const showLegendRow = showLegend && fileTypeColoursEnabled;
   const listHeaderRows = showLegendRow ? 4 : 3;
-  const reservedRows = APP_HEADER_ROWS + listHeaderRows + APP_FOOTER_ROWS + extraTopRows;
+  const reservedRows = APP_HEADER_ROWS + listHeaderRows + APP_FOOTER_ROWS + extraBottomRows;
 
   useEffect(() => {
     const updateRows = () => {
