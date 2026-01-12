@@ -25,7 +25,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme }) => {
       width={modalWidth}
       height={modalHeight}
     >
-      {HELP_ITEMS.map((item) => (
+      {HELP_ITEMS.filter((item) => item.label !== 'Help').map((item) => (
         <Box key={item.label} width="100%">
           <Box width={labelWidth}>
             <Text color={theme.colours.text} wrap="truncate-end">{item.label}</Text>

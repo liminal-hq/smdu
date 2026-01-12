@@ -133,7 +133,7 @@ SMDU is growing beyond the Unix "do one thing well" principle - and that's okay!
 
 ---
 
-### 7. Heatmap Mode for Size Bars
+### 7. Heatmap Mode for Size Bars ✅
 **Problem:** All bars use same colour, harder to spot outliers  
 **Solution:** Gradient from green (small) → yellow → red (large)  
 **Impact:** Medium  

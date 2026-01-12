@@ -5,6 +5,7 @@ export interface ConfigSchema {
   units: 'iec' | 'si';
   fileTypeColoursEnabled: boolean;
   showHiddenFiles: boolean;
+  heatmapEnabled: boolean;
 }
 
 // Create a new configuration instance
@@ -16,6 +17,7 @@ const config = new Conf<ConfigSchema>({
     units: 'iec',
     fileTypeColoursEnabled: true,
     showHiddenFiles: true,
+    heatmapEnabled: true,
   },
 });
 
@@ -49,6 +51,14 @@ export const getShowHiddenFilesFromConfig = (): boolean => {
 
 export const setShowHiddenFilesInConfig = (enabled: boolean): void => {
   config.set('showHiddenFiles', enabled);
+};
+
+export const getHeatmapEnabledFromConfig = (): boolean => {
+  return config.get('heatmapEnabled');
+};
+
+export const setHeatmapEnabledInConfig = (enabled: boolean): void => {
+  config.set('heatmapEnabled', enabled);
 };
 
 export const getConfigPath = (): string => {
