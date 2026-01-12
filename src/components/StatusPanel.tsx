@@ -12,6 +12,7 @@ interface StatusPanelProps {
   heatmapEnabled: boolean;
   fileTypeColoursEnabled: boolean;
   showLegend: boolean;
+  units: 'iec' | 'si';
 }
 
 export const StatusPanel: React.FC<StatusPanelProps> = ({
@@ -23,6 +24,7 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
   heatmapEnabled,
   fileTypeColoursEnabled,
   showLegend,
+  units,
 }) => {
   const sortLabel = sortBy === 'name' ? 'Name' : 'Size';
   const orderLabel = sortOrder === 'asc' ? 'asc' : 'desc';
@@ -30,18 +32,15 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
   const hiddenLabel = showHiddenFiles ? 'On' : 'Off';
   const heatmapLabel = heatmapEnabled ? 'On' : 'Off';
   const legendLabel = fileTypeColoursEnabled ? (showLegend ? 'On' : 'Off') : 'N/A';
+  const unitsLabel = units === 'iec' ? 'IEC' : 'SI';
 
   const statusItems = [
     `Sort: ${sortLabel} (${orderLabel})`,
     `View: ${viewLabel}`,
+    `Units: ${unitsLabel}`,
     `Hidden [.]: ${hiddenLabel}`,
     `Heatmap [H]: ${heatmapLabel}`,
     `Legend [L]: ${legendLabel}`,
-    'Panel [p]: Toggle',
-    'Settings [S]: Open',
-    'Help [?]: Toggle',
-    'Info [i]: Toggle',
-    'Quit [q/Esc]: Quit',
   ];
 
   return (

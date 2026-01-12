@@ -492,6 +492,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 heatmapEnabled={heatmapEnabled}
                 fileTypeColoursEnabled={fileTypeColoursEnabled}
                 showLegend={showLegend}
+                units={currentUnits}
               />
             </Box>
           ) : null}
