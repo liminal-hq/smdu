@@ -34,19 +34,14 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
   const statusItems = [
     `Sort: ${sortLabel} (${orderLabel})`,
     `View: ${viewLabel}`,
-    `Hidden: ${hiddenLabel}`,
-    `Heatmap: ${heatmapLabel}`,
-    `Legend: ${legendLabel}`,
-  ];
-
-  const hintItems = [
-    'Panel: p',
-    'Legend: L',
-    'Heatmap: H',
-    'Settings: S',
-    'Help: ?',
-    'Info: i',
-    'Quit: q/Esc',
+    `Hidden: ${hiddenLabel} [.]`,
+    `Heatmap: ${heatmapLabel} [H]`,
+    `Legend: ${legendLabel} [L]`,
+    'Panel: Toggle [p]',
+    'Settings: Open [S]',
+    'Help: Toggle [?]',
+    'Info: Toggle [i]',
+    'Quit: [q/Esc]',
   ];
 
   return (
@@ -62,14 +57,6 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
       <Box flexDirection="column" marginTop={1}>
         {statusItems.map((item) => (
           <Text key={item} color={theme.colours.text} wrap="truncate-end">
-            {item}
-          </Text>
-        ))}
-      </Box>
-      <Box flexDirection="column" marginTop={1}>
-        <Text color={theme.colours.header} bold>Keys</Text>
-        {hintItems.map((item) => (
-          <Text key={item} color={theme.colours.size} wrap="truncate-end">
             {item}
           </Text>
         ))}
