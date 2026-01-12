@@ -493,6 +493,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 fileTypeColoursEnabled={fileTypeColoursEnabled}
                 showLegend={showLegend}
                 units={currentUnits}
+                width={panelWidth}
               />
             </Box>
           ) : null}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';
 import { SortField, SortOrder, ViewMode } from '../state.js';
 
@@ -13,6 +13,7 @@ interface StatusPanelProps {
   fileTypeColoursEnabled: boolean;
   showLegend: boolean;
   units: 'iec' | 'si';
+  width?: number;
 }
 
 export const StatusPanel: React.FC<StatusPanelProps> = ({
@@ -25,7 +26,11 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
   fileTypeColoursEnabled,
   showLegend,
   units,
+  width,
 }) => {
+  const { stdout } = useStdout();
+  const panelWidth = Math.max(10, width ?? stdout?.columns ?? process.stdout.columns ?? 30);
+  const contentWidth = Math.max(0, panelWidth - 2);
   const sortLabel = sortBy === 'name' ? 'Name' : 'Size';
   const orderLabel = sortOrder === 'asc' ? 'asc' : 'desc';
   const viewLabel = viewMode === 'tree' ? 'Tree' : 'Flat';
@@ -43,23 +48,24 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
     `Legend [L]: ${legendLabel}`,
   ];
 
+  const title = ' Status ';
+  const trimmedTitle = title.length > contentWidth ? title.slice(0, contentWidth) : title;
+  const topLine = `┌${trimmedTitle}${'─'.repeat(Math.max(0, contentWidth - trimmedTitle.length))}┐`;
+  const bottomLine = `└${'─'.repeat(contentWidth)}┘`;
+  const contentLines = statusItems.map((item) => {
+    const trimmed = item.length > contentWidth ? item.slice(0, contentWidth) : item;
+    return `│${trimmed}${' '.repeat(Math.max(0, contentWidth - trimmed.length))}│`;
+  });
+
   return (
-    <Box
-      borderStyle="single"
-      borderColor={theme.colours.footer}
-      paddingX={1}
-      paddingY={0}
-      flexDirection="column"
-      width="100%"
-    >
-      <Text color={theme.colours.header} bold>Status</Text>
-      <Box flexDirection="column" marginTop={1}>
-        {statusItems.map((item) => (
-          <Text key={item} color={theme.colours.text} wrap="truncate-end">
-            {item}
-          </Text>
-        ))}
-      </Box>
+    <Box flexDirection="column" width="100%">
+      <Text color={theme.colours.footer}>{topLine}</Text>
+      {contentLines.map((line, index) => (
+        <Text key={`${line}-${index}`} color={theme.colours.text}>
+          {line}
+        </Text>
+      ))}
+      <Text color={theme.colours.footer}>{bottomLine}</Text>
     </Box>
   );
 };
