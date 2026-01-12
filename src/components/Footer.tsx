@@ -8,8 +8,6 @@ interface FooterProps {
   itemCount: number;
   theme: Theme;
   units: 'iec' | 'si';
-  fileTypeColoursEnabled: boolean;
-  showLegend: boolean;
   isScanning?: boolean;
 }
 
@@ -18,8 +16,6 @@ export const Footer: React.FC<FooterProps> = ({
   itemCount,
   theme,
   units,
-  fileTypeColoursEnabled,
-  showLegend,
   isScanning = false,
 }) => {
   const { stdout } = useStdout();
@@ -30,8 +26,7 @@ export const Footer: React.FC<FooterProps> = ({
   const sizeLabel = filesize(totalSize, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' });
   const scanLabel = isScanning ? ' | Scan: Partial' : '';
   const leftText = `Total: ${sizeLabel} (${itemCount} items) | Units: ${unitsLabel}${scanLabel}`;
-  const legendText = fileTypeColoursEnabled ? ` | Legend: L${showLegend ? ' (on)' : ' (off)'}` : '';
-  const rightText = `Help: ? | Info: i${legendText}`;
+  const rightText = 'Help: ? | Info: i | Panel: p';
 
   return (
     <Box

@@ -8,6 +8,7 @@ import { Settings } from './components/Settings.js';
 import { HelpModal } from './components/HelpModal.js';
 import { InfoModal } from './components/InfoModal.js';
 import { ScanStatus } from './components/ScanStatus.js';
+import { StatusPanel } from './components/StatusPanel.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import {
@@ -42,6 +43,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
+  const [totalColumns, setTotalColumns] = useState(() => stdout?.columns ?? process.stdout.columns ?? 80);
 
   // Determine initial theme: CLI arg > Config > Default
   const configTheme = getThemeFromConfig();
@@ -68,6 +70,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const [showHelp, setShowHelp] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
+  const [showStatusPanel, setShowStatusPanel] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [spinnerIndex, setSpinnerIndex] = useState(0);
   const spinnerFrames = ['|', '/', '-', '\\'];
@@ -203,6 +206,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   useEffect(() => {
     const updateRows = () => {
       setTotalRows(stdout?.rows ?? process.stdout.rows ?? 24);
+      setTotalColumns(stdout?.columns ?? process.stdout.columns ?? 80);
     };
 
     updateRows();
@@ -279,6 +283,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         setHeatmapEnabledInConfig(next);
         return next;
       });
+      return;
+    }
+
+    if (checkInput(input, key, ACTIONS.STATUS_PANEL)) {
+      setShowStatusPanel((prev) => !prev);
       return;
     }
 
@@ -372,10 +381,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         <Header
           path={startPath}
           theme={theme}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          viewMode={viewMode}
-          showHiddenFiles={showHiddenFiles}
         />
         <Box flexGrow={1} paddingX={1} paddingY={1} borderStyle="single">
           <Box flexDirection="column">
@@ -398,8 +403,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
           itemCount={scanStatus.files}
           theme={theme}
           units={currentUnits}
-          fileTypeColoursEnabled={fileTypeColoursEnabled}
-          showLegend={showLegend}
           isScanning={loading || isScanning}
         />
         {helpOverlay}
@@ -416,10 +419,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
               <Header
                 path={currentNode.path}
                 theme={theme}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
-                viewMode={viewMode}
-                showHiddenFiles={showHiddenFiles}
               />
               <Box flexGrow={1} justifyContent="center" alignItems="center">
                   <ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
@@ -429,8 +428,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 itemCount={files.length}
                 theme={theme}
                 units={currentUnits}
-                fileTypeColoursEnabled={fileTypeColoursEnabled}
-                showLegend={showLegend}
                 isScanning={isScanning}
               />
               {helpOverlay}
@@ -452,32 +449,53 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   ) : null;
 
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
+  const panelWidth = showStatusPanel
+    ? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
+    : 0;
+  const listWidth = showStatusPanel
+    ? Math.max(20, totalColumns - panelWidth)
+    : totalColumns;
   return (
     <Box flexDirection="column" height={totalRows} width="100%">
       <Header
         path={currentNode.path}
         theme={theme}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        viewMode={viewMode}
-        showHiddenFiles={showHiddenFiles}
       />
 
       <Box flexGrow={1} overflowY="hidden">
-        <FileList
-            files={files}
-            selectedIndex={selectionIndex}
-            maxSize={maxSize}
-            theme={theme}
-            units={currentUnits}
-            viewMode={viewMode}
-            rootPath={currentNode.path}
-            scanRootPath={rootNode?.path ?? currentNode.path}
-            fileTypeColoursEnabled={fileTypeColoursEnabled}
-            showLegend={showLegend}
-            heatmapEnabled={heatmapEnabled}
-            extraBottomRows={isScanning ? 3 : 0}
-        />
+        <Box flexDirection="row" width="100%">
+          <Box width={showStatusPanel ? listWidth : '100%'}>
+            <FileList
+                files={files}
+                selectedIndex={selectionIndex}
+                maxSize={maxSize}
+                theme={theme}
+                units={currentUnits}
+                viewMode={viewMode}
+                rootPath={currentNode.path}
+                scanRootPath={rootNode?.path ?? currentNode.path}
+                fileTypeColoursEnabled={fileTypeColoursEnabled}
+                showLegend={showLegend}
+                heatmapEnabled={heatmapEnabled}
+                availableColumns={listWidth}
+                extraBottomRows={isScanning ? 3 : 0}
+            />
+          </Box>
+          {showStatusPanel ? (
+            <Box width={panelWidth}>
+              <StatusPanel
+                theme={theme}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                viewMode={viewMode}
+                showHiddenFiles={showHiddenFiles}
+                heatmapEnabled={heatmapEnabled}
+                fileTypeColoursEnabled={fileTypeColoursEnabled}
+                showLegend={showLegend}
+              />
+            </Box>
+          ) : null}
+        </Box>
       </Box>
 
       {scanIndicator}
@@ -487,8 +505,6 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         itemCount={files.length}
         theme={theme}
         units={currentUnits}
-        fileTypeColoursEnabled={fileTypeColoursEnabled}
-        showLegend={showLegend}
         isScanning={isScanning}
       />
       {helpOverlay}

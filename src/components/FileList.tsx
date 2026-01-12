@@ -19,6 +19,7 @@ interface FileListProps {
   fileTypeColoursEnabled: boolean;
   showLegend: boolean;
   heatmapEnabled: boolean;
+  availableColumns?: number;
   extraBottomRows?: number;
 }
 
@@ -88,11 +89,12 @@ export const FileList: React.FC<FileListProps> = ({
   fileTypeColoursEnabled,
   showLegend,
   heatmapEnabled,
+  availableColumns,
   extraBottomRows = 0,
 }) => {
   const { stdout } = useStdout();
   const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
-  const [totalColumns, setTotalColumns] = useState(() => stdout?.columns ?? process.stdout.columns ?? 80);
+  const [totalColumns, setTotalColumns] = useState(() => availableColumns ?? stdout?.columns ?? process.stdout.columns ?? 80);
   const showLegendRow = showLegend && fileTypeColoursEnabled;
   const listHeaderRows = showLegendRow ? 4 : 3;
   const reservedRows = APP_HEADER_ROWS + listHeaderRows + APP_FOOTER_ROWS + extraBottomRows;
@@ -100,7 +102,7 @@ export const FileList: React.FC<FileListProps> = ({
   useEffect(() => {
     const updateRows = () => {
       setTotalRows(stdout?.rows ?? process.stdout.rows ?? 24);
-      setTotalColumns(stdout?.columns ?? process.stdout.columns ?? 80);
+      setTotalColumns(availableColumns ?? stdout?.columns ?? process.stdout.columns ?? 80);
     };
 
     updateRows();
@@ -113,7 +115,13 @@ export const FileList: React.FC<FileListProps> = ({
       clearTimeout(immediateTimer);
       clearTimeout(settleTimer);
     };
-  }, [stdout]);
+  }, [stdout, availableColumns]);
+
+  useEffect(() => {
+    if (availableColumns !== undefined) {
+      setTotalColumns(availableColumns);
+    }
+  }, [availableColumns]);
 
   const windowSize = Math.max(1, totalRows - reservedRows);
   const columnLayout = useMemo(() => {
