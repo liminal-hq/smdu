@@ -85,6 +85,7 @@ const scanDirectoryInternal = async (
     try {
       const entries = await fs.promises.readdir(dirPath);
       const children: FileNode[] = [];
+      node.children = children;
       node.size = 0;
       for (const entry of entries) {
         if (signal?.aborted) {
@@ -103,7 +104,6 @@ const scanDirectoryInternal = async (
         node.size += child.size;
         onPartial?.(activeRoot);
       }
-      node.children = children;
     } catch (error) {
       if (error instanceof ScanCancelledError) {
         throw error;
