@@ -18,7 +18,7 @@ export const Footer: React.FC<FooterProps> = ({ totalSize, itemCount, theme, uni
   const unitsLabel = units === 'iec' ? 'IEC' : 'SI';
   const sizeLabel = filesize(totalSize, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' });
   const leftText = `Total: ${sizeLabel} (${itemCount} items) | Units: ${unitsLabel}`;
-  const rightText = 'Help: ?';
+  const rightText = 'Help: ? | Info: i';
 
   return (
     <Box

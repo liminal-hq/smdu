@@ -21,6 +21,7 @@ export const ACTIONS: Record<string, ActionDefinition> = {
   SETTINGS: { input: ['S'] },
   QUIT: { input: ['q'], key: ['escape'] },
   CONFIRM: { input: ['y'] },
+  INFO: { input: ['i'] },
   SORT_NAME: { input: ['n'] },
   SORT_SIZE: { input: ['s'] },
   VIEW_MODE: { input: ['v'] },
@@ -77,6 +78,7 @@ export const HELP_ITEMS: HelpItem[] = [
   { label: 'Toggle view mode', keys: formatActions(['VIEW_MODE']) },
   { label: 'Delete item', keys: formatActions(['DELETE']) },
   { label: 'Settings', keys: formatActions(['SETTINGS']) },
+  { label: 'Information panel', keys: formatActions(['INFO']) },
   { label: 'Help', keys: formatActions(['HELP']) },
   { label: 'Quit', keys: formatActions(['QUIT']) },
 ];

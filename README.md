@@ -15,6 +15,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **View Modes:** Flat (ncdu-style, default) and Tree.
 -   **Planned:** List view (name-only entries).
 -   **Help Modal:** Press `?` to view keybindings.
+-   **Information Panel:** Press `i` to view details for the selected item.
 -   **Cross-Platform:** Works on Linux, macOS, and Windows (best on POSIX).
 
 ## Installation
@@ -71,6 +72,7 @@ Settings available:
 -   **Left / Backspace / h**: Go up a directory.
 -   **d**: Delete selected file/directory.
 -   **S**: Open Settings.
+-   **i**: Toggle the information panel for the selected item.
 -   **n**: Sort by name.
 -   **s**: Sort by size.
 -   **v**: Toggle view mode (flat/tree).
