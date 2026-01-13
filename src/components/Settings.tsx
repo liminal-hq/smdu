@@ -107,6 +107,7 @@ export const Settings: React.FC<SettingsProps> = ({
   sections.forEach((section) => {
     if (section.items.length === 0) return;
     if (rows.length > 0) {
+      // Add empty line spacer
       rows.push({ kind: 'spacer' });
     }
     rows.push({ kind: 'heading', label: `${section.title}:` });

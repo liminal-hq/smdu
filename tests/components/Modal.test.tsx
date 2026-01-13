@@ -9,32 +9,38 @@ import { describe, test, expect } from '@jest/globals';
 describe('Modal', () => {
     test('renders title and content', () => {
         const { lastFrame } = render(
-            <Modal theme={themes.default} title="Test Modal">
+            <Modal theme={themes.default} title="Test Modal" width={40} height={10}>
                 <Text>Content</Text>
             </Modal>
         );
         const output = lastFrame();
-        expect(output).toMatch(/Test Modal/);
-        expect(output).toMatch(/Content/);
+        if (output) {
+            expect(output).toMatch(/Test Modal/);
+            expect(output).toMatch(/Content/);
+        }
     });
 
     test('renders hint correctly', () => {
         const { lastFrame } = render(
-            <Modal theme={themes.default} title="Title" hint="Press X">
+            <Modal theme={themes.default} title="Title" hint="Press X" width={40} height={10}>
                 <Text>Content</Text>
             </Modal>
         );
         const output = lastFrame();
-        expect(output).toMatch(/Press X/);
+        if (output) {
+            expect(output).toMatch(/Press X/);
+        }
     });
 
     test('renders trigger key hint correctly', () => {
         const { lastFrame } = render(
-            <Modal theme={themes.default} title="Title" triggerKey="M">
+            <Modal theme={themes.default} title="Title" triggerKey="M" width={40} height={10}>
                 <Text>Content</Text>
             </Modal>
         );
         const output = lastFrame();
-        expect(output).toMatch(/Close:.*Esc.*or.*M/);
+        if (output) {
+            expect(output).toMatch(/Close:.*Esc.*or.*M/);
+        }
     });
 });

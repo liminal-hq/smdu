@@ -181,6 +181,9 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         setIsScanning(true);
         setLoading(true);
         rootNodeRef.current = null;
+        setRootNode(null); // Release memory of old tree immediately
+        // Allow a small delay for state update and potential GC
+        await new Promise(resolve => setTimeout(resolve, 50));
         const progressState: ScanProgress = {
           currentPath: absolutePath,
           directories: 0,

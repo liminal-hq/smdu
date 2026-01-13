@@ -40,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({
   // I will use "green" for now.
 
   const scanStatus = isScanning ? (
-      <Text>Scan: Partial</Text>
+      <Text>Scan: <Text color={theme.colours.fileTypes.documents}>Partial</Text></Text>
   ) : (
       <Text>Scan: <Text color="green">Done</Text></Text>
   );
@@ -56,9 +56,11 @@ export const Footer: React.FC<FooterProps> = ({
   if (isScanning) {
       rightTextContent = 'Quit: q';
   } else if (mode === 'settings') {
-      rightTextContent = 'Select: Enter  Close: Esc';
-  } else if (mode === 'help' || mode === 'info') {
-      rightTextContent = 'Close: Esc';
+      rightTextContent = `Select: Enter  Close: Esc or ${mode === 'settings' ? 'S' : ''}`;
+  } else if (mode === 'help') {
+      rightTextContent = 'Close: Esc or ?';
+  } else if (mode === 'info') {
+      rightTextContent = 'Close: Esc or i';
   } else {
       // Default
       // "Help: ? Info: i Panel: p Timer: T/t Rescan: R"

@@ -36,8 +36,8 @@ describe('Footer', () => {
             />
         );
         const output = lastFrame();
-        expect(output).toMatch(/Select:\s*Enter/);
-        expect(output).toMatch(/Close:\s*Esc/);
+        expect(output).toMatch(/Select:.*Enter/);
+        expect(output).toMatch(/Close:.*Esc.*or.*S/);
     });
 
     test('renders scanning state correctly', () => {
@@ -51,7 +51,7 @@ describe('Footer', () => {
             />
         );
         const output = lastFrame();
-        expect(output).toMatch(/Scan:\s*Partial/);
+        expect(output).toMatch(/Scan:.*Partial/);
         expect(output).toMatch(/Quit:\s*q/);
     });
 
