@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { Header } from './components/Header.js';
@@ -171,7 +172,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     }, 100);
   }, [updateRootNode]);
 
-  useEffect(() => {
+  const scanRef = useCallback(() => {
     const runScan = async () => {
       try {
         const absolutePath = path.resolve(startPath);
@@ -217,6 +218,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       }
     };
     runScan();
+  }, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
+
+  useEffect(() => {
+    scanRef();
     return () => {
       scanAbortRef.current?.abort();
       if (partialUpdateTimerRef.current) {
@@ -224,7 +229,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         partialUpdateTimerRef.current = null;
       }
     };
-  }, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
+  }, [scanRef]);
 
   useEffect(() => {
     if (!isScanning) return;
@@ -438,6 +443,12 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         return next;
       });
     }
+    if (checkInput(input, key, ACTIONS.RESCAN)) {
+        if (!isScanning) {
+          scanRef();
+        }
+        return;
+    }
   });
 
   const selectedFile = files[selectionIndex];
@@ -484,9 +495,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
     return (
       <Box height={totalRows} width="100%" flexDirection="column">
+
         <Header
           path={startPath}
           theme={theme}
+          viewMode={viewMode}
         />
         <Box flexGrow={1} flexDirection="column">
           <Text color={theme.colours.line}>{divider}</Text>
@@ -505,12 +518,14 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             ) : null}
           </Box>
         </Box>
+
         <Footer
           totalSize={scanStatus.bytes}
           itemCount={scanStatus.files}
           theme={theme}
           units={currentUnits}
           isScanning={loading || isScanning}
+          mode="default"
         />
         {helpOverlay}
         {infoOverlay}
@@ -524,8 +539,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return (
           <Box flexDirection="column" height={totalRows} width="100%">
               <Header
+
                 path={currentNode.path}
                 theme={theme}
+                viewMode={viewMode}
               />
               <Box flexGrow={1} justifyContent="center" alignItems="center">
                   <ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
@@ -534,8 +551,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 totalSize={currentNode.size}
                 itemCount={files.length}
                 theme={theme}
+
                 units={currentUnits}
                 isScanning={isScanning}
+                mode="default"
               />
               {helpOverlay}
               {infoOverlay}
@@ -581,9 +600,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
   return (
     <Box flexDirection="column" height={totalRows} width="100%">
+
       <Header
         path={currentNode.path}
         theme={theme}
+        viewMode={viewMode}
       />
 
       <Box flexGrow={1} overflowY="hidden">
@@ -627,12 +648,14 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
       {statusIndicator}
 
+
       <Footer
         totalSize={currentNode.size}
         itemCount={files.length}
         theme={theme}
         units={currentUnits}
         isScanning={isScanning}
+        mode={showHelp ? 'help' : showInfo ? 'info' : view === ViewState.Settings ? 'settings' : 'default'}
       />
       {helpOverlay}
       {infoOverlay}
