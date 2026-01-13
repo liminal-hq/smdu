@@ -270,10 +270,10 @@ export const FileList: React.FC<FileListProps> = ({
           <Box width={columnLayout.nameColumns}>
             <Text color={theme.colours.muted}>{viewMode === 'flat' ? 'Path' : 'Name'}</Text>
           </Box>
-          <Box width={columnLayout.sizeColumns}>
+          <Box width={columnLayout.sizeColumns} justifyContent="flex-end">
             <Text color={theme.colours.muted}>Size</Text>
           </Box>
-          <Box width={columnLayout.percentColumns}>
+          <Box width={columnLayout.percentColumns} justifyContent="flex-end">
             <Text color={theme.colours.muted}>{columnLayout.showGraph ? '' : 'Usage'}</Text>
           </Box>
           {columnLayout.showGraph ? (

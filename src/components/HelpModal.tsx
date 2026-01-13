@@ -41,51 +41,72 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
     ].filter(s => s.items.length > 0);
   }, []);
 
-  // Flatten for scrolling
-  type FlatItem =
-    | { kind: 'header', title: string }
-    | { kind: 'item', label: string, keys: string };
+  // Flatten for rendering AND selection mapping
+  type IndexedItem = { label: string; keys: string; index: number };
 
-  const flatList = useMemo(() => {
-    const list: FlatItem[] = [];
-    sections.forEach(section => {
-      // Small optimization: don't add spacer at very top
-      if (list.length > 0) list.push({ kind: 'item', label: '', keys: '' }); // spacer
-      list.push({ kind: 'header', title: section.title });
-      section.items.forEach(item => {
-        list.push({ kind: 'item', label: item.label, keys: item.keys });
+  // Selectable items only
+  const items = useMemo(() => {
+    const list: IndexedItem[] = [];
+    let idx = 0;
+    sections.forEach(s => {
+      s.items.forEach(item => {
+        list.push({ ...item, index: idx++ });
       });
     });
     return list;
   }, [sections]);
 
-  // We only want to scroll through actual items for selection?
-  // Unlike Settings, Help is read-only. We just want to scroll the VIEW.
-  // The useScrollableList is built for selection.
-  // But we can use it to drive the scroll offset.
-  // We can treat every line as a selectable item (even headers) just to allow scrolling through everything.
+  // Render rows (headers, spacers, items)
+  type Row =
+    | { kind: 'header'; title: string }
+    | { kind: 'spacer' }
+    | { kind: 'item'; label: string; keys: string; index: number };
+
+  const rows = useMemo(() => {
+    const r: Row[] = [];
+    let itemIdx = 0;
+    sections.forEach(section => {
+      if (r.length > 0) r.push({ kind: 'spacer' });
+      r.push({ kind: 'header', title: section.title });
+      section.items.forEach(item => {
+        r.push({ kind: 'item', label: item.label, keys: item.keys, index: itemIdx++ });
+      });
+    });
+    return r;
+  }, [sections]);
+
+  // Map logical index (0..items.length-1) to row index (0..rows.length-1)
+  const rowIndexMap = useMemo(() => {
+    const map = new Map<number, number>();
+    rows.forEach((row, rIdx) => {
+      if (row.kind === 'item') {
+        map.set(row.index, rIdx);
+      }
+    });
+    return map;
+  }, [rows]);
 
   const { selectedIndex } = useScrollableList({
-      itemsCount: flatList.length,
+      itemsCount: items.length,
       height: contentRows,
       onClose: onBack,
       triggerAction: ACTIONS.HELP,
   });
 
-  // Calculate visual offset to keep selectedIndex in view
+  const selectedRowIndex = rowIndexMap.get(selectedIndex) ?? 0;
   const visualOffsetRef = React.useRef(0);
   const safeContentRows = Math.max(1, contentRows);
 
-  if (selectedIndex < visualOffsetRef.current) {
-      visualOffsetRef.current = selectedIndex;
-  } else if (selectedIndex >= visualOffsetRef.current + safeContentRows) {
-      visualOffsetRef.current = selectedIndex - safeContentRows + 1;
+  if (selectedRowIndex < visualOffsetRef.current) {
+      visualOffsetRef.current = selectedRowIndex;
+  } else if (selectedRowIndex >= visualOffsetRef.current + safeContentRows) {
+      visualOffsetRef.current = selectedRowIndex - safeContentRows + 1;
   }
 
-  const maxVisualScroll = Math.max(0, flatList.length - safeContentRows);
+  const maxVisualScroll = Math.max(0, rows.length - safeContentRows);
   visualOffsetRef.current = Math.min(visualOffsetRef.current, maxVisualScroll);
 
-  const visibleItems = flatList.slice(visualOffsetRef.current, visualOffsetRef.current + safeContentRows);
+  const visibleRows = rows.slice(visualOffsetRef.current, visualOffsetRef.current + safeContentRows);
 
   return (
     <Modal
@@ -97,38 +118,33 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
       height={modalHeight}
     >
       <Box flexDirection="column" height={safeContentRows}>
-        {visibleItems.map((item, index) => {
-          // Use a key relative to visual slice to ensure stability or just unique content
-          const uniqueKey = `${item.kind}-${index}-${'title' in item ? item.title : item.label}`;
+        {visibleRows.map((row, index) => {
+          // Unique key: row kind + index in render slice + content
+          const uniqueKey = `${row.kind}-${index}-${'title' in row ? row.title : 'label' in row ? row.label : 'sp'}`;
 
-          if (item.kind === 'header') {
+          if (row.kind === 'header') {
              return (
                  <Text key={uniqueKey} color={theme.colours.muted} underline bold>
-                     {item.title}:
+                     {row.title}:
                  </Text>
              );
           }
-
-          if (item.label === '') {
-              return <Text key={uniqueKey}> </Text>;
+          if (row.kind === 'spacer') {
+             return <Box key={uniqueKey} height={1} />;
           }
 
-          // Use selectedIndex to highlight current line?
-          // For a passive help modal, highlighting isn't strictly necessary but helps show where you are.
-          const globalIndex = visualOffsetRef.current + index;
-          const isSelected = globalIndex === selectedIndex;
-
+          const isSelected = row.index === selectedIndex;
           return (
             <Box key={uniqueKey} width="100%">
               <Box width={labelWidth}>
                 <Text color={isSelected ? theme.colours.accent : theme.colours.muted} wrap="truncate-end">
                     {isSelected ? '> ' : '  '}
-                    {item.label}
+                    {row.label}
                 </Text>
               </Box>
               <Box width={keyWidth}>
                 <Text color={isSelected ? theme.colours.accent : theme.colours.text} wrap="truncate-end">
-                    {item.keys}
+                    {row.keys}
                 </Text>
               </Box>
             </Box>
