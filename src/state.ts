@@ -38,7 +38,13 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
   }, []);
 
   useEffect(() => {
-    if (!initialNode) return;
+    if (!initialNode) {
+      if (currentNode) {
+        setCurrentNode(null);
+      }
+      setSelectionIndex(0);
+      return;
+    }
     if (!currentNode) {
       setCurrentNode(initialNode);
       return;

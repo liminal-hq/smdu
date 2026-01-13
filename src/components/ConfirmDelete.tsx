@@ -10,7 +10,7 @@ interface ConfirmDeleteProps {
 export const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({ fileName, theme }) => {
   return (
     <Box
-      borderStyle="double"
+      borderStyle="single"
       borderColor="red"
       flexDirection="column"
       padding={1}

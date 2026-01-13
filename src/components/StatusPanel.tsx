@@ -51,15 +51,13 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
     `Legend [L]: ${legendLabel}`,
   ];
 
-  const title = ' Status ';
-  const trimmedTitle = title.length > contentWidth ? title.slice(0, contentWidth) : title;
-  const topLine = `┌${trimmedTitle}${'─'.repeat(Math.max(0, contentWidth - trimmedTitle.length))}┐`;
-  const bottomLine = `└${'─'.repeat(contentWidth)}┘`;
+  const title = 'Status';
+  const divider = '-'.repeat(Math.max(0, panelWidth));
   const contentLines = statusItems.map((item) => {
     const trimmed = item.length > contentWidth ? item.slice(0, contentWidth) : item;
-    return `│${trimmed}${' '.repeat(Math.max(0, contentWidth - trimmed.length))}│`;
+    return trimmed.padEnd(contentWidth, ' ');
   });
-  const emptyLine = `│${' '.repeat(contentWidth)}│`;
+  const emptyLine = ''.padEnd(contentWidth, ' ');
   const innerHeight = Math.max(0, panelHeight - 2);
   const paddedLines = contentLines.length >= innerHeight
     ? contentLines.slice(0, innerHeight)
@@ -67,13 +65,17 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 
   return (
     <Box flexDirection="column" width="100%" height={panelHeight}>
-      <Text color={theme.colours.footer}>{topLine}</Text>
-      {paddedLines.map((line, index) => (
-        <Text key={`${line}-${index}`} color={theme.colours.text}>
-          {line}
+      <Box paddingX={1}>
+        <Text color={theme.colours.muted} bold>
+          {title}
         </Text>
+      </Box>
+      <Text color={theme.colours.line}>{divider}</Text>
+      {paddedLines.map((line, index) => (
+        <Box key={`${line}-${index}`} paddingX={1}>
+          <Text color={theme.colours.text}>{line}</Text>
+        </Box>
       ))}
-      <Text color={theme.colours.footer}>{bottomLine}</Text>
     </Box>
   );
 };

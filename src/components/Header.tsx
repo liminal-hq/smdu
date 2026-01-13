@@ -1,36 +1,41 @@
 import React from 'react';
 import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';
+import { ViewMode } from '../state.js';
+
 interface HeaderProps {
   path: string;
   theme: Theme;
   width?: number;
+  viewMode?: ViewMode;
 }
 
-export const Header: React.FC<HeaderProps> = ({ path, theme, width }) => {
+export const Header: React.FC<HeaderProps> = ({ path, theme, width, viewMode }) => {
   const { stdout } = useStdout();
   const totalColumns = width ?? stdout?.columns ?? process.stdout.columns ?? 80;
-  const contentWidth = Math.max(20, totalColumns - 2);
+  const divider = '-'.repeat(Math.max(0, totalColumns));
   const title = 'smdu';
-  const titleLabel = ` ${title} `;
+
+  const viewModeLabel = viewMode === 'tree' ? '[Tree]' : (viewMode === 'flat' ? '[Flat]' : '');
 
   return (
-    <Box
-      borderStyle="single"
-      borderColor={theme.colours.header}
-      paddingX={1}
-      width={width ?? '100%'}
-    >
-      <Box position="absolute" marginTop={-1} width="100%" justifyContent="center">
-        <Text color={theme.colours.header} bold>
-          {titleLabel}
+    <Box flexDirection="column" width={width ?? '100%'}>
+      <Box paddingX={1}>
+        <Box flexGrow={1}>
+            {viewMode && (
+                <Text color={theme.colours.muted} bold>
+                 {viewModeLabel}{' '}
+                </Text>
+            )}
+            <Text color={theme.colours.text} wrap="truncate-end">
+              {path}
+            </Text>
+        </Box>
+        <Text color={theme.colours.muted} bold>
+          {title}
         </Text>
       </Box>
-      <Box width={contentWidth}>
-        <Text color={theme.colours.header} bold wrap="truncate-end">
-          {path}
-        </Text>
-      </Box>
+      <Text color={theme.colours.line}>{divider}</Text>
     </Box>
   );
 };

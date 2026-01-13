@@ -41,8 +41,8 @@ export const TimerStatus: React.FC<TimerStatusProps> = ({
 
   return (
     <StatusBanner theme={theme}>
-      <Text color={theme.colours.footer}>{timerLine}</Text>
-      <Text color={theme.colours.footer}>{statsLine}</Text>
+      <Text color={theme.colours.text}>{timerLine}</Text>
+      <Text color={theme.colours.muted}>{statsLine}</Text>
     </StatusBanner>
   );
 };

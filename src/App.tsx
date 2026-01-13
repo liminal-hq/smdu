@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { Header } from './components/Header.js';
@@ -171,7 +172,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     }, 100);
   }, [updateRootNode]);
 
-  useEffect(() => {
+  const scanRef = useCallback(() => {
     const runScan = async () => {
       try {
         const absolutePath = path.resolve(startPath);
@@ -180,6 +181,9 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         setIsScanning(true);
         setLoading(true);
         rootNodeRef.current = null;
+        setRootNode(null); // Release memory of old tree immediately
+        // Allow a small delay for state update and potential GC
+        await new Promise(resolve => setTimeout(resolve, 50));
         const progressState: ScanProgress = {
           currentPath: absolutePath,
           directories: 0,
@@ -217,6 +221,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       }
     };
     runScan();
+  }, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
+
+  useEffect(() => {
+    scanRef();
     return () => {
       scanAbortRef.current?.abort();
       if (partialUpdateTimerRef.current) {
@@ -224,7 +232,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         partialUpdateTimerRef.current = null;
       }
     };
-  }, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
+  }, [scanRef]);
 
   useEffect(() => {
     if (!isScanning) return;
@@ -438,6 +446,12 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
         return next;
       });
     }
+    if (checkInput(input, key, ACTIONS.RESCAN)) {
+        if (!isScanning) {
+          scanRef();
+        }
+        return;
+    }
   });
 
   const selectedFile = files[selectionIndex];
@@ -480,19 +494,23 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
   if (!currentNode) {
     const sizeLabel = formatSize(scanStatus.bytes);
+    const divider = '-'.repeat(Math.max(0, totalColumns));
 
     return (
       <Box height={totalRows} width="100%" flexDirection="column">
+
         <Header
           path={startPath}
           theme={theme}
+          viewMode={viewMode}
         />
-        <Box flexGrow={1} paddingX={1} paddingY={1} borderStyle="single">
-          <Box flexDirection="column">
+        <Box flexGrow={1} flexDirection="column">
+          <Text color={theme.colours.line}>{divider}</Text>
+          <Box flexDirection="column" paddingX={1} paddingY={1}>
             <Text color={theme.colours.text}>
               Scanning {startPath}... {spinnerFrames[spinnerIndex]}
             </Text>
-            <Text color={theme.colours.text} wrap="truncate-end">
+            <Text color={theme.colours.muted} wrap="truncate-end">
               Current: {scanStatus.currentPath}
             </Text>
             <Text color={theme.colours.text}>
@@ -503,12 +521,14 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
             ) : null}
           </Box>
         </Box>
+
         <Footer
           totalSize={scanStatus.bytes}
           itemCount={scanStatus.files}
           theme={theme}
           units={currentUnits}
           isScanning={loading || isScanning}
+          mode="default"
         />
         {helpOverlay}
         {infoOverlay}
@@ -522,8 +542,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
       return (
           <Box flexDirection="column" height={totalRows} width="100%">
               <Header
+
                 path={currentNode.path}
                 theme={theme}
+                viewMode={viewMode}
               />
               <Box flexGrow={1} justifyContent="center" alignItems="center">
                   <ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
@@ -532,8 +554,10 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
                 totalSize={currentNode.size}
                 itemCount={files.length}
                 theme={theme}
+
                 units={currentUnits}
                 isScanning={isScanning}
+                mode="default"
               />
               {helpOverlay}
               {infoOverlay}
@@ -564,12 +588,12 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
     />
   ) : null;
   const statusIndicator = timerIndicator ?? scanIndicator;
-  const STATUS_INDICATOR_ROWS = 4;
+  const STATUS_INDICATOR_ROWS = 3;
   const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
   const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
-  const headerRows = 3;
-  const footerRows = 3;
+  const headerRows = 2;
+  const footerRows = 2;
   const panelWidth = showStatusPanel
     ? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
     : 0;
@@ -579,9 +603,11 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
   const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
   return (
     <Box flexDirection="column" height={totalRows} width="100%">
+
       <Header
         path={currentNode.path}
         theme={theme}
+        viewMode={viewMode}
       />
 
       <Box flexGrow={1} overflowY="hidden">
@@ -625,12 +651,14 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
 
       {statusIndicator}
 
+
       <Footer
         totalSize={currentNode.size}
         itemCount={files.length}
         theme={theme}
         units={currentUnits}
         isScanning={isScanning}
+        mode={showHelp ? 'help' : showInfo ? 'info' : view === ViewState.Settings ? 'settings' : 'default'}
       />
       {helpOverlay}
       {infoOverlay}

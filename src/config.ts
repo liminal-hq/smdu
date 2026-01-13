@@ -1,66 +1,66 @@
 import Conf from 'conf';
 
 export interface ConfigSchema {
-  theme: string;
-  units: 'iec' | 'si';
-  fileTypeColoursEnabled: boolean;
-  showHiddenFiles: boolean;
-  heatmapEnabled: boolean;
+	theme: string;
+	units: 'iec' | 'si';
+	fileTypeColoursEnabled: boolean;
+	showHiddenFiles: boolean;
+	heatmapEnabled: boolean;
 }
 
 // Create a new configuration instance
 // 'smdu' project name will be used for storage path
 const config = new Conf<ConfigSchema>({
-  projectName: 'smdu',
-  defaults: {
-    theme: 'default',
-    units: 'iec',
-    fileTypeColoursEnabled: true,
-    showHiddenFiles: true,
-    heatmapEnabled: true,
-  },
+	projectName: 'smdu',
+	defaults: {
+		theme: 'default',
+		units: 'iec',
+		fileTypeColoursEnabled: true,
+		showHiddenFiles: true,
+		heatmapEnabled: true,
+	},
 });
 
 export const getThemeFromConfig = (): string => {
-  return config.get('theme');
+	return config.get('theme');
 };
 
 export const setThemeInConfig = (theme: string): void => {
-  config.set('theme', theme);
+	config.set('theme', theme);
 };
 
 export const getUnitsFromConfig = (): 'iec' | 'si' => {
-  return config.get('units');
+	return config.get('units');
 };
 
 export const setUnitsInConfig = (units: 'iec' | 'si'): void => {
-  config.set('units', units);
+	config.set('units', units);
 };
 
 export const getFileTypeColoursEnabledFromConfig = (): boolean => {
-  return config.get('fileTypeColoursEnabled');
+	return config.get('fileTypeColoursEnabled');
 };
 
 export const setFileTypeColoursEnabledInConfig = (enabled: boolean): void => {
-  config.set('fileTypeColoursEnabled', enabled);
+	config.set('fileTypeColoursEnabled', enabled);
 };
 
 export const getShowHiddenFilesFromConfig = (): boolean => {
-  return config.get('showHiddenFiles');
+	return config.get('showHiddenFiles');
 };
 
 export const setShowHiddenFilesInConfig = (enabled: boolean): void => {
-  config.set('showHiddenFiles', enabled);
+	config.set('showHiddenFiles', enabled);
 };
 
 export const getHeatmapEnabledFromConfig = (): boolean => {
-  return config.get('heatmapEnabled');
+	return config.get('heatmapEnabled');
 };
 
 export const setHeatmapEnabledInConfig = (enabled: boolean): void => {
-  config.set('heatmapEnabled', enabled);
+	config.set('heatmapEnabled', enabled);
 };
 
 export const getConfigPath = (): string => {
-  return config.path;
+	return config.path;
 };
