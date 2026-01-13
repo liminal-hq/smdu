@@ -157,7 +157,111 @@ export const FileList: React.FC<FileListProps> = ({
   }
 
   const visibleFiles = files.slice(start, start + windowSize);
-  const divider = '-'.repeat(Math.max(0, totalColumns));
+
+  // Construct segmented divider
+  const getDivider = () => {
+    const dash = '-';
+    // paddingX=1 means 1 char on left, so first break is at nameColumns + 1
+    // But text is inside padding... wait.
+    // The columns are INSIDE the padding.
+    // So relative to the `Text` output (which has no padding itself, but is inside `Box`... no the Text is OUTSIDE Box padding)
+    // `Text` here is independent: `<Text color={theme.colours.line}>{divider}</Text>`
+    // So we need to account for the 1 char padding of the headers above.
+
+    // Header layout:
+    // PADDING(1) | Name | Size | Percent | Graph
+
+    const pad = '-'; // Character to use for padding area? Or space? Divider usually dashes.
+    // If we use breaks, usually spaces?
+    // "Can there be breaks in the ---- row... to show delination"
+    // So spaces at boundaries.
+
+    let line = '';
+    // Left padding
+    line += '-';
+
+    // Name column
+    line += '-'.repeat(Math.max(0, columnLayout.nameColumns));
+
+    // Break?
+    line += ' '; // Break between Name and Size
+
+    // Size column
+    line += '-'.repeat(Math.max(0, columnLayout.sizeColumns));
+
+    // Break
+    line += ' ';
+
+    // Percent
+    line += '-'.repeat(Math.max(0, columnLayout.percentColumns));
+
+    if (columnLayout.showGraph) {
+        line += ' ';
+        line += '-'.repeat(Math.max(0, columnLayout.graphColumns));
+    }
+
+    // Right padding (approximate if full width match needed)
+    // The above calculation might exceed totalColumns or be less due to flexibility.
+    // Layout calc uses `remaining` logic.
+    // name + graph + size + percent = contentColumns.
+    // So sum matches totalColumns - 2.
+    // We added spaces. We need to subtract dashes to make room for spaces?
+    // User wants alignment. Headers are flexed? No, specific widths.
+    // <Box width={...}>
+
+    // So if I add spaces, I need to reduce dashes?
+    // No, the columns have specific widths.
+    // If headers are:
+    // <Box width={nameCol}>...</Box><Box width={sizeCol}>...</Box>
+    // They are adjacent.
+    // So the break should be BETWEEN them.
+    // But there is no space between them in the header layout currently.
+    // "Break in the ---- row".
+    // If I put a space in the divider, it implies a vertical separator, but header text has no gap?
+    // Header text is just separate boxes.
+    // If I put a gap in divider, it visually separates columns.
+    // But if columns are tight, the gap might eat into column space?
+    // Wait, the divider is just a visual line.
+    // If I replace the char at boundary with ' ', it works.
+
+    // Boundary 1: 1 + nameColumns
+    // Boundary 2: 1 + nameColumns + sizeColumns
+    // etc.
+
+    const fullLine = '-'.repeat(totalColumns);
+    const chars = fullLine.split('');
+
+    let cursor = 1; // Left padding
+
+    cursor += columnLayout.nameColumns;
+    if (cursor < chars.length) chars[cursor] = ' '; // Break? Or cursor-1?
+    // If column is width N, it occupies index 1 to 1+N-1.
+    // Next column starts at 1+N.
+    // So break should be at 1+N? No, that's the start of next column.
+    // Usually break is between?
+    // If headers are flush, break might look weird if it erases a char under a letter.
+    // But usually headers align left/right.
+
+    // Let's try putting space at `cursor` (start of Size col) reduces Size divider?
+    // Or maybe `cursor - 1`?
+    // User said "delination between the columns".
+    // I'll put space at the boundary indices.
+
+    chars[cursor] = ' '; // Between Name and Size?
+    // Wait, if Name is "Filename......", and Size is "....10KB", they touch.
+    // A space at `cursor` overwrites the first dash of Size column.
+    // That seems fine.
+
+    cursor += columnLayout.sizeColumns;
+    if (cursor < chars.length) chars[cursor] = ' ';
+
+    cursor += columnLayout.percentColumns;
+    if (columnLayout.showGraph && cursor < chars.length) chars[cursor] = ' ';
+
+    return chars.join('');
+  };
+
+  const divider = getDivider();
 
   return (
     <Box flexDirection="column" width="100%">
@@ -264,13 +368,19 @@ export const FileList: React.FC<FileListProps> = ({
                   </Text>
                   <Text
                     backgroundColor={isSelected ? theme.colours.highlight : undefined}
-                    color={isSelected ? theme.colours.selectedText : barColour}
+                    color={
+                      heatmapEnabled
+                        ? heatmapColour
+                        : isSelected
+                        ? theme.colours.selectedText
+                        : theme.colours.bar
+                    }
                   >
                     {barFilledStr}
                   </Text>
                   <Text
                     backgroundColor={isSelected ? theme.colours.highlight : undefined}
-                    color={isSelected ? theme.colours.selectedText : theme.colours.barEmpty}
+                    color={theme.colours.barEmpty}
                   >
                     {barEmptyStr}
                   </Text>
