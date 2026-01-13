@@ -119,8 +119,14 @@ export const FileList: React.FC<FileListProps> = ({
   const windowSize = Math.max(1, totalRows - reservedRows);
   const columnLayout = useMemo(() => {
     const contentColumns = Math.max(0, totalColumns - 2); // paddingX=1
+    // We need gaps: Name <gap> Size <gap> Percent <gap> Graph
+    // Gaps = 3 (if graph shown) or 2.
+    // Let's reserve 3 chars for gaps if graph shown, else 2.
+    const gapCount = 3; // Name-Size, Size-Percent, Percent-Graph (or usage)
+
+    const availableForContent = Math.max(0, contentColumns - gapCount);
     const fixedColumns = SIZE_COL + PERCENT_COL;
-    const remaining = Math.max(0, contentColumns - fixedColumns);
+    const remaining = Math.max(0, availableForContent - fixedColumns);
 
     let graphColumns = Math.max(MIN_GRAPH_COL, Math.floor(remaining * 0.35));
     let nameColumns = Math.max(MIN_NAME_COL, remaining - graphColumns);
@@ -145,6 +151,7 @@ export const FileList: React.FC<FileListProps> = ({
       graphColumns,
       barWidth,
       showGraph,
+      gapCount: showGraph ? 3 : 2,
     };
   }, [totalColumns]);
 
@@ -158,107 +165,33 @@ export const FileList: React.FC<FileListProps> = ({
 
   const visibleFiles = files.slice(start, start + windowSize);
 
-  // Construct segmented divider
+  // Construct segmented divider with explicit gaps matching layout
   const getDivider = () => {
-    const dash = '-';
-    // paddingX=1 means 1 char on left, so first break is at nameColumns + 1
-    // But text is inside padding... wait.
-    // The columns are INSIDE the padding.
-    // So relative to the `Text` output (which has no padding itself, but is inside `Box`... no the Text is OUTSIDE Box padding)
-    // `Text` here is independent: `<Text color={theme.colours.line}>{divider}</Text>`
-    // So we need to account for the 1 char padding of the headers above.
-
-    // Header layout:
-    // PADDING(1) | Name | Size | Percent | Graph
-
-    const pad = '-'; // Character to use for padding area? Or space? Divider usually dashes.
-    // If we use breaks, usually spaces?
-    // "Can there be breaks in the ---- row... to show delination"
-    // So spaces at boundaries.
-
     let line = '';
     // Left padding
     line += '-';
 
-    // Name column
-    line += '-'.repeat(Math.max(0, columnLayout.nameColumns));
+    line += '-'.repeat(columnLayout.nameColumns);
+    line += ' '; // Gap Name-Size
 
-    // Break?
-    line += ' '; // Break between Name and Size
+    line += '-'.repeat(columnLayout.sizeColumns);
+    line += ' '; // Gap Size-Percent
 
-    // Size column
-    line += '-'.repeat(Math.max(0, columnLayout.sizeColumns));
-
-    // Break
-    line += ' ';
-
-    // Percent
-    line += '-'.repeat(Math.max(0, columnLayout.percentColumns));
+    line += '-'.repeat(columnLayout.percentColumns);
 
     if (columnLayout.showGraph) {
-        line += ' ';
-        line += '-'.repeat(Math.max(0, columnLayout.graphColumns));
+        line += ' '; // Gap Percent-Graph
+        line += '-'.repeat(columnLayout.graphColumns);
     }
 
-    // Right padding (approximate if full width match needed)
-    // The above calculation might exceed totalColumns or be less due to flexibility.
-    // Layout calc uses `remaining` logic.
-    // name + graph + size + percent = contentColumns.
-    // So sum matches totalColumns - 2.
-    // We added spaces. We need to subtract dashes to make room for spaces?
-    // User wants alignment. Headers are flexed? No, specific widths.
-    // <Box width={...}>
+    // Since we calculated columns based on total - gaps - padding,
+    // the sum should fit. But strictly, we used availableForContent.
+    // availableForContent = total - 2 - gapCount.
+    // line length = 1 + name + 1 + size + 1 + percent + 1 + graph + 1 ??
+    // No, padding right is accounted for?
+    // Let's just return the line. Ink handles overflow if any, but we aimed for exact fit.
 
-    // So if I add spaces, I need to reduce dashes?
-    // No, the columns have specific widths.
-    // If headers are:
-    // <Box width={nameCol}>...</Box><Box width={sizeCol}>...</Box>
-    // They are adjacent.
-    // So the break should be BETWEEN them.
-    // But there is no space between them in the header layout currently.
-    // "Break in the ---- row".
-    // If I put a space in the divider, it implies a vertical separator, but header text has no gap?
-    // Header text is just separate boxes.
-    // If I put a gap in divider, it visually separates columns.
-    // But if columns are tight, the gap might eat into column space?
-    // Wait, the divider is just a visual line.
-    // If I replace the char at boundary with ' ', it works.
-
-    // Boundary 1: 1 + nameColumns
-    // Boundary 2: 1 + nameColumns + sizeColumns
-    // etc.
-
-    const fullLine = '-'.repeat(totalColumns);
-    const chars = fullLine.split('');
-
-    let cursor = 1; // Left padding
-
-    cursor += columnLayout.nameColumns;
-    if (cursor < chars.length) chars[cursor] = ' '; // Break? Or cursor-1?
-    // If column is width N, it occupies index 1 to 1+N-1.
-    // Next column starts at 1+N.
-    // So break should be at 1+N? No, that's the start of next column.
-    // Usually break is between?
-    // If headers are flush, break might look weird if it erases a char under a letter.
-    // But usually headers align left/right.
-
-    // Let's try putting space at `cursor` (start of Size col) reduces Size divider?
-    // Or maybe `cursor - 1`?
-    // User said "delination between the columns".
-    // I'll put space at the boundary indices.
-
-    chars[cursor] = ' '; // Between Name and Size?
-    // Wait, if Name is "Filename......", and Size is "....10KB", they touch.
-    // A space at `cursor` overwrites the first dash of Size column.
-    // That seems fine.
-
-    cursor += columnLayout.sizeColumns;
-    if (cursor < chars.length) chars[cursor] = ' ';
-
-    cursor += columnLayout.percentColumns;
-    if (columnLayout.showGraph && cursor < chars.length) chars[cursor] = ' ';
-
-    return chars.join('');
+    return line;
   };
 
   const divider = getDivider();
@@ -270,16 +203,21 @@ export const FileList: React.FC<FileListProps> = ({
           <Box width={columnLayout.nameColumns}>
             <Text color={theme.colours.muted}>{viewMode === 'flat' ? 'Path' : 'Name'}</Text>
           </Box>
+          <Box width={1} />
           <Box width={columnLayout.sizeColumns} justifyContent="flex-end">
             <Text color={theme.colours.muted}>Size</Text>
           </Box>
+          <Box width={1} />
           <Box width={columnLayout.percentColumns} justifyContent="flex-end">
             <Text color={theme.colours.muted}>{columnLayout.showGraph ? '' : 'Usage'}</Text>
           </Box>
           {columnLayout.showGraph ? (
-            <Box width={columnLayout.graphColumns}>
-              <Text color={theme.colours.muted}>Usage</Text>
-            </Box>
+            <>
+              <Box width={1} />
+              <Box width={columnLayout.graphColumns}>
+                <Text color={theme.colours.muted}>Usage</Text>
+              </Box>
+            </>
           ) : null}
         </Box>
         {showLegendRow ? (
@@ -340,6 +278,8 @@ export const FileList: React.FC<FileListProps> = ({
                 </Text>
               </Box>
 
+              <Box width={1} />
+
               <Box width={columnLayout.sizeColumns} justifyContent="flex-end">
                   <Text
                     backgroundColor={isSelected ? theme.colours.highlight : undefined}
@@ -348,6 +288,8 @@ export const FileList: React.FC<FileListProps> = ({
                     {filesize(file.size, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' })}
                   </Text>
               </Box>
+
+              <Box width={1} />
 
               <Box width={columnLayout.percentColumns} justifyContent="flex-end">
                   <Text
@@ -359,7 +301,9 @@ export const FileList: React.FC<FileListProps> = ({
               </Box>
 
               {columnLayout.showGraph ? (
-                <Box width={columnLayout.graphColumns}>
+                <>
+                  <Box width={1} />
+                  <Box width={columnLayout.graphColumns}>
                   <Text
                     backgroundColor={isSelected ? theme.colours.highlight : undefined}
                     color={isSelected ? theme.colours.selectedText : theme.colours.line}
@@ -391,6 +335,7 @@ export const FileList: React.FC<FileListProps> = ({
                     ]
                   </Text>
                 </Box>
+                </>
               ) : null}
             </Box>
           </Box>

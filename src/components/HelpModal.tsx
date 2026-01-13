@@ -108,6 +108,29 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
 
   const visibleRows = rows.slice(visualOffsetRef.current, visualOffsetRef.current + safeContentRows);
 
+  // Sticky header logic
+  let stickyHeading: Row | null = null;
+  if (visibleRows[0]?.kind !== 'header') {
+      for (let index = visualOffsetRef.current; index >= 0; index -= 1) {
+          if (rows[index]?.kind === 'header') {
+              stickyHeading = rows[index];
+              break;
+          }
+      }
+  }
+
+  let displayRows = visibleRows;
+  if (stickyHeading) {
+      // Replace top row with sticky header to keep it visible
+      displayRows = [stickyHeading, ...visibleRows.slice(0, safeContentRows - 1)];
+  }
+
+  // Fill with spacers if needed
+  if (displayRows.length < safeContentRows) {
+      const filler = Array.from({ length: safeContentRows - displayRows.length }, () => ({ kind: 'spacer' as const }));
+      displayRows = [...displayRows, ...filler];
+  }
+
   return (
     <Modal
       theme={theme}
@@ -118,7 +141,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
       height={modalHeight}
     >
       <Box flexDirection="column" height={safeContentRows}>
-        {visibleRows.map((row, index) => {
+        {displayRows.map((row, index) => {
           // Unique key: row kind + index in render slice + content
           const uniqueKey = `${row.kind}-${index}-${'title' in row ? row.title : 'label' in row ? row.label : 'sp'}`;
 
@@ -133,18 +156,18 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
              return <Box key={uniqueKey} height={1} />;
           }
 
-          const isSelected = row.index === selectedIndex;
+          const isSelected = 'index' in row && row.index === selectedIndex;
           return (
             <Box key={uniqueKey} width="100%">
               <Box width={labelWidth}>
                 <Text color={isSelected ? theme.colours.accent : theme.colours.muted} wrap="truncate-end">
                     {isSelected ? '> ' : '  '}
-                    {row.label}
+                    {'label' in row ? row.label : ''}
                 </Text>
               </Box>
               <Box width={keyWidth}>
                 <Text color={isSelected ? theme.colours.accent : theme.colours.text} wrap="truncate-end">
-                    {row.keys}
+                    {'keys' in row ? row.keys : ''}
                 </Text>
               </Box>
             </Box>
