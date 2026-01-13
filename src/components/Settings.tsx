@@ -244,7 +244,9 @@ export const Settings: React.FC<SettingsProps> = ({
           const key = `${row.kind}-${rowIndex}-${'label' in row ? row.label : ''}`;
           if (row.kind === 'spacer') {
             return (
-              <Box key={key} height={1} />
+              <Box key={key} height={1}>
+                  <Text> </Text>
+              </Box>
             );
           }
           if (row.kind === 'heading') {

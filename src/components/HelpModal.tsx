@@ -153,7 +153,11 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
              );
           }
           if (row.kind === 'spacer') {
-             return <Box key={uniqueKey} height={1} />;
+             return (
+                 <Box key={uniqueKey} height={1}>
+                     <Text> </Text>
+                 </Box>
+             );
           }
 
           const isSelected = 'index' in row && row.index === selectedIndex;
