@@ -6,6 +6,7 @@ interface ModalProps {
   theme: Theme;
   title: string;
   hint?: string;
+  triggerKey?: string;
   width?: number;
   height?: number;
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export const Modal: React.FC<ModalProps> = ({
   theme,
   title,
   hint,
+  triggerKey,
   width,
   height,
   children,
@@ -46,6 +48,9 @@ export const Modal: React.FC<ModalProps> = ({
         <Box justifyContent="space-between">
           <Text color={theme.colours.text} bold>{title}</Text>
           {hint ? <Text color={theme.colours.muted}>{hint}</Text> : null}
+          {triggerKey && !hint ? (
+              <Text color={theme.colours.muted}>Close: Esc or {triggerKey}</Text>
+          ) : null}
         </Box>
         <Box flexDirection="column" marginTop={1} flexGrow={1}>
           {children}
