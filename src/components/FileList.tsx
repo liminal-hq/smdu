@@ -11,6 +11,7 @@ interface FileListProps {
   files: FileNode[];
   selectedIndex: number;
   maxSize: number; // Size of the largest file in the list, for bar calculation
+  totalSize: number; // Total size of all files in the directory for percentage calculation
   theme: Theme;
   units: 'iec' | 'si';
   viewMode: ViewMode;
@@ -81,6 +82,7 @@ export const FileList: React.FC<FileListProps> = ({
   files,
   selectedIndex,
   maxSize,
+  totalSize,
   theme,
   units,
   viewMode,
@@ -237,10 +239,16 @@ export const FileList: React.FC<FileListProps> = ({
       {visibleFiles.map((file, index) => {
         const globalIndex = start + index;
         const isSelected = globalIndex === selectedIndex;
-        const percentage = maxSize > 0 ? (file.size / maxSize) * 100 : 0;
-        const barFilled = Math.round((percentage / 100) * columnLayout.barWidth);
+
+        // Percentage is relative to the directory total size
+        const percentage = totalSize > 0 ? (file.size / totalSize) * 100 : 0;
+
+        // Bar is relative to the largest item in the directory
+        const barRatio = maxSize > 0 ? file.size / maxSize : 0;
+        const barFilled = Math.round(barRatio * columnLayout.barWidth);
         const barEmpty = Math.max(0, columnLayout.barWidth - barFilled);
-        const heatmapColour = getHeatmapColour(maxSize > 0 ? file.size / maxSize : 0);
+
+        const heatmapColour = getHeatmapColour(barRatio);
         const barColour = heatmapEnabled ? heatmapColour : theme.colours.bar;
         const barFilledStr = '#'.repeat(barFilled);
         const barEmptyStr = '.'.repeat(barEmpty);

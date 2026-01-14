@@ -37,6 +37,7 @@ const mockFiles: FileNode[] = [
     path: '/root/dir1',
     size: 1000,
     isDirectory: true,
+    isHidden: false,
     mtime: new Date(),
   },
   {
@@ -44,6 +45,7 @@ const mockFiles: FileNode[] = [
     path: '/root/file1.txt',
     size: 500,
     isDirectory: false,
+    isHidden: false,
     mtime: new Date(),
   },
 ];
@@ -55,6 +57,7 @@ describe('FileList', () => {
         files={mockFiles}
         selectedIndex={0}
         maxSize={1000}
+        totalSize={1500}
         theme={mockTheme}
         units="iec"
         viewMode="tree"
@@ -69,7 +72,7 @@ describe('FileList', () => {
     const output = lastFrame();
     expect(output).toContain('dir1');
     expect(output).toContain('file1.txt');
-    expect(output).toContain('100.0%'); // dir1
-    expect(output).toContain('50.0%'); // file1
+    expect(output).toContain('66.7%'); // dir1: 1000 / 1500
+    expect(output).toContain('33.3%'); // file1: 500 / 1500
   });
 });
