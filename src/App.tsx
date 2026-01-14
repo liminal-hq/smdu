@@ -617,6 +617,7 @@ export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName
               files={files}
               selectedIndex={selectionIndex}
               maxSize={maxSize}
+              totalSize={currentNode.size}
               theme={theme}
               units={currentUnits}
               viewMode={viewMode}
