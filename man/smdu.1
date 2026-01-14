@@ -1,0 +1,101 @@
+.TH SMDU 1 "February 2025" "1.0.0" "User Commands"
+.SH NAME
+smdu \- See My Disk Usage - A clone of ncdu
+.SH SYNOPSIS
+.B smdu
+[\fIpath\fR] [\fIoptions\fR]
+.SH DESCRIPTION
+.B smdu
+is a TUI disk usage analyser inspired by \fBncdu\fR(1). It recursively scans directories to calculate file sizes and displays them in an interactive file tree. It features various view modes, sorting options, theming, and a focus timer.
+.SH OPTIONS
+.TP
+.BR \-t ", " \-\-theme " \fItheme\fR"
+Set the colour theme. Available themes: \fBdefault\fR (charcoal/green), \fBclassic\fR (original terminal colours), \fBdracula\fR.
+.TP
+.BR \-u ", " \-\-units " \fIunits\fR"
+Set the display units. Available options: \fBiec\fR (binary, e.g., KiB, MiB), \fBsi\fR (decimal, e.g., kB, MB).
+.TP
+.B \-\-no\-fullscreen
+Do not use the alternate screen buffer. By default, \fBsmdu\fR switches to the alternate screen buffer to avoid cluttering the terminal history.
+.TP
+.B \-h, \-\-help
+Display help information.
+.TP
+.B \-V, \-\-version
+Display version information.
+.SH KEY BINDINGS
+.SS Navigation
+.TP
+.B k, Up Arrow
+Move selection up.
+.TP
+.B j, Down Arrow
+Move selection down.
+.TP
+.B l, Right Arrow, Enter
+Enter directory.
+.TP
+.B h, Left Arrow, Backspace
+Go to parent directory.
+.SS Actions
+.TP
+.B d
+Delete the selected file or directory (with confirmation).
+.TP
+.B i
+Show detailed information about the selected item.
+.TP
+.B R
+Rescan the current directory.
+.TP
+.B q, Esc
+Quit \fBsmdu\fR.
+.SS View & Sorting
+.TP
+.B n
+Sort by name (toggle Ascending/Descending).
+.TP
+.B s
+Sort by size (toggle Ascending/Descending).
+.TP
+.B v
+Toggle view mode (Flat vs Tree).
+.TP
+.B .
+Toggle hidden files (dotfiles).
+.TP
+.B L
+Toggle file type legend.
+.TP
+.B H
+Toggle heatmap colours for size bars.
+.TP
+.B p
+Toggle status panel.
+.SS Timer
+.TP
+.B T
+Start/Cycle focus timer (5, 10, 15, 30 minutes).
+.TP
+.B t
+Toggle timer display visibility.
+.TP
+.B c
+Cancel the current timer.
+.SS Settings
+.TP
+.B S
+Open settings menu.
+.SH ENVIRONMENT
+.B smdu
+respects standard terminal environment variables.
+.SH SEE ALSO
+.BR ncdu (1)
+.SH AUTHOR
+smdu contributors.
+.SH COPYRIGHT
+Copyright \(co 2025 Scott Morris. License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+.br
+There is NO WARRANTY, to the extent permitted by law.
