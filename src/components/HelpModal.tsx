@@ -16,7 +16,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
   const totalRows = stdout?.rows ?? process.stdout.rows ?? 24;
   const modalWidth = Math.min(72, Math.max(40, totalColumns - 6));
   const modalHeight = Math.min(22, Math.max(12, totalRows - 4));
-  const contentRows = Math.max(5, modalHeight - 6);
+  const contentRows = Math.max(5, modalHeight - 8);
   const labelWidth = Math.max(18, Math.floor(modalWidth * 0.55));
   const keyWidth = Math.max(12, modalWidth - labelWidth - 4);
 
@@ -108,22 +108,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
 
   const visibleRows = rows.slice(visualOffsetRef.current, visualOffsetRef.current + safeContentRows);
 
-  // Sticky header logic
-  let stickyHeading: Row | null = null;
-  if (visibleRows[0]?.kind !== 'header') {
-      for (let index = visualOffsetRef.current; index >= 0; index -= 1) {
-          if (rows[index]?.kind === 'header') {
-              stickyHeading = rows[index];
-              break;
-          }
-      }
-  }
-
+  // Sticky header logic removed to strictly fix item index issues
   let displayRows = visibleRows;
-  if (stickyHeading) {
-      // Replace top row with sticky header to keep it visible
-      displayRows = [stickyHeading, ...visibleRows.slice(0, safeContentRows - 1)];
-  }
 
   // Fill with spacers if needed
   if (displayRows.length < safeContentRows) {
@@ -147,31 +133,40 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
 
           if (row.kind === 'header') {
              return (
-                 <Text key={uniqueKey} color={theme.colours.muted} underline bold>
-                     {row.title}:
-                 </Text>
+                 <Box key={uniqueKey} width="100%" height={1} flexShrink={0}>
+                     <Text color={theme.colours.muted} underline bold>
+                         {row.title}:
+                     </Text>
+                     <Text>
+                         {''.padEnd(modalWidth - 4 - (row.title.length + 1), ' ')}
+                     </Text>
+                 </Box>
              );
           }
           if (row.kind === 'spacer') {
              return (
-                 <Box key={uniqueKey} height={1}>
-                     <Text> </Text>
+                 <Box key={uniqueKey} height={1} flexShrink={0}>
+                     <Text>{''.padEnd(modalWidth - 4, ' ')}</Text>
                  </Box>
              );
           }
 
           const isSelected = 'index' in row && row.index === selectedIndex;
           return (
-            <Box key={uniqueKey} width="100%">
-              <Box width={labelWidth}>
+            <Box key={uniqueKey} width="100%" height={1} flexShrink={0}>
+              <Box width={2}>
+                <Text color={isSelected ? theme.colours.accent : theme.colours.muted}>
+                  {isSelected ? '> ' : '  '}
+                </Text>
+              </Box>
+              <Box width={labelWidth - 2}>
                 <Text color={isSelected ? theme.colours.accent : theme.colours.muted} wrap="truncate-end">
-                    {isSelected ? '> ' : '  '}
-                    {'label' in row ? row.label : ''}
+                    {('label' in row ? row.label : '').padEnd(labelWidth - 2, ' ')}
                 </Text>
               </Box>
               <Box width={keyWidth}>
                 <Text color={isSelected ? theme.colours.accent : theme.colours.text} wrap="truncate-end">
-                    {'keys' in row ? row.keys : ''}
+                    {('keys' in row ? row.keys : '').padEnd(keyWidth, ' ')}
                 </Text>
               </Box>
             </Box>
