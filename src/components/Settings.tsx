@@ -37,9 +37,11 @@ export const Settings: React.FC<SettingsProps> = ({
   theme,
 }) => {
   const { stdout } = useStdout();
+  const totalColumns = stdout?.columns ?? process.stdout.columns ?? 80;
   const totalRows = stdout?.rows ?? process.stdout.rows ?? 24;
+  const modalWidth = Math.min(72, Math.max(40, totalColumns - 6));
   const modalHeight = Math.min(20, Math.max(12, totalRows - 4));
-  const contentRows = Math.max(5, modalHeight - 6);
+  const contentRows = Math.max(5, modalHeight - 8);
 
   const items = useMemo<SettingItem[]>(() => [
     ...themeNames.map((themeName) => ({ type: 'theme' as const, value: themeName })),
@@ -216,20 +218,8 @@ export const Settings: React.FC<SettingsProps> = ({
 
   const visibleRows = rows.slice(visualOffsetRef.current, visualOffsetRef.current + safeContentRows);
 
-  let stickyHeading: Row | null = null;
-  if (visibleRows[0]?.kind !== 'heading') {
-    for (let index = visualOffsetRef.current; index >= 0; index -= 1) {
-      if (rows[index]?.kind === 'heading') {
-        stickyHeading = rows[index];
-        break;
-      }
-    }
-  }
-
+  // Sticky header logic removed
   let displayRows = visibleRows;
-  if (stickyHeading) {
-    displayRows = [stickyHeading, ...visibleRows.slice(0, safeContentRows - 1)];
-  }
 
   // Fill with spacers if needed
   if (displayRows.length < safeContentRows) {
@@ -238,32 +228,45 @@ export const Settings: React.FC<SettingsProps> = ({
   }
 
   return (
-    <Modal theme={theme} title="Settings" hint="" triggerKey="S" height={modalHeight}>
+    <Modal theme={theme} title="Settings" hint="" triggerKey="S" height={modalHeight} width={modalWidth}>
       <Box flexDirection="column" height={safeContentRows}>
         {displayRows.map((row, rowIndex) => {
           const key = `${row.kind}-${rowIndex}-${'label' in row ? row.label : ''}`;
           if (row.kind === 'spacer') {
             return (
-              <Box key={key} height={1}>
-                  <Text> </Text>
+              <Box key={key} height={1} flexShrink={0}>
+                  <Text>{''.padEnd(modalWidth - 6, ' ')}</Text>
               </Box>
             );
           }
           if (row.kind === 'heading') {
             return (
-              <Text key={key} color={theme.colours.muted} underline>
-                {row.label}
-              </Text>
+              <Box key={key} width="100%" height={1} flexShrink={0}>
+                  <Text color={theme.colours.muted} underline bold>
+                    {row.label}
+                  </Text>
+                  <Text>
+                    {''.padEnd(modalWidth - 6 - row.label.length, ' ')}
+                  </Text>
+              </Box>
             );
           }
 
           const isSelected = row.index === selectedIndex;
+          const labelText = row.label + (row.isActive ? ' (current)' : '');
+
           return (
-            <Box key={key}>
-              <Text color={isSelected ? theme.colours.accent : theme.colours.text}>
-                {isSelected ? '> ' : '  '}
-                {row.label} {row.isActive ? '(current)' : ''}
-              </Text>
+            <Box key={key} width="100%" height={1} flexShrink={0}>
+              <Box width={2}>
+                 <Text color={isSelected ? theme.colours.accent : theme.colours.muted}>
+                    {isSelected ? '> ' : '  '}
+                 </Text>
+              </Box>
+              <Box>
+                  <Text color={isSelected ? theme.colours.accent : theme.colours.text}>
+                    {labelText.padEnd(modalWidth - 6 - 2, ' ')}
+                  </Text>
+              </Box>
             </Box>
           );
         })}
