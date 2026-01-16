@@ -72,7 +72,7 @@ Settings available:
 - `units`: The display units (`iec` or `si`).
 - `fileTypeColoursEnabled`: Enable file type colours in the list.
 - `heatmapEnabled`: Enable heatmap colours for size bars (default on).
-- `showHiddenFiles`: Show hidden files by default (dotfiles only on Windows, default on).
+- `showHiddenFiles`: Show hidden files by default (dotfiles only; Windows hidden attributes are not detected, default on).
 
 ## Keybindings
 
@@ -92,6 +92,7 @@ Settings available:
 -   **T**: Start a focus timer (cycles 5/10/15/30 minutes).
 -   **t**: Toggle focus timer display (shows the timer pane even when idle).
 -   **c**: Cancel the focus timer.
+-   **R**: Rescan the current directory.
 -   **?**: Toggle help.
 -   **q / Esc**: Quit (during scan, cancels).
 
