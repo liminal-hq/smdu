@@ -8,7 +8,7 @@
 		"smdu": "dist/cli.js"
 	},
 	"scripts": {
-		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+		"test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"build": "tsc",
 		"watch": "tsc -w",
 		"start": "node dist/cli.js"
