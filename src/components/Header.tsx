@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';
 import { ViewMode } from '../state.js';
+import { VERSION } from '../version.js';
 
 interface HeaderProps {
   path: string;
@@ -14,7 +15,8 @@ export const Header: React.FC<HeaderProps> = ({ path, theme, width, viewMode }) 
   const { stdout } = useStdout();
   const totalColumns = width ?? stdout?.columns ?? process.stdout.columns ?? 80;
   const divider = '-'.repeat(Math.max(0, totalColumns));
-  const title = 'smdu';
+  const versionSuffix = VERSION === 'unknown' ? '' : ` v${VERSION}`;
+  const title = `smdu${versionSuffix}`;
 
   const viewModeLabel = viewMode === 'tree' ? '[Tree]' : (viewMode === 'flat' ? '[Flat]' : '');
 

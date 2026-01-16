@@ -16,7 +16,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 -   **File Type Colours:** Colour-codes files by category with an optional legend.
 -   **Heatmap Size Bars:** Green-to-red gradient for size bars (toggle with `H`).
 -   **Hidden Files Toggle:** Show or hide dotfiles with `.`.
--   **Header:** Shows the current path with a subtle divider and a right-aligned `smdu` label.
+-   **Header:** Shows the current path with a subtle divider and a right-aligned `smdu v<version>` label.
 -   **Planned:** List view (name-only entries).
 -   **View Modes:** Flat (ncdu-style, default) and Tree.
 -   **Help Modal:** Press `?` to view keybindings.
@@ -72,7 +72,7 @@ Settings available:
 - `units`: The display units (`iec` or `si`).
 - `fileTypeColoursEnabled`: Enable file type colours in the list.
 - `heatmapEnabled`: Enable heatmap colours for size bars (default on).
-- `showHiddenFiles`: Show hidden files by default (dotfiles only on Windows, default on).
+- `showHiddenFiles`: Show hidden files by default (dotfiles only; Windows hidden attributes are not detected, default on).
 
 ## Keybindings
 
@@ -92,6 +92,7 @@ Settings available:
 -   **T**: Start a focus timer (cycles 5/10/15/30 minutes).
 -   **t**: Toggle focus timer display (shows the timer pane even when idle).
 -   **c**: Cancel the focus timer.
+-   **R**: Rescan the current directory.
 -   **?**: Toggle help.
 -   **q / Esc**: Quit (during scan, cancels).
 
@@ -125,4 +126,4 @@ To start the project in development mode:
 
 ## License
 
-GPL-3.0
+MIT

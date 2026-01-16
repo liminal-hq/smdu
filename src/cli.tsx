@@ -3,13 +3,14 @@ import React from 'react';
 import { render } from 'ink';
 import { Command } from 'commander';
 import { App } from './App.js';
+import { VERSION } from './version.js';
 
 const program = new Command();
 
 program
   .name('smdu')
   .description('See My Disk Usage - A clone of ncdu')
-  .version('1.0.0')
+  .version(VERSION)
   .argument('[path]', 'Path to scan', process.cwd())
   .option('-t, --theme <theme>', 'Theme (default, dracula)')
   .option('-u, --units <units>', 'Display units (iec, si)')
