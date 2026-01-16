@@ -125,4 +125,4 @@ To start the project in development mode:
 
 ## License
 
-GPL-3.0
+MIT

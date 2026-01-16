@@ -15,7 +15,7 @@
 	},
 	"keywords": [],
 	"author": "",
-	"license": "GPL-3.0",
+	"license": "MIT",
 	"dependencies": {
 		"chalk": "^5.2.0",
 		"commander": "^14.0.2",
