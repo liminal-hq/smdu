@@ -61,7 +61,7 @@ smdu /var/log
 -   `--units <units>`: Display units (iec, si). This overrides the configuration file.
 -   `--no-fullscreen`: Disable the alternate screen buffer.
 -   `--help`: Show help.
--   `--version`: Show version.
+-   `-v, --version`: Show version.
 
 ## Configuration
 

@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name('smdu')
   .description('See My Disk Usage - A clone of ncdu')
-  .version(VERSION)
+  .version(VERSION, '-v, --version')
   .argument('[path]', 'Path to scan', process.cwd())
   .option('-t, --theme <theme>', 'Theme (default, dracula)')
   .option('-u, --units <units>', 'Display units (iec, si)')
