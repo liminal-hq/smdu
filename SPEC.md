@@ -72,7 +72,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 
 3.  **UI Components (`src/components/`)**
     -   `App`: Main container.
-    -   `Header`: Displays current path.
+    -   `Header`: Displays current path and version label.
     -   `FileList`: Renders the list of files/folders.
         -   Calculates bars relative to the largest item in the directory.
     -   `Footer`: Shows key hints and total size.
@@ -89,7 +89,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     -   Context provider to supply the theme to components.
 
 ## UI/UX
--   **Header:** `/home/user/projects/smdu` with a subtle divider and right-aligned `smdu` label.
+-   **Header:** `/home/user/projects/smdu` with a subtle divider and right-aligned `smdu v<version>` label.
 -   **Status Panel:** Right-side panel shows sort/view/hidden/heatmap/legend state and key hints.
 -   **Footer:** Shows totals with a partial scan indicator while scanning.
 -   **Scan Status:** Displays live progress above the footer while scanning.
