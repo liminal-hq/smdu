@@ -21,6 +21,10 @@ export interface Theme {
 			archives: string;
 			system: string;
 		};
+		scanStatus: {
+			scanning: string;
+			done: string;
+		};
 	};
 }
 
@@ -48,6 +52,10 @@ export const themes: Record<string, Theme> = {
 				archives: '#c4a7e7',
 				system: '#94a3b8',
 			},
+			scanStatus: {
+				scanning: '#ffd166',
+				done: '#2ec66a',
+			},
 		},
 	},
 	classic: {
@@ -73,6 +81,10 @@ export const themes: Record<string, Theme> = {
 				archives: 'blue',
 				system: 'gray',
 			},
+			scanStatus: {
+				scanning: 'yellow',
+				done: 'green',
+			},
 		},
 	},
 	dracula: {
@@ -97,6 +109,10 @@ export const themes: Record<string, Theme> = {
 				code: '#50fa7b', // Green
 				archives: '#8be9fd', // Cyan
 				system: '#6272a4', // Comment
+			},
+			scanStatus: {
+				scanning: '#f1fa8c', // Yellow
+				done: '#50fa7b', // Green
 			},
 		},
 	},

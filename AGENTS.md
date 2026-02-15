@@ -5,6 +5,23 @@
 - **Spelling:** Must use Canadian Spelling for things that don't require American spelling (e.g., UI strings, variables, comments). Examples: "colour", "center" -> "centre", "behavior" -> "behaviour".
 - **Commit Messages:** Use Conventional Commits (e.g., `feat: add scanner`, `fix: typo in header`).
 
+## Commit Messages
+
+**Format:** Use Conventional Commits format (e.g., `feat: ...`, `fix: ...`, `docs: ...`, `test: ...`).
+
+- Use `test:` for test-related changes, including fixes to tests themselves (do not use `fix:` unless it fixes application code).
+
+**Body Requirements:**
+
+- Explain what and why (not how)
+- Use markdown: **bold**, _italics_, `code`, bullet lists
+- **NO markdown headings** - use **bold labels** for sections (not always required)
+- When a commit body includes backticked code in shell commands, avoid command substitution by using single-quoted `-m` strings (preferred) or escaping backticks.
+  - Example (preferred): `git commit -m 'fix: ...' -m 'Use `scanStatus` in footer'`
+  - Example (escape): `git commit -m "Use \`scanStatus\` in footer"`
+
+**Specific Updates**: Each commit message should reflect the specific changes made in that commit. Do not just recap the entire project history or scope. Focus on the now.
+
 ## Testing
 
 - **Mandatory Testing:** Make sure the unit tests are run after changes to the code.

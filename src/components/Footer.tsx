@@ -30,25 +30,13 @@ export const Footer: React.FC<FooterProps> = ({
 		totalSize,
 		units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' },
 	);
-	// Add dark green "Done" if not scanning?
-	// User asked: "Add 'Scan: Done' when the scan is done. Can you use a dark green for the word 'Done'?"
-	// If isScanning is false, we assume done? Or only after initial scan?
-	// App starts with scanning=true.
-	// We can just show "Scan: Done" always when not scanning? Or check if totalSize > 0?
-	// Let's assume !isScanning implies Done.
-
-	// Note: theme.colours doesn't explicitly have "dark green". I'll use a hex code or nearest standard color.
-	// Ink Text accepts color names. "green" is usually bright green. "#005f00" or similar?
-	// Or just "green" and assume user meant green. "dark green" might be invisible on dark bg.
-	// I will use "green" for now.
-
 	const scanStatus = isScanning ? (
 		<Text>
-			Scan: <Text color={theme.colours.fileTypes.documents}>Partial</Text>
+			Scan: <Text color={theme.colours.scanStatus.scanning}>Partial</Text>
 		</Text>
 	) : (
 		<Text>
-			Scan: <Text color={theme.colours.fileTypes.code}>Done</Text>
+			Scan: <Text color={theme.colours.scanStatus.done}>Done</Text>
 		</Text>
 	);
 
