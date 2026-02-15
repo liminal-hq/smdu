@@ -64,19 +64,23 @@ const getGroupLabel = (gid: number): string => {
 const calculateDirectoryStats = (node: FileNode): { directCount: number; totalCount: number; depth: number } => {
   const directCount = node.children?.length ?? 0;
   let totalCount = 0;
-  let depth = 0;
+  let maxDepth = 0;
 
-  const walk = (current: FileNode, currentDepth: number) => {
-    depth = Math.max(depth, currentDepth);
-    if (!current.children) return;
-    for (const child of current.children) {
-      totalCount += 1;
-      walk(child, currentDepth + 1);
+  const stack: { current: FileNode; currentDepth: number }[] = [{ current: node, currentDepth: 0 }];
+
+  while (stack.length > 0) {
+    const { current, currentDepth } = stack.pop()!;
+    maxDepth = Math.max(maxDepth, currentDepth);
+
+    if (current.children) {
+      for (const child of current.children) {
+        totalCount += 1;
+        stack.push({ current: child, currentDepth: currentDepth + 1 });
+      }
     }
-  };
+  }
 
-  walk(node, 0);
-  return { directCount, totalCount, depth };
+  return { directCount, totalCount, depth: maxDepth };
 };
 
 export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
