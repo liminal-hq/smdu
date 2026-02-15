@@ -230,7 +230,8 @@ export const App: React.FC<AppProps> = ({
 					exit();
 					return;
 				}
-				setError(err.message);
+				const message = err instanceof Error ? err.message : String(err);
+				setError(message);
 				setLoading(false);
 				setIsScanning(false);
 			}
