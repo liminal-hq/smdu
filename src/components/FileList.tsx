@@ -236,6 +236,13 @@ export const FileList: React.FC<FileListProps> = ({
         ) : null}
       </Box>
       <Text color={theme.colours.line}>{divider}</Text>
+      {files.length === 0 ? (
+        <Box paddingX={1} paddingTop={1} justifyContent="center">
+          <Text color={theme.colours.muted} italic>
+            This directory is empty.
+          </Text>
+        </Box>
+      ) : null}
       {visibleFiles.map((file, index) => {
         const globalIndex = start + index;
         const isSelected = globalIndex === selectedIndex;

@@ -42,7 +42,7 @@ export const Footer: React.FC<FooterProps> = ({
   const scanStatus = isScanning ? (
       <Text>Scan: <Text color={theme.colours.fileTypes.documents}>Partial</Text></Text>
   ) : (
-      <Text>Scan: <Text color="green">Done</Text></Text>
+      <Text>Scan: <Text color={theme.colours.fileTypes.code}>Done</Text></Text>
   );
 
   const leftText = (

@@ -75,4 +75,26 @@ describe('FileList', () => {
     expect(output).toContain('66.7%'); // dir1: 1000 / 1500
     expect(output).toContain('33.3%'); // file1: 500 / 1500
   });
+
+  it('renders empty state message when no files', () => {
+    const { lastFrame } = render(
+      <FileList
+        files={[]}
+        selectedIndex={0}
+        maxSize={0}
+        totalSize={0}
+        theme={mockTheme}
+        units="iec"
+        viewMode="tree"
+        rootPath="/root"
+        scanRootPath="/root"
+        fileTypeColoursEnabled={true}
+        showLegend={false}
+        heatmapEnabled={false}
+      />
+    );
+
+    const output = lastFrame();
+    expect(output).toContain('This directory is empty.');
+  });
 });
