@@ -14,7 +14,7 @@
 ## Documentation
 
 - **Updates:** When user-facing behaviour, CLI options, or features change, update `README.md` and `SPEC.md`.
- - **Man Page:** Ensure `man/smdu.1` is kept in sync with CLI options and features.
+- **Man Page:** Ensure `man/smdu.1` is kept in sync with CLI options and features.
 
 ## Project Structure
 

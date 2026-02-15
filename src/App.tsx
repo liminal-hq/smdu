@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { Header } from './components/Header.js';
@@ -14,16 +13,16 @@ import { TimerStatus } from './components/TimerStatus.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import {
-  getThemeFromConfig,
-  setThemeInConfig,
-  getUnitsFromConfig,
-  setUnitsInConfig,
-  getFileTypeColoursEnabledFromConfig,
-  setFileTypeColoursEnabledInConfig,
-  getShowHiddenFilesFromConfig,
-  setShowHiddenFilesInConfig,
-  getHeatmapEnabledFromConfig,
-  setHeatmapEnabledInConfig,
+	getThemeFromConfig,
+	setThemeInConfig,
+	getUnitsFromConfig,
+	setUnitsInConfig,
+	getFileTypeColoursEnabledFromConfig,
+	setFileTypeColoursEnabledInConfig,
+	getShowHiddenFilesFromConfig,
+	setShowHiddenFilesInConfig,
+	getHeatmapEnabledFromConfig,
+	setHeatmapEnabledInConfig,
 } from './config.js';
 import { scanDirectory, FileNode, ScanProgress, ScanCancelledError } from './scanner.js';
 import { ACTIONS, checkInput } from './keys.js';
@@ -31,639 +30,643 @@ import path from 'path';
 import { filesize } from 'filesize';
 
 interface AppProps {
-  startPath: string;
-  themeName?: string; // Flag overrides config
-  units?: string; // Flag overrides config
+	startPath: string;
+	themeName?: string; // Flag overrides config
+	units?: string; // Flag overrides config
 }
 
 enum ViewState {
-  FileList = 'filelist',
-  Settings = 'settings',
+	FileList = 'filelist',
+	Settings = 'settings',
 }
 
 const TIMER_MINUTES = [5, 10, 15, 30];
 
-export const App: React.FC<AppProps> = ({ startPath, themeName: initialThemeName, units: initialUnits }) => {
-  const { exit } = useApp();
-  const { stdout } = useStdout();
-  const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
-  const [totalColumns, setTotalColumns] = useState(() => stdout?.columns ?? process.stdout.columns ?? 80);
+export const App: React.FC<AppProps> = ({
+	startPath,
+	themeName: initialThemeName,
+	units: initialUnits,
+}) => {
+	const { exit } = useApp();
+	const { stdout } = useStdout();
+	const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
+	const [totalColumns, setTotalColumns] = useState(
+		() => stdout?.columns ?? process.stdout.columns ?? 80,
+	);
 
-  // Determine initial theme: CLI arg > Config > Default
-  const configTheme = getThemeFromConfig();
-  const [currentThemeName, setCurrentThemeName] = useState(initialThemeName !== 'default' ? initialThemeName : configTheme);
-  const theme = getTheme(currentThemeName || 'default');
+	// Determine initial theme: CLI arg > Config > Default
+	const configTheme = getThemeFromConfig();
+	const [currentThemeName, setCurrentThemeName] = useState(
+		initialThemeName !== 'default' ? initialThemeName : configTheme,
+	);
+	const theme = getTheme(currentThemeName || 'default');
 
-  // Determine initial units
-  const configUnits = getUnitsFromConfig();
-  const [currentUnits, setCurrentUnits] = useState<'iec' | 'si'>(
-    (initialUnits === 'iec' || initialUnits === 'si') ? initialUnits : configUnits
-  );
-  const configFileTypeColoursEnabled = getFileTypeColoursEnabledFromConfig();
-  const [fileTypeColoursEnabled, setFileTypeColoursEnabled] = useState(configFileTypeColoursEnabled);
-  const configShowHiddenFiles = getShowHiddenFilesFromConfig();
-  const [showHiddenFiles, setShowHiddenFiles] = useState(configShowHiddenFiles);
-  const configHeatmapEnabled = getHeatmapEnabledFromConfig();
-  const [heatmapEnabled, setHeatmapEnabled] = useState(configHeatmapEnabled);
+	// Determine initial units
+	const configUnits = getUnitsFromConfig();
+	const [currentUnits, setCurrentUnits] = useState<'iec' | 'si'>(
+		initialUnits === 'iec' || initialUnits === 'si' ? initialUnits : configUnits,
+	);
+	const configFileTypeColoursEnabled = getFileTypeColoursEnabledFromConfig();
+	const [fileTypeColoursEnabled, setFileTypeColoursEnabled] = useState(
+		configFileTypeColoursEnabled,
+	);
+	const configShowHiddenFiles = getShowHiddenFilesFromConfig();
+	const [showHiddenFiles, setShowHiddenFiles] = useState(configShowHiddenFiles);
+	const configHeatmapEnabled = getHeatmapEnabledFromConfig();
+	const [heatmapEnabled, setHeatmapEnabled] = useState(configHeatmapEnabled);
 
-  const [view, setView] = useState<ViewState>(ViewState.FileList);
-  const [loading, setLoading] = useState(true);
-  const [isScanning, setIsScanning] = useState(true);
-  const [rootNode, setRootNode] = useState<FileNode | null>(null);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
-  const [showLegend, setShowLegend] = useState(false);
-  const [showStatusPanel, setShowStatusPanel] = useState(false);
-  const [showTimerStatus, setShowTimerStatus] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [spinnerIndex, setSpinnerIndex] = useState(0);
-  const spinnerFrames = ['|', '/', '-', '\\'];
-  const [scanStatus, setScanStatus] = useState<ScanProgress>({
-    currentPath: startPath,
-    directories: 0,
-    files: 0,
-    bytes: 0,
-    errors: 0,
-  });
-  const lastProgressUpdateRef = useRef(0);
-  const scanAbortRef = useRef<AbortController | null>(null);
-  const rootNodeRef = useRef<FileNode | null>(null);
-  const pendingRootRef = useRef<FileNode | null>(null);
-  const partialUpdateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const timerAlertedRef = useRef(false);
+	const [view, setView] = useState<ViewState>(ViewState.FileList);
+	const [loading, setLoading] = useState(true);
+	const [isScanning, setIsScanning] = useState(true);
+	const [rootNode, setRootNode] = useState<FileNode | null>(null);
+	const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+	const [showHelp, setShowHelp] = useState(false);
+	const [showInfo, setShowInfo] = useState(false);
+	const [showLegend, setShowLegend] = useState(false);
+	const [showStatusPanel, setShowStatusPanel] = useState(false);
+	const [showTimerStatus, setShowTimerStatus] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [spinnerIndex, setSpinnerIndex] = useState(0);
+	const spinnerFrames = ['|', '/', '-', '\\'];
+	const [scanStatus, setScanStatus] = useState<ScanProgress>({
+		currentPath: startPath,
+		directories: 0,
+		files: 0,
+		bytes: 0,
+		errors: 0,
+	});
+	const lastProgressUpdateRef = useRef(0);
+	const scanAbortRef = useRef<AbortController | null>(null);
+	const rootNodeRef = useRef<FileNode | null>(null);
+	const pendingRootRef = useRef<FileNode | null>(null);
+	const partialUpdateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const timerAlertedRef = useRef(false);
 
-  const [timerIndex, setTimerIndex] = useState(-1);
-  const [timerState, setTimerState] = useState({
-    status: 'idle' as 'idle' | 'running' | 'completed',
-    durationSeconds: 0,
-    remainingSeconds: 0,
-    endsAt: 0,
-  });
-  const [timerStats, setTimerStats] = useState({
-    deletedItems: 0,
-    freedBytes: 0,
-  });
+	const [timerIndex, setTimerIndex] = useState(-1);
+	const [timerState, setTimerState] = useState({
+		status: 'idle' as 'idle' | 'running' | 'completed',
+		durationSeconds: 0,
+		remainingSeconds: 0,
+		endsAt: 0,
+	});
+	const [timerStats, setTimerStats] = useState({
+		deletedItems: 0,
+		freedBytes: 0,
+	});
 
-  const {
-    currentNode,
-    files,
-    selectionIndex,
-    sortBy,
-    sortOrder,
-    viewMode,
-    moveSelection,
-    enterDirectory,
-    goUp,
-    toggleSort,
-    toggleViewMode,
-    deleteSelected,
-  } = useFileSystem(rootNode, showHiddenFiles);
+	const {
+		currentNode,
+		files,
+		selectionIndex,
+		sortBy,
+		sortOrder,
+		viewMode,
+		moveSelection,
+		enterDirectory,
+		goUp,
+		toggleSort,
+		toggleViewMode,
+		deleteSelected,
+	} = useFileSystem(rootNode, showHiddenFiles);
 
-  const formatSize = useCallback((bytes: number) => {
-    return currentUnits === 'si'
-      ? filesize(bytes, { base: 10, standard: 'si', output: 'string' })
-      : filesize(bytes, { base: 2, standard: 'iec', output: 'string' });
-  }, [currentUnits]);
+	const formatSize = useCallback(
+		(bytes: number) => {
+			return currentUnits === 'si'
+				? filesize(bytes, { base: 10, standard: 'si', output: 'string' })
+				: filesize(bytes, { base: 2, standard: 'iec', output: 'string' });
+		},
+		[currentUnits],
+	);
 
-  const updateRootNode = useCallback((root: FileNode) => {
-    rootNodeRef.current = root;
-    setRootNode({ ...root });
-  }, []);
+	const updateRootNode = useCallback((root: FileNode) => {
+		rootNodeRef.current = root;
+		setRootNode({ ...root });
+	}, []);
 
-  const startTimer = useCallback((durationMinutes: number) => {
-    const durationSeconds = durationMinutes * 60;
-    setTimerState({
-      status: 'running',
-      durationSeconds,
-      remainingSeconds: durationSeconds,
-      endsAt: Date.now() + durationSeconds * 1000,
-    });
-    setTimerStats({
-      deletedItems: 0,
-      freedBytes: 0,
-    });
-    timerAlertedRef.current = false;
-    setShowTimerStatus(true);
-  }, []);
+	const startTimer = useCallback((durationMinutes: number) => {
+		const durationSeconds = durationMinutes * 60;
+		setTimerState({
+			status: 'running',
+			durationSeconds,
+			remainingSeconds: durationSeconds,
+			endsAt: Date.now() + durationSeconds * 1000,
+		});
+		setTimerStats({
+			deletedItems: 0,
+			freedBytes: 0,
+		});
+		timerAlertedRef.current = false;
+		setShowTimerStatus(true);
+	}, []);
 
-  const handleScanProgress = useCallback((progress: ScanProgress) => {
-    const now = Date.now();
-    if (now - lastProgressUpdateRef.current < 80) return;
-    lastProgressUpdateRef.current = now;
-    setScanStatus({ ...progress });
-  }, []);
+	const handleScanProgress = useCallback((progress: ScanProgress) => {
+		const now = Date.now();
+		if (now - lastProgressUpdateRef.current < 80) return;
+		lastProgressUpdateRef.current = now;
+		setScanStatus({ ...progress });
+	}, []);
 
-  const handlePartialUpdate = useCallback((root: FileNode) => {
-    if (!rootNodeRef.current) {
-      setLoading(false);
-      updateRootNode(root);
-      return;
-    }
+	const handlePartialUpdate = useCallback(
+		(root: FileNode) => {
+			if (!rootNodeRef.current) {
+				setLoading(false);
+				updateRootNode(root);
+				return;
+			}
 
-    pendingRootRef.current = root;
-    if (partialUpdateTimerRef.current) return;
+			pendingRootRef.current = root;
+			if (partialUpdateTimerRef.current) return;
 
-    partialUpdateTimerRef.current = setTimeout(() => {
-      if (pendingRootRef.current) {
-        updateRootNode(pendingRootRef.current);
-      }
-      partialUpdateTimerRef.current = null;
-    }, 100);
-  }, [updateRootNode]);
+			partialUpdateTimerRef.current = setTimeout(() => {
+				if (pendingRootRef.current) {
+					updateRootNode(pendingRootRef.current);
+				}
+				partialUpdateTimerRef.current = null;
+			}, 100);
+		},
+		[updateRootNode],
+	);
 
-  const scanRef = useCallback(() => {
-    const runScan = async () => {
-      try {
-        const absolutePath = path.resolve(startPath);
-        const controller = new AbortController();
-        scanAbortRef.current = controller;
-        setIsScanning(true);
-        setLoading(true);
-        rootNodeRef.current = null;
-        setRootNode(null); // Release memory of old tree immediately
-        // Allow a small delay for state update and potential GC
-        await new Promise(resolve => setTimeout(resolve, 50));
-        const progressState: ScanProgress = {
-          currentPath: absolutePath,
-          directories: 0,
-          files: 0,
-          bytes: 0,
-          errors: 0,
-        };
-        setScanStatus(progressState);
-        const root = await scanDirectory(
-          absolutePath,
-          undefined,
-          handleScanProgress,
-          progressState,
-          controller.signal,
-          handlePartialUpdate
-        );
-        if (partialUpdateTimerRef.current) {
-          clearTimeout(partialUpdateTimerRef.current);
-          partialUpdateTimerRef.current = null;
-        }
-        pendingRootRef.current = null;
-        updateRootNode(root);
-        setLoading(false);
-        setIsScanning(false);
-      } catch (err: any) {
-        if (err instanceof ScanCancelledError) {
-          setLoading(false);
-          setIsScanning(false);
-          exit();
-          return;
-        }
-        setError(err.message);
-        setLoading(false);
-        setIsScanning(false);
-      }
-    };
-    runScan();
-  }, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
+	const scanRef = useCallback(() => {
+		const runScan = async () => {
+			try {
+				const absolutePath = path.resolve(startPath);
+				const controller = new AbortController();
+				scanAbortRef.current = controller;
+				setIsScanning(true);
+				setLoading(true);
+				rootNodeRef.current = null;
+				setRootNode(null); // Release memory of old tree immediately
+				// Allow a small delay for state update and potential GC
+				await new Promise((resolve) => setTimeout(resolve, 50));
+				const progressState: ScanProgress = {
+					currentPath: absolutePath,
+					directories: 0,
+					files: 0,
+					bytes: 0,
+					errors: 0,
+				};
+				setScanStatus(progressState);
+				const root = await scanDirectory(
+					absolutePath,
+					undefined,
+					handleScanProgress,
+					progressState,
+					controller.signal,
+					handlePartialUpdate,
+				);
+				if (partialUpdateTimerRef.current) {
+					clearTimeout(partialUpdateTimerRef.current);
+					partialUpdateTimerRef.current = null;
+				}
+				pendingRootRef.current = null;
+				updateRootNode(root);
+				setLoading(false);
+				setIsScanning(false);
+			} catch (err: any) {
+				if (err instanceof ScanCancelledError) {
+					setLoading(false);
+					setIsScanning(false);
+					exit();
+					return;
+				}
+				setError(err.message);
+				setLoading(false);
+				setIsScanning(false);
+			}
+		};
+		runScan();
+	}, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
 
-  useEffect(() => {
-    scanRef();
-    return () => {
-      scanAbortRef.current?.abort();
-      if (partialUpdateTimerRef.current) {
-        clearTimeout(partialUpdateTimerRef.current);
-        partialUpdateTimerRef.current = null;
-      }
-    };
-  }, [scanRef]);
+	useEffect(() => {
+		scanRef();
+		return () => {
+			scanAbortRef.current?.abort();
+			if (partialUpdateTimerRef.current) {
+				clearTimeout(partialUpdateTimerRef.current);
+				partialUpdateTimerRef.current = null;
+			}
+		};
+	}, [scanRef]);
 
-  useEffect(() => {
-    if (!isScanning) return;
-    const timer = setInterval(() => {
-      setSpinnerIndex((prev) => (prev + 1) % spinnerFrames.length);
-    }, 120);
+	useEffect(() => {
+		if (!isScanning) return;
+		const timer = setInterval(() => {
+			setSpinnerIndex((prev) => (prev + 1) % spinnerFrames.length);
+		}, 120);
 
-    return () => clearInterval(timer);
-  }, [isScanning]);
+		return () => clearInterval(timer);
+	}, [isScanning]);
 
-  useEffect(() => {
-    if (timerState.status !== 'running') return;
-    const tick = () => {
-      const remainingSeconds = Math.max(0, Math.ceil((timerState.endsAt - Date.now()) / 1000));
-      setTimerState((prev) => {
-        if (prev.status !== 'running') return prev;
-        if (remainingSeconds <= 0) {
-          return {
-            ...prev,
-            status: 'completed',
-            remainingSeconds: 0,
-          };
-        }
-        return {
-          ...prev,
-          remainingSeconds,
-        };
-      });
-    };
-    tick();
-    const timer = setInterval(tick, 1000);
-    return () => clearInterval(timer);
-  }, [timerState.endsAt, timerState.status]);
+	useEffect(() => {
+		if (timerState.status !== 'running') return;
+		const tick = () => {
+			const remainingSeconds = Math.max(0, Math.ceil((timerState.endsAt - Date.now()) / 1000));
+			setTimerState((prev) => {
+				if (prev.status !== 'running') return prev;
+				if (remainingSeconds <= 0) {
+					return {
+						...prev,
+						status: 'completed',
+						remainingSeconds: 0,
+					};
+				}
+				return {
+					...prev,
+					remainingSeconds,
+				};
+			});
+		};
+		tick();
+		const timer = setInterval(tick, 1000);
+		return () => clearInterval(timer);
+	}, [timerState.endsAt, timerState.status]);
 
-  useEffect(() => {
-    if (timerState.status !== 'completed' || timerAlertedRef.current) return;
-    if (process.stdout.isTTY) {
-      process.stdout.write('\u0007');
-    }
-    timerAlertedRef.current = true;
-  }, [timerState.status]);
+	useEffect(() => {
+		if (timerState.status !== 'completed' || timerAlertedRef.current) return;
+		if (process.stdout.isTTY) {
+			process.stdout.write('\u0007');
+		}
+		timerAlertedRef.current = true;
+	}, [timerState.status]);
 
+	useEffect(() => {
+		const updateRows = () => {
+			setTotalRows(stdout?.rows ?? process.stdout.rows ?? 24);
+			setTotalColumns(stdout?.columns ?? process.stdout.columns ?? 80);
+		};
 
-  useEffect(() => {
-    const updateRows = () => {
-      setTotalRows(stdout?.rows ?? process.stdout.rows ?? 24);
-      setTotalColumns(stdout?.columns ?? process.stdout.columns ?? 80);
-    };
+		updateRows();
+		const immediateTimer = setTimeout(updateRows, 0);
+		const settleTimer = setTimeout(updateRows, 100);
+		stdout?.on('resize', updateRows);
 
-    updateRows();
-    const immediateTimer = setTimeout(updateRows, 0);
-    const settleTimer = setTimeout(updateRows, 100);
-    stdout?.on('resize', updateRows);
+		return () => {
+			stdout?.off('resize', updateRows);
+			clearTimeout(immediateTimer);
+			clearTimeout(settleTimer);
+		};
+	}, [stdout]);
 
-    return () => {
-      stdout?.off('resize', updateRows);
-      clearTimeout(immediateTimer);
-      clearTimeout(settleTimer);
-    };
-  }, [stdout]);
+	useInput((input, key) => {
+		if (showHelp) {
+			if (checkInput(input, key, ACTIONS.HELP) || key.escape) {
+				setShowHelp(false);
+			}
+			return;
+		}
 
-  useInput((input, key) => {
-    if (showHelp) {
-      if (checkInput(input, key, ACTIONS.HELP) || key.escape) {
-        setShowHelp(false);
-      }
-      return;
-    }
+		if (showInfo) {
+			if (checkInput(input, key, ACTIONS.INFO) || key.escape) {
+				setShowInfo(false);
+			}
+			return;
+		}
 
-    if (showInfo) {
-      if (checkInput(input, key, ACTIONS.INFO) || key.escape) {
-        setShowInfo(false);
-      }
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.HELP)) {
+			setShowHelp(true);
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.HELP)) {
-      setShowHelp(true);
-      return;
-    }
+		if (loading) {
+			if (checkInput(input, key, ACTIONS.QUIT)) {
+				scanAbortRef.current?.abort();
+				exit();
+			}
+			return;
+		}
 
-    if (loading) {
-      if (checkInput(input, key, ACTIONS.QUIT)) {
-        scanAbortRef.current?.abort();
-        exit();
-      }
-      return;
-    }
+		// If Settings is active, input is handled by Settings component usually,
+		// but here we are mounting components conditionally.
+		// However, useInput runs even if component is not rendering? No, only mounted components.
+		// But App is always mounted. So we must gate input based on View.
+		if (view === ViewState.Settings) return;
 
-    // If Settings is active, input is handled by Settings component usually,
-    // but here we are mounting components conditionally.
-    // However, useInput runs even if component is not rendering? No, only mounted components.
-    // But App is always mounted. So we must gate input based on View.
-    if (view === ViewState.Settings) return;
+		if (showConfirmDelete) {
+			if (checkInput(input, key, ACTIONS.CONFIRM)) {
+				void deleteSelected().then((deletedNode) => {
+					if (!deletedNode) return;
+					if (timerState.status === 'running') {
+						setTimerStats((prev) => ({
+							deletedItems: prev.deletedItems + 1,
+							freedBytes: prev.freedBytes + deletedNode.size,
+						}));
+					}
+				});
+				setShowConfirmDelete(false);
+			} else {
+				setShowConfirmDelete(false);
+			}
+			return;
+		}
 
-    if (showConfirmDelete) {
-      if (checkInput(input, key, ACTIONS.CONFIRM)) {
-        void deleteSelected().then((deletedNode) => {
-          if (!deletedNode) return;
-          if (timerState.status === 'running') {
-            setTimerStats((prev) => ({
-              deletedItems: prev.deletedItems + 1,
-              freedBytes: prev.freedBytes + deletedNode.size,
-            }));
-          }
-        });
-        setShowConfirmDelete(false);
-      } else {
-        setShowConfirmDelete(false);
-      }
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.INFO)) {
+			if (files[selectionIndex]) {
+				setShowInfo(true);
+			}
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.INFO)) {
-      if (files[selectionIndex]) {
-        setShowInfo(true);
-      }
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.LEGEND)) {
+			setShowLegend((prev) => !prev);
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.LEGEND)) {
-      setShowLegend((prev) => !prev);
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.HEATMAP)) {
+			setHeatmapEnabled((prev) => {
+				const next = !prev;
+				setHeatmapEnabledInConfig(next);
+				return next;
+			});
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.HEATMAP)) {
-      setHeatmapEnabled((prev) => {
-        const next = !prev;
-        setHeatmapEnabledInConfig(next);
-        return next;
-      });
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.STATUS_PANEL)) {
+			setShowStatusPanel((prev) => !prev);
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.STATUS_PANEL)) {
-      setShowStatusPanel((prev) => !prev);
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.TIMER_TOGGLE)) {
+			setShowTimerStatus((prev) => !prev);
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.TIMER_TOGGLE)) {
-      setShowTimerStatus((prev) => !prev);
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.TIMER_CANCEL)) {
+			if (timerState.status !== 'idle') {
+				setTimerState({
+					status: 'idle',
+					durationSeconds: 0,
+					remainingSeconds: 0,
+					endsAt: 0,
+				});
+				setTimerIndex(-1);
+				setTimerStats({
+					deletedItems: 0,
+					freedBytes: 0,
+				});
+				timerAlertedRef.current = false;
+			}
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.TIMER_CANCEL)) {
-      if (timerState.status !== 'idle') {
-        setTimerState({
-          status: 'idle',
-          durationSeconds: 0,
-          remainingSeconds: 0,
-          endsAt: 0,
-        });
-        setTimerIndex(-1);
-        setTimerStats({
-          deletedItems: 0,
-          freedBytes: 0,
-        });
-        timerAlertedRef.current = false;
-      }
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.SETTINGS)) {
+			setView(ViewState.Settings);
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.SETTINGS)) {
-      setView(ViewState.Settings);
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.TIMER)) {
+			setTimerIndex((prev) => {
+				const nextIndex = (prev + 1) % TIMER_MINUTES.length;
+				startTimer(TIMER_MINUTES[nextIndex]);
+				return nextIndex;
+			});
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.TIMER)) {
-      setTimerIndex((prev) => {
-        const nextIndex = (prev + 1) % TIMER_MINUTES.length;
-        startTimer(TIMER_MINUTES[nextIndex]);
-        return nextIndex;
-      });
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.QUIT)) {
+			exit();
+			return;
+		}
 
-    if (checkInput(input, key, ACTIONS.QUIT)) {
-      exit();
-      return;
-    }
+		if (checkInput(input, key, ACTIONS.MOVE_UP)) {
+			moveSelection(-1);
+		}
 
-    if (checkInput(input, key, ACTIONS.MOVE_UP)) {
-      moveSelection(-1);
-    }
+		if (checkInput(input, key, ACTIONS.MOVE_DOWN)) {
+			moveSelection(1);
+		}
 
-    if (checkInput(input, key, ACTIONS.MOVE_DOWN)) {
-      moveSelection(1);
-    }
+		if (checkInput(input, key, ACTIONS.MOVE_RIGHT)) {
+			enterDirectory();
+		}
 
-    if (checkInput(input, key, ACTIONS.MOVE_RIGHT)) {
-      enterDirectory();
-    }
+		if (checkInput(input, key, ACTIONS.MOVE_LEFT)) {
+			goUp();
+		}
 
-    if (checkInput(input, key, ACTIONS.MOVE_LEFT)) {
-      goUp();
-    }
+		if (checkInput(input, key, ACTIONS.DELETE)) {
+			if (files[selectionIndex]) {
+				setShowConfirmDelete(true);
+			}
+		}
 
-    if (checkInput(input, key, ACTIONS.DELETE)) {
-        if (files[selectionIndex]) {
-            setShowConfirmDelete(true);
-        }
-    }
+		if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
+		if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
+		if (checkInput(input, key, ACTIONS.VIEW_MODE)) toggleViewMode();
+		if (checkInput(input, key, ACTIONS.TOGGLE_HIDDEN)) {
+			setShowHiddenFiles((prev) => {
+				const next = !prev;
+				setShowHiddenFilesInConfig(next);
+				return next;
+			});
+		}
+		if (checkInput(input, key, ACTIONS.RESCAN)) {
+			if (!isScanning) {
+				scanRef();
+			}
+			return;
+		}
+	});
 
-    if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
-    if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
-    if (checkInput(input, key, ACTIONS.VIEW_MODE)) toggleViewMode();
-    if (checkInput(input, key, ACTIONS.TOGGLE_HIDDEN)) {
-      setShowHiddenFiles((prev) => {
-        const next = !prev;
-        setShowHiddenFilesInConfig(next);
-        return next;
-      });
-    }
-    if (checkInput(input, key, ACTIONS.RESCAN)) {
-        if (!isScanning) {
-          scanRef();
-        }
-        return;
-    }
-  });
+	const selectedFile = files[selectionIndex];
+	const helpOverlay = showHelp ? <HelpModal theme={theme} /> : null;
+	const infoOverlay =
+		showInfo && selectedFile ? <InfoModal theme={theme} node={selectedFile} /> : null;
+	const settingsOverlay =
+		view === ViewState.Settings ? (
+			<Settings
+				currentTheme={currentThemeName || 'default'}
+				currentUnits={currentUnits}
+				theme={theme}
+				onSelectTheme={(name) => {
+					setCurrentThemeName(name);
+					setThemeInConfig(name);
+				}}
+				onSelectUnits={(units) => {
+					setCurrentUnits(units);
+					setUnitsInConfig(units);
+				}}
+				fileTypeColoursEnabled={fileTypeColoursEnabled}
+				onSelectFileTypeColours={(enabled) => {
+					setFileTypeColoursEnabled(enabled);
+					setFileTypeColoursEnabledInConfig(enabled);
+				}}
+				heatmapEnabled={heatmapEnabled}
+				onSelectHeatmap={(enabled) => {
+					setHeatmapEnabled(enabled);
+					setHeatmapEnabledInConfig(enabled);
+				}}
+				onBack={() => setView(ViewState.FileList)}
+			/>
+		) : null;
 
-  const selectedFile = files[selectionIndex];
-  const helpOverlay = showHelp ? <HelpModal theme={theme} /> : null;
-  const infoOverlay = showInfo && selectedFile ? <InfoModal theme={theme} node={selectedFile} /> : null;
-  const settingsOverlay = view === ViewState.Settings ? (
-    <Settings
-      currentTheme={currentThemeName || 'default'}
-      currentUnits={currentUnits}
-      theme={theme}
-      onSelectTheme={(name) => {
-        setCurrentThemeName(name);
-        setThemeInConfig(name);
-      }}
-      onSelectUnits={(units) => {
-        setCurrentUnits(units);
-        setUnitsInConfig(units);
-      }}
-      fileTypeColoursEnabled={fileTypeColoursEnabled}
-      onSelectFileTypeColours={(enabled) => {
-        setFileTypeColoursEnabled(enabled);
-        setFileTypeColoursEnabledInConfig(enabled);
-      }}
-      heatmapEnabled={heatmapEnabled}
-      onSelectHeatmap={(enabled) => {
-        setHeatmapEnabled(enabled);
-        setHeatmapEnabledInConfig(enabled);
-      }}
-      onBack={() => setView(ViewState.FileList)}
-    />
-  ) : null;
+	if (error) {
+		return (
+			<Box height={totalRows} width="100%">
+				<Text color="red">Error: {error}</Text>
+			</Box>
+		);
+	}
 
-  if (error) {
-    return (
-      <Box height={totalRows} width="100%">
-        <Text color="red">Error: {error}</Text>
-      </Box>
-    );
-  }
+	if (!currentNode) {
+		const sizeLabel = formatSize(scanStatus.bytes);
+		const divider = '-'.repeat(Math.max(0, totalColumns));
 
-  if (!currentNode) {
-    const sizeLabel = formatSize(scanStatus.bytes);
-    const divider = '-'.repeat(Math.max(0, totalColumns));
+		return (
+			<Box height={totalRows} width="100%" flexDirection="column">
+				<Header path={startPath} theme={theme} viewMode={viewMode} />
+				<Box flexGrow={1} flexDirection="column">
+					<Text color={theme.colours.line}>{divider}</Text>
+					<Box flexDirection="column" paddingX={1} paddingY={1}>
+						<Text color={theme.colours.text}>
+							Scanning {startPath}... {spinnerFrames[spinnerIndex]}
+						</Text>
+						<Text color={theme.colours.muted} wrap="truncate-end">
+							Current: {scanStatus.currentPath}
+						</Text>
+						<Text color={theme.colours.text}>
+							Progress: {scanStatus.directories} directories, {scanStatus.files} files, {sizeLabel}
+						</Text>
+						{scanStatus.errors > 0 ? <Text color="yellow">Errors: {scanStatus.errors}</Text> : null}
+					</Box>
+				</Box>
 
-    return (
-      <Box height={totalRows} width="100%" flexDirection="column">
+				<Footer
+					totalSize={scanStatus.bytes}
+					itemCount={scanStatus.files}
+					theme={theme}
+					units={currentUnits}
+					isScanning={loading || isScanning}
+					mode="default"
+				/>
+				{helpOverlay}
+				{infoOverlay}
+				{settingsOverlay}
+			</Box>
+		);
+	}
 
-        <Header
-          path={startPath}
-          theme={theme}
-          viewMode={viewMode}
-        />
-        <Box flexGrow={1} flexDirection="column">
-          <Text color={theme.colours.line}>{divider}</Text>
-          <Box flexDirection="column" paddingX={1} paddingY={1}>
-            <Text color={theme.colours.text}>
-              Scanning {startPath}... {spinnerFrames[spinnerIndex]}
-            </Text>
-            <Text color={theme.colours.muted} wrap="truncate-end">
-              Current: {scanStatus.currentPath}
-            </Text>
-            <Text color={theme.colours.text}>
-              Progress: {scanStatus.directories} directories, {scanStatus.files} files, {sizeLabel}
-            </Text>
-            {scanStatus.errors > 0 ? (
-              <Text color="yellow">Errors: {scanStatus.errors}</Text>
-            ) : null}
-          </Box>
-        </Box>
+	if (showConfirmDelete) {
+		const selectedFile = files[selectionIndex];
+		return (
+			<Box flexDirection="column" height={totalRows} width="100%">
+				<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
+				<Box flexGrow={1} justifyContent="center" alignItems="center">
+					<ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
+				</Box>
+				<Footer
+					totalSize={currentNode.size}
+					itemCount={files.length}
+					theme={theme}
+					units={currentUnits}
+					isScanning={isScanning}
+					mode="default"
+				/>
+				{helpOverlay}
+				{infoOverlay}
+				{settingsOverlay}
+			</Box>
+		);
+	}
 
-        <Footer
-          totalSize={scanStatus.bytes}
-          itemCount={scanStatus.files}
-          theme={theme}
-          units={currentUnits}
-          isScanning={loading || isScanning}
-          mode="default"
-        />
-        {helpOverlay}
-        {infoOverlay}
-        {settingsOverlay}
-      </Box>
-    );
-  }
+	const scanErrorsLabel = scanStatus.errors > 0 ? ` | Errors: ${scanStatus.errors}` : '';
+	const scanSummary = `Scan: ${scanStatus.directories} directories, ${scanStatus.files} files, ${formatSize(scanStatus.bytes)}${scanErrorsLabel}`;
+	const scanIndicator = isScanning ? (
+		<ScanStatus
+			theme={theme}
+			summary={scanSummary}
+			currentPath={scanStatus.currentPath}
+			spinnerFrame={spinnerFrames[spinnerIndex]}
+		/>
+	) : null;
+	const timerIndicator = showTimerStatus ? (
+		<TimerStatus
+			theme={theme}
+			status={timerState.status}
+			remainingSeconds={timerState.remainingSeconds}
+			durationSeconds={timerState.durationSeconds}
+			deletedItems={timerStats.deletedItems}
+			freedBytes={timerStats.freedBytes}
+			formatSize={formatSize}
+		/>
+	) : null;
+	const statusIndicator = timerIndicator ?? scanIndicator;
+	const STATUS_INDICATOR_ROWS = 3;
+	const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
-  if (showConfirmDelete) {
-      const selectedFile = files[selectionIndex];
-      return (
-          <Box flexDirection="column" height={totalRows} width="100%">
-              <Header
+	const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
+	const headerRows = 2;
+	const footerRows = 2;
+	const panelWidth = showStatusPanel
+		? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
+		: 0;
+	const listWidth = showStatusPanel ? Math.max(20, totalColumns - panelWidth) : totalColumns;
+	const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
+	return (
+		<Box flexDirection="column" height={totalRows} width="100%">
+			<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
 
-                path={currentNode.path}
-                theme={theme}
-                viewMode={viewMode}
-              />
-              <Box flexGrow={1} justifyContent="center" alignItems="center">
-                  <ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
-              </Box>
-              <Footer
-                totalSize={currentNode.size}
-                itemCount={files.length}
-                theme={theme}
+			<Box flexGrow={1} overflowY="hidden">
+				<Box flexDirection="row" width="100%">
+					<Box width={showStatusPanel ? listWidth : '100%'}>
+						<FileList
+							files={files}
+							selectedIndex={selectionIndex}
+							maxSize={maxSize}
+							totalSize={currentNode.size}
+							theme={theme}
+							units={currentUnits}
+							viewMode={viewMode}
+							rootPath={currentNode.path}
+							scanRootPath={rootNode?.path ?? currentNode.path}
+							fileTypeColoursEnabled={fileTypeColoursEnabled}
+							showLegend={showLegend}
+							heatmapEnabled={heatmapEnabled}
+							availableColumns={showStatusPanel ? listWidth : undefined}
+							extraBottomRows={statusIndicatorRows}
+						/>
+					</Box>
+					{showStatusPanel ? (
+						<Box width={panelWidth}>
+							<StatusPanel
+								theme={theme}
+								sortBy={sortBy}
+								sortOrder={sortOrder}
+								viewMode={viewMode}
+								showHiddenFiles={showHiddenFiles}
+								heatmapEnabled={heatmapEnabled}
+								fileTypeColoursEnabled={fileTypeColoursEnabled}
+								showLegend={showLegend}
+								units={currentUnits}
+								width={panelWidth}
+								height={panelHeight}
+							/>
+						</Box>
+					) : null}
+				</Box>
+			</Box>
 
-                units={currentUnits}
-                isScanning={isScanning}
-                mode="default"
-              />
-              {helpOverlay}
-              {infoOverlay}
-              {settingsOverlay}
-          </Box>
-      );
-  }
+			{statusIndicator}
 
-  const scanErrorsLabel = scanStatus.errors > 0 ? ` | Errors: ${scanStatus.errors}` : '';
-  const scanSummary = `Scan: ${scanStatus.directories} directories, ${scanStatus.files} files, ${formatSize(scanStatus.bytes)}${scanErrorsLabel}`;
-  const scanIndicator = isScanning ? (
-    <ScanStatus
-      theme={theme}
-      summary={scanSummary}
-      currentPath={scanStatus.currentPath}
-      spinnerFrame={spinnerFrames[spinnerIndex]}
-    />
-  ) : null;
-  const timerIndicator = showTimerStatus ? (
-    <TimerStatus
-      theme={theme}
-      status={timerState.status}
-      remainingSeconds={timerState.remainingSeconds}
-      durationSeconds={timerState.durationSeconds}
-      deletedItems={timerStats.deletedItems}
-      freedBytes={timerStats.freedBytes}
-      formatSize={formatSize}
-    />
-  ) : null;
-  const statusIndicator = timerIndicator ?? scanIndicator;
-  const STATUS_INDICATOR_ROWS = 3;
-  const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
-
-  const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
-  const headerRows = 2;
-  const footerRows = 2;
-  const panelWidth = showStatusPanel
-    ? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
-    : 0;
-  const listWidth = showStatusPanel
-    ? Math.max(20, totalColumns - panelWidth)
-    : totalColumns;
-  const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
-  return (
-    <Box flexDirection="column" height={totalRows} width="100%">
-
-      <Header
-        path={currentNode.path}
-        theme={theme}
-        viewMode={viewMode}
-      />
-
-      <Box flexGrow={1} overflowY="hidden">
-        <Box flexDirection="row" width="100%">
-          <Box width={showStatusPanel ? listWidth : '100%'}>
-            <FileList
-              files={files}
-              selectedIndex={selectionIndex}
-              maxSize={maxSize}
-              totalSize={currentNode.size}
-              theme={theme}
-              units={currentUnits}
-              viewMode={viewMode}
-              rootPath={currentNode.path}
-              scanRootPath={rootNode?.path ?? currentNode.path}
-              fileTypeColoursEnabled={fileTypeColoursEnabled}
-              showLegend={showLegend}
-              heatmapEnabled={heatmapEnabled}
-              availableColumns={showStatusPanel ? listWidth : undefined}
-              extraBottomRows={statusIndicatorRows}
-            />
-          </Box>
-          {showStatusPanel ? (
-            <Box width={panelWidth}>
-              <StatusPanel
-                theme={theme}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
-                viewMode={viewMode}
-                showHiddenFiles={showHiddenFiles}
-                heatmapEnabled={heatmapEnabled}
-                fileTypeColoursEnabled={fileTypeColoursEnabled}
-                showLegend={showLegend}
-                units={currentUnits}
-                width={panelWidth}
-                height={panelHeight}
-              />
-            </Box>
-          ) : null}
-        </Box>
-      </Box>
-
-      {statusIndicator}
-
-
-      <Footer
-        totalSize={currentNode.size}
-        itemCount={files.length}
-        theme={theme}
-        units={currentUnits}
-        isScanning={isScanning}
-        mode={showHelp ? 'help' : showInfo ? 'info' : view === ViewState.Settings ? 'settings' : 'default'}
-      />
-      {helpOverlay}
-      {infoOverlay}
-      {settingsOverlay}
-    </Box>
-  );
+			<Footer
+				totalSize={currentNode.size}
+				itemCount={files.length}
+				theme={theme}
+				units={currentUnits}
+				isScanning={isScanning}
+				mode={
+					showHelp
+						? 'help'
+						: showInfo
+							? 'info'
+							: view === ViewState.Settings
+								? 'settings'
+								: 'default'
+				}
+			/>
+			{helpOverlay}
+			{infoOverlay}
+			{settingsOverlay}
+		</Box>
+	);
 };
