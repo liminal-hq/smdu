@@ -139,4 +139,32 @@ describe('useFileSystem', () => {
 		// Size should update for currentNode (root)
 		expect(result.current.currentNode?.size).toBe(400); // 600 - 200
 	});
+
+	it('should handle large number of children without stack overflow', () => {
+		const children = Array.from({ length: 500000 }, (_, i) => createNode(`file${i}`, 1, false));
+		// Make first child a directory so we can enter it
+		children[0] = createNode('dir0', 10, true, []);
+		children[0].parent = undefined; // Will be set by parent creation
+
+		const largeRoot = createNode('root', 500000, true, children);
+		// Fix parent ref for dir0 manually as createNode helper sets it but we replaced it
+		children[0].parent = largeRoot;
+
+		const { result, rerender } = renderHook(({ root }) => useFileSystem(root), {
+			initialProps: { root: largeRoot }
+		});
+
+		// Enter dir0
+		act(() => {
+			result.current.enterDirectory();
+		});
+		expect(result.current.currentNode?.name).toBe('dir0');
+
+		// Force update with new root object (same structure) to trigger findNodeByPath
+		const newRoot = { ...largeRoot };
+		rerender({ root: newRoot });
+
+		// This should not throw/crash
+		expect(result.current.currentNode?.name).toBe('dir0');
+	});
 });

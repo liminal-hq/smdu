@@ -31,7 +31,9 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 			if (!node) continue;
 			if (node.path === targetPath) return node;
 			if (node.children) {
-				stack.push(...node.children);
+				for (const child of node.children) {
+					stack.push(child);
+				}
 			}
 		}
 		return null;
