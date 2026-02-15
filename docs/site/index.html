@@ -1,556 +1,511 @@
 <!doctype html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SMDU | See My Disk Usage</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              mono: ["JetBrains Mono", "monospace"],
-            },
-            colors: {
-              brand: {
-                50: "#faf5ff",
-                100: "#f3e8ff",
-                200: "#e9d5ff",
-                300: "#d8b4fe",
-                400: "#bd93f9", // Dracula Purple
-                500: "#a855f7",
-                600: "#9333ea",
-                900: "#581c87",
-              },
-              dark: {
-                bg: "#0f1115",
-                surface: "#181b21",
-                border: "#2a2f3a",
-              },
-            },
-            animation: {
-              "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-              float: "float 6s ease-in-out infinite",
-            },
-            keyframes: {
-              float: {
-                "0%, 100%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-10px)" },
-              },
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      body {
-        background-color: #0f1115;
-        color: #e2e8f0;
-      }
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #0f1115;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #2a2f3a;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #bd93f9;
-      }
-      .gradient-text {
-        background: linear-gradient(135deg, #bd93f9 0%, #e9d5ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .terminal-shadow {
-        box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.7);
-      }
-      .glass-nav {
-        background: rgba(15, 17, 21, 0.8);
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      }
-    </style>
-  </head>
-  <body class="antialiased selection:bg-brand-400 selection:text-black">
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
-          <div class="flex items-center space-x-3">
-            <div
-              class="w-8 h-8 bg-gradient-to-br from-brand-400 to-purple-300 rounded-lg flex items-center justify-center font-mono font-bold text-black text-sm shadow-lg shadow-brand-400/20"
-            >
-              &gt;_
-            </div>
-            <span class="font-bold text-xl tracking-tight">smdu</span>
-          </div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>SMDU | See My Disk Usage</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap"
+			rel="stylesheet"
+		/>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						fontFamily: {
+							sans: ['Inter', 'sans-serif'],
+							mono: ['JetBrains Mono', 'monospace'],
+						},
+						colors: {
+							brand: {
+								50: '#faf5ff',
+								100: '#f3e8ff',
+								200: '#e9d5ff',
+								300: '#d8b4fe',
+								400: '#bd93f9', // Dracula Purple
+								500: '#a855f7',
+								600: '#9333ea',
+								900: '#581c87',
+							},
+							dark: {
+								bg: '#0f1115',
+								surface: '#181b21',
+								border: '#2a2f3a',
+							},
+						},
+						animation: {
+							'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+							float: 'float 6s ease-in-out infinite',
+						},
+						keyframes: {
+							float: {
+								'0%, 100%': { transform: 'translateY(0)' },
+								'50%': { transform: 'translateY(-10px)' },
+							},
+						},
+					},
+				},
+			};
+		</script>
+		<style>
+			body {
+				background-color: #0f1115;
+				color: #e2e8f0;
+			}
+			/* Custom Scrollbar */
+			::-webkit-scrollbar {
+				width: 8px;
+			}
+			::-webkit-scrollbar-track {
+				background: #0f1115;
+			}
+			::-webkit-scrollbar-thumb {
+				background: #2a2f3a;
+				border-radius: 4px;
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background: #bd93f9;
+			}
+			.gradient-text {
+				background: linear-gradient(135deg, #bd93f9 0%, #e9d5ff 100%);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+			.terminal-shadow {
+				box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.7);
+			}
+			.glass-nav {
+				background: rgba(15, 17, 21, 0.8);
+				backdrop-filter: blur(12px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			}
+		</style>
+	</head>
+	<body class="antialiased selection:bg-brand-400 selection:text-black">
+		<!-- Navigation -->
+		<nav class="fixed w-full z-50 glass-nav transition-all duration-300">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="flex items-center justify-between h-20">
+					<div class="flex items-center space-x-3">
+						<div
+							class="w-8 h-8 bg-gradient-to-br from-brand-400 to-purple-300 rounded-lg flex items-center justify-center font-mono font-bold text-black text-sm shadow-lg shadow-brand-400/20"
+						>
+							&gt;_
+						</div>
+						<span class="font-bold text-xl tracking-tight">smdu</span>
+					</div>
 
-          <div class="hidden md:block">
-            <div class="ml-10 flex items-baseline space-x-8">
-              <a
-                href="#features"
-                class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium"
-                >Features</a
-              >
-              <a
-                href="#demo"
-                class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium"
-                >Demo</a
-              >
-              <a
-                href="#install"
-                class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium"
-                >Install</a
-              >
-              <a
-                href="https://github.com/ScottMorris/smdu"
-                target="_blank"
-                class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2"
-              >
-                <i class="fab fa-github"></i> GitHub
-              </a>
-            </div>
-          </div>
+					<div class="hidden md:block">
+						<div class="ml-10 flex items-baseline space-x-8">
+							<a
+								href="#features"
+								class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium"
+								>Features</a
+							>
+							<a
+								href="#demo"
+								class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium"
+								>Demo</a
+							>
+							<a
+								href="#install"
+								class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium"
+								>Install</a
+							>
+							<a
+								href="https://github.com/ScottMorris/smdu"
+								target="_blank"
+								class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2"
+							>
+								<i class="fab fa-github"></i> GitHub
+							</a>
+						</div>
+					</div>
 
-          <!-- Mobile menu button -->
-          <div class="md:hidden">
-            <button
-              onclick="
-                document
-                  .getElementById('mobile-menu')
-                  .classList.toggle('hidden')
-              "
-              class="text-gray-300 hover:text-white p-2"
-            >
-              <i class="fas fa-bars text-xl"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- Mobile Menu -->
-      <div
-        id="mobile-menu"
-        class="hidden md:hidden bg-dark-surface border-b border-dark-border"
-      >
-        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          <a
-            href="#features"
-            class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
-            >Features</a
-          >
-          <a
-            href="#demo"
-            class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
-            >Demo</a
-          >
-          <a
-            href="#install"
-            class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
-            >Install</a
-          >
-        </div>
-      </div>
-    </nav>
+					<!-- Mobile menu button -->
+					<div class="md:hidden">
+						<button
+							onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+							class="text-gray-300 hover:text-white p-2"
+						>
+							<i class="fas fa-bars text-xl"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+			<!-- Mobile Menu -->
+			<div id="mobile-menu" class="hidden md:hidden bg-dark-surface border-b border-dark-border">
+				<div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+					<a
+						href="#features"
+						class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
+						>Features</a
+					>
+					<a href="#demo" class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
+						>Demo</a
+					>
+					<a
+						href="#install"
+						class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
+						>Install</a
+					>
+				</div>
+			</div>
+		</nav>
 
-    <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-      <!-- Background accents -->
-      <div
-        class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full z-0 pointer-events-none"
-      >
-        <div
-          class="absolute top-20 left-1/4 w-96 h-96 bg-brand-400/10 rounded-full blur-[100px]"
-        ></div>
-        <div
-          class="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"
-        ></div>
-      </div>
+		<!-- Hero Section -->
+		<section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+			<!-- Background accents -->
+			<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full z-0 pointer-events-none">
+				<div
+					class="absolute top-20 left-1/4 w-96 h-96 bg-brand-400/10 rounded-full blur-[100px]"
+				></div>
+				<div
+					class="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"
+				></div>
+			</div>
 
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center"
-      >
-        <div
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-brand-400 text-sm font-medium mb-8 animate-fade-in-up"
-        >
-          <span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span>
-          Active Development
-        </div>
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+				<div
+					class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-brand-400 text-sm font-medium mb-8 animate-fade-in-up"
+				>
+					<span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span>
+					Active Development
+				</div>
 
-        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
-          See My <br class="hidden md:block" />
-          <span class="gradient-text">Disk Usage.</span>
-        </h1>
+				<h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+					See My <br class="hidden md:block" />
+					<span class="gradient-text">Disk Usage.</span>
+				</h1>
 
-        <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-10">
-          A modern, terminal-based disk usage analyser inspired by
-          <code class="text-brand-400">ncdu</code>. <br />
-          Built with <span class="text-white font-semibold">TypeScript</span>,
-          <span class="text-white font-semibold">React</span>, and
-          <span class="text-white font-semibold">Ink</span>.
-        </p>
+				<p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-10">
+					A modern, terminal-based disk usage analyser inspired by
+					<code class="text-brand-400">ncdu</code>. <br />
+					Built with <span class="text-white font-semibold">TypeScript</span>,
+					<span class="text-white font-semibold">React</span>, and
+					<span class="text-white font-semibold">Ink</span>.
+				</p>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <div class="relative group">
-            <div
-              class="absolute -inset-0.5 bg-gradient-to-r from-brand-400 to-purple-600 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-200"
-            ></div>
-            <button
-              onclick="copyInstall()"
-              class="relative w-full sm:w-auto flex items-center justify-center gap-3 bg-dark-surface border border-dark-border hover:bg-dark-surface/80 text-white px-8 py-4 rounded-lg font-mono text-sm transition-all"
-            >
-              <span class="text-brand-400">$</span> git clone ...
-              <i
-                class="far fa-copy text-gray-500 group-hover:text-white transition-colors"
-              ></i>
-            </button>
-            <div
-              id="copy-toast"
-              class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-brand-400 text-black text-xs font-bold rounded opacity-0 transition-opacity pointer-events-none"
-            >
-              Copied!
-            </div>
-          </div>
-          <a
-            href="https://github.com/ScottMorris/smdu"
-            target="_blank"
-            class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-lg font-semibold transition-all"
-          >
-            View on GitHub
-          </a>
-        </div>
-      </div>
-    </section>
+				<div class="flex flex-col sm:flex-row justify-center gap-4">
+					<div class="relative group">
+						<div
+							class="absolute -inset-0.5 bg-gradient-to-r from-brand-400 to-purple-600 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-200"
+						></div>
+						<button
+							onclick="copyInstall()"
+							class="relative w-full sm:w-auto flex items-center justify-center gap-3 bg-dark-surface border border-dark-border hover:bg-dark-surface/80 text-white px-8 py-4 rounded-lg font-mono text-sm transition-all"
+						>
+							<span class="text-brand-400">$</span> git clone ...
+							<i class="far fa-copy text-gray-500 group-hover:text-white transition-colors"></i>
+						</button>
+						<div
+							id="copy-toast"
+							class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-brand-400 text-black text-xs font-bold rounded opacity-0 transition-opacity pointer-events-none"
+						>
+							Copied!
+						</div>
+					</div>
+					<a
+						href="https://github.com/ScottMorris/smdu"
+						target="_blank"
+						class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-lg font-semibold transition-all"
+					>
+						View on GitHub
+					</a>
+				</div>
+			</div>
+		</section>
 
-    <!-- Terminal Demo Section -->
-    <section id="demo" class="py-20 relative">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          class="animate-float terminal-shadow rounded-xl overflow-hidden border border-dark-border bg-[#1E1E1E]"
-        >
-          <!-- Terminal Header (GNOME Style) -->
-          <div
-            class="bg-[#323232] px-4 py-2 flex items-center justify-between border-b border-[#1e1e1e]"
-          >
-            <div
-              class="text-sm text-gray-300 font-bold font-sans tracking-wide flex items-center gap-2"
-            >
-              <i class="fas fa-terminal text-gray-500"></i>
-              smdu
-            </div>
-            <!-- Window Controls (Right side, GNOME Style) -->
-            <div class="flex items-center gap-1">
-              <div
-                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 transition-colors cursor-pointer"
-                title="Minimize"
-              >
-                <i class="fas fa-minus text-xs"></i>
-              </div>
-              <div
-                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 transition-colors cursor-pointer"
-                title="Maximize"
-              >
-                <i class="far fa-square text-xs"></i>
-              </div>
-              <div
-                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#E01B24] hover:text-white text-gray-400 transition-colors cursor-pointer"
-                title="Close"
-              >
-                <i class="fas fa-times text-sm"></i>
-              </div>
-            </div>
-          </div>
-          <!-- Terminal Body -->
-          <div
-            class="p-6 font-mono text-sm md:text-base leading-relaxed overflow-x-auto"
-          >
-            <div
-              class="grid grid-cols-[auto_1fr_auto] gap-x-6 gap-y-1 text-gray-300"
-            >
-              <!-- Header Row -->
-              <div class="text-gray-500 border-b border-gray-700 pb-1 mb-2">
-                /home/user/projects/smdu
-              </div>
-              <div
-                class="text-gray-500 border-b border-gray-700 pb-1 mb-2"
-              ></div>
-              <div
-                class="text-gray-500 border-b border-gray-700 pb-1 mb-2 text-right"
-              >
-                Size
-              </div>
+		<!-- Terminal Demo Section -->
+		<section id="demo" class="py-20 relative">
+			<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div
+					class="animate-float terminal-shadow rounded-xl overflow-hidden border border-dark-border bg-[#1E1E1E]"
+				>
+					<!-- Terminal Header (GNOME Style) -->
+					<div
+						class="bg-[#323232] px-4 py-2 flex items-center justify-between border-b border-[#1e1e1e]"
+					>
+						<div
+							class="text-sm text-gray-300 font-bold font-sans tracking-wide flex items-center gap-2"
+						>
+							<i class="fas fa-terminal text-gray-500"></i>
+							smdu
+						</div>
+						<!-- Window Controls (Right side, GNOME Style) -->
+						<div class="flex items-center gap-1">
+							<div
+								class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 transition-colors cursor-pointer"
+								title="Minimize"
+							>
+								<i class="fas fa-minus text-xs"></i>
+							</div>
+							<div
+								class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 transition-colors cursor-pointer"
+								title="Maximize"
+							>
+								<i class="far fa-square text-xs"></i>
+							</div>
+							<div
+								class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#E01B24] hover:text-white text-gray-400 transition-colors cursor-pointer"
+								title="Close"
+							>
+								<i class="fas fa-times text-sm"></i>
+							</div>
+						</div>
+					</div>
+					<!-- Terminal Body -->
+					<div class="p-6 font-mono text-sm md:text-base leading-relaxed overflow-x-auto">
+						<div class="grid grid-cols-[auto_1fr_auto] gap-x-6 gap-y-1 text-gray-300">
+							<!-- Header Row -->
+							<div class="text-gray-500 border-b border-gray-700 pb-1 mb-2">
+								/home/user/projects/smdu
+							</div>
+							<div class="text-gray-500 border-b border-gray-700 pb-1 mb-2"></div>
+							<div class="text-gray-500 border-b border-gray-700 pb-1 mb-2 text-right">Size</div>
 
-              <!-- Rows -->
-              <div class="text-brand-400 font-bold flex items-center gap-2">
-                <i class="fas fa-folder text-blue-400"></i> node_modules
-              </div>
-              <div class="text-gray-600">
-                [<span class="text-brand-400">####################</span>] 65%
-              </div>
-              <div class="text-right text-brand-400">450 MB</div>
+							<!-- Rows -->
+							<div class="text-brand-400 font-bold flex items-center gap-2">
+								<i class="fas fa-folder text-blue-400"></i> node_modules
+							</div>
+							<div class="text-gray-600">
+								[<span class="text-brand-400">####################</span>] 65%
+							</div>
+							<div class="text-right text-brand-400">450 MB</div>
 
-              <div class="flex items-center gap-2">
-                <i class="fas fa-folder text-blue-400"></i> .git
-              </div>
-              <div class="text-gray-600">
-                [<span class="text-brand-400">#####</span>...............] 15%
-              </div>
-              <div class="text-right">105 MB</div>
+							<div class="flex items-center gap-2">
+								<i class="fas fa-folder text-blue-400"></i> .git
+							</div>
+							<div class="text-gray-600">
+								[<span class="text-brand-400">#####</span>...............] 15%
+							</div>
+							<div class="text-right">105 MB</div>
 
-              <div class="flex items-center gap-2">
-                <i class="fas fa-folder text-blue-400"></i> dist
-              </div>
-              <div class="text-gray-600">
-                [<span class="text-brand-400">###</span>.................] 10%
-              </div>
-              <div class="text-right">70 MB</div>
+							<div class="flex items-center gap-2">
+								<i class="fas fa-folder text-blue-400"></i> dist
+							</div>
+							<div class="text-gray-600">
+								[<span class="text-brand-400">###</span>.................] 10%
+							</div>
+							<div class="text-right">70 MB</div>
 
-              <div class="flex items-center gap-2">
-                <i class="fas fa-folder text-blue-400"></i> src
-              </div>
-              <div class="text-gray-600">
-                [<span class="text-brand-400">##</span>..................] 8%
-              </div>
-              <div class="text-right">55 MB</div>
+							<div class="flex items-center gap-2">
+								<i class="fas fa-folder text-blue-400"></i> src
+							</div>
+							<div class="text-gray-600">
+								[<span class="text-brand-400">##</span>..................] 8%
+							</div>
+							<div class="text-right">55 MB</div>
 
-              <div class="flex items-center gap-2 text-yellow-200">
-                <i class="fas fa-file text-gray-400"></i> pnpm-lock.yaml
-              </div>
-              <div class="text-gray-600">
-                [<span class="text-brand-400">.</span>...................] <1%
-              </div>
-              <div class="text-right">450 KB</div>
+							<div class="flex items-center gap-2 text-yellow-200">
+								<i class="fas fa-file text-gray-400"></i> pnpm-lock.yaml
+							</div>
+							<div class="text-gray-600">
+								[<span class="text-brand-400">.</span>...................] <1%
+							</div>
+							<div class="text-right">450 KB</div>
 
-              <div class="flex items-center gap-2 text-purple-300">
-                <i class="fas fa-file-code text-gray-400"></i> README.md
-              </div>
-              <div class="text-gray-600">
-                [<span class="text-brand-400">.</span>...................] <1%
-              </div>
-              <div class="text-right">4 KB</div>
-            </div>
+							<div class="flex items-center gap-2 text-purple-300">
+								<i class="fas fa-file-code text-gray-400"></i> README.md
+							</div>
+							<div class="text-gray-600">
+								[<span class="text-brand-400">.</span>...................] <1%
+							</div>
+							<div class="text-right">4 KB</div>
+						</div>
 
-            <!-- Footer Status Bar -->
-            <div
-              class="border-t border-gray-700 mt-6 pt-2 flex flex-wrap justify-between text-gray-400 text-xs md:text-sm"
-            >
-              <div>
-                Total: <span class="text-white">680 MB</span> (125 items)
-              </div>
-              <div>Scan: <span class="text-green-400">Done</span></div>
-            </div>
-            <div class="mt-1 text-gray-500 text-xs flex flex-wrap gap-4">
-              <span>Help: <span class="text-white">?</span></span>
-              <span>Info: <span class="text-white">i</span></span>
-              <span>Panel: <span class="text-white">p</span></span>
-              <span>Timer: <span class="text-white">T</span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+						<!-- Footer Status Bar -->
+						<div
+							class="border-t border-gray-700 mt-6 pt-2 flex flex-wrap justify-between text-gray-400 text-xs md:text-sm"
+						>
+							<div>Total: <span class="text-white">680 MB</span> (125 items)</div>
+							<div>Scan: <span class="text-green-400">Done</span></div>
+						</div>
+						<div class="mt-1 text-gray-500 text-xs flex flex-wrap gap-4">
+							<span>Help: <span class="text-white">?</span></span>
+							<span>Info: <span class="text-white">i</span></span>
+							<span>Panel: <span class="text-white">p</span></span>
+							<span>Timer: <span class="text-white">T</span></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-    <!-- Features Grid -->
-    <section id="features" class="py-24 bg-dark-surface/50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold mb-4">Modern Terminal Experience</h2>
-          <p class="text-gray-400">
-            A familiar interface, rebuilt with modern web technologies.
-          </p>
-        </div>
+		<!-- Features Grid -->
+		<section id="features" class="py-24 bg-dark-surface/50">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="text-center mb-16">
+					<h2 class="text-3xl font-bold mb-4">Modern Terminal Experience</h2>
+					<p class="text-gray-400">A familiar interface, rebuilt with modern web technologies.</p>
+				</div>
 
-        <div class="grid md:grid-cols-3 gap-8">
-          <!-- Feature 1 -->
-          <div
-            class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-400/30 transition-colors group"
-          >
-            <div
-              class="w-12 h-12 bg-brand-400/20 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-            >
-              <i class="fas fa-code text-brand-400 text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-3">TypeScript & Ink</h3>
-            <p class="text-gray-400 leading-relaxed">
-              Built on Node.js using React and Ink for a robust,
-              component-driven TUI that adapts to your terminal size.
-            </p>
-          </div>
+				<div class="grid md:grid-cols-3 gap-8">
+					<!-- Feature 1 -->
+					<div
+						class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-400/30 transition-colors group"
+					>
+						<div
+							class="w-12 h-12 bg-brand-400/20 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+						>
+							<i class="fas fa-code text-brand-400 text-xl"></i>
+						</div>
+						<h3 class="text-xl font-bold mb-3">TypeScript & Ink</h3>
+						<p class="text-gray-400 leading-relaxed">
+							Built on Node.js using React and Ink for a robust, component-driven TUI that adapts to
+							your terminal size.
+						</p>
+					</div>
 
-          <!-- Feature 2 -->
-          <div
-            class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-400/30 transition-colors group"
-          >
-            <div
-              class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-            >
-              <i class="fas fa-stopwatch text-blue-400 text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-3">Productivity Tools</h3>
-            <p class="text-gray-400 leading-relaxed">
-              Includes a built-in Focus Timer (5/10/15/30m), file type
-              colouring, and heatmap visualization for size bars.
-            </p>
-          </div>
+					<!-- Feature 2 -->
+					<div
+						class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-400/30 transition-colors group"
+					>
+						<div
+							class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+						>
+							<i class="fas fa-stopwatch text-blue-400 text-xl"></i>
+						</div>
+						<h3 class="text-xl font-bold mb-3">Productivity Tools</h3>
+						<p class="text-gray-400 leading-relaxed">
+							Includes a built-in Focus Timer (5/10/15/30m), file type colouring, and heatmap
+							visualization for size bars.
+						</p>
+					</div>
 
-          <!-- Feature 3 -->
-          <div
-            class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-400/30 transition-colors group"
-          >
-            <div
-              class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-            >
-              <i class="fas fa-paint-brush text-purple-400 text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-3">Theming & Modes</h3>
-            <p class="text-gray-400 leading-relaxed">
-              Switch between Default, Classic, and Dracula themes. Toggle
-              between Flat (ncdu-style) and Tree views instantly.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+					<!-- Feature 3 -->
+					<div
+						class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-400/30 transition-colors group"
+					>
+						<div
+							class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+						>
+							<i class="fas fa-paint-brush text-purple-400 text-xl"></i>
+						</div>
+						<h3 class="text-xl font-bold mb-3">Theming & Modes</h3>
+						<p class="text-gray-400 leading-relaxed">
+							Switch between Default, Classic, and Dracula themes. Toggle between Flat (ncdu-style)
+							and Tree views instantly.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
 
-    <!-- Installation Section -->
-    <section id="install" class="py-24">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          class="bg-gradient-to-br from-gray-900 to-black border border-dark-border rounded-2xl p-8 md:p-12 relative overflow-hidden"
-        >
-          <!-- Decoration -->
-          <div
-            class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-brand-400/10 rounded-full blur-3xl"
-          ></div>
+		<!-- Installation Section -->
+		<section id="install" class="py-24">
+			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div
+					class="bg-gradient-to-br from-gray-900 to-black border border-dark-border rounded-2xl p-8 md:p-12 relative overflow-hidden"
+				>
+					<!-- Decoration -->
+					<div
+						class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-brand-400/10 rounded-full blur-3xl"
+					></div>
 
-          <h2 class="text-3xl font-bold mb-8 text-center md:text-left">
-            Get Started
-          </h2>
+					<h2 class="text-3xl font-bold mb-8 text-center md:text-left">Get Started</h2>
 
-          <div class="space-y-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-400 mb-2"
-                >Clone & Build</label
-              >
-              <div
-                class="flex items-center gap-4 bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm overflow-x-auto"
-              >
-                <span class="text-brand-400 shrink-0">$</span>
-                <span class="flex-1 text-gray-300 whitespace-nowrap"
-                  >git clone https://github.com/ScottMorris/smdu.git && cd
-                  smdu</span
-                >
-                <button
-                  onclick="
-                    copyCommand(
-                      'git clone https://github.com/ScottMorris/smdu.git && cd smdu'
-                    )
-                  "
-                  class="text-gray-500 hover:text-white transition-colors shrink-0"
-                >
-                  <i class="far fa-copy"></i>
-                </button>
-              </div>
-            </div>
+					<div class="space-y-6">
+						<div>
+							<label class="block text-sm font-medium text-gray-400 mb-2">Clone & Build</label>
+							<div
+								class="flex items-center gap-4 bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm overflow-x-auto"
+							>
+								<span class="text-brand-400 shrink-0">$</span>
+								<span class="flex-1 text-gray-300 whitespace-nowrap"
+									>git clone https://github.com/ScottMorris/smdu.git && cd smdu</span
+								>
+								<button
+									onclick="
+										copyCommand('git clone https://github.com/ScottMorris/smdu.git && cd smdu')
+									"
+									class="text-gray-500 hover:text-white transition-colors shrink-0"
+								>
+									<i class="far fa-copy"></i>
+								</button>
+							</div>
+						</div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-400 mb-2"
-                >Install Dependencies</label
-              >
-              <div
-                class="flex items-center gap-4 bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm"
-              >
-                <span class="text-brand-400">$</span>
-                <span class="flex-1 text-gray-300"
-                  >pnpm install && pnpm build</span
-                >
-                <button
-                  onclick="copyCommand('pnpm install && pnpm build')"
-                  class="text-gray-500 hover:text-white transition-colors"
-                >
-                  <i class="far fa-copy"></i>
-                </button>
-              </div>
-            </div>
+						<div>
+							<label class="block text-sm font-medium text-gray-400 mb-2"
+								>Install Dependencies</label
+							>
+							<div
+								class="flex items-center gap-4 bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm"
+							>
+								<span class="text-brand-400">$</span>
+								<span class="flex-1 text-gray-300">pnpm install && pnpm build</span>
+								<button
+									onclick="copyCommand('pnpm install && pnpm build')"
+									class="text-gray-500 hover:text-white transition-colors"
+								>
+									<i class="far fa-copy"></i>
+								</button>
+							</div>
+						</div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-400 mb-2"
-                >Run</label
-              >
-              <div
-                class="flex items-center gap-4 bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm"
-              >
-                <span class="text-brand-400">$</span>
-                <span class="flex-1 text-gray-300">pnpm start</span>
-                <button
-                  onclick="copyCommand('pnpm start')"
-                  class="text-gray-500 hover:text-white transition-colors"
-                >
-                  <i class="far fa-copy"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+						<div>
+							<label class="block text-sm font-medium text-gray-400 mb-2">Run</label>
+							<div
+								class="flex items-center gap-4 bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm"
+							>
+								<span class="text-brand-400">$</span>
+								<span class="flex-1 text-gray-300">pnpm start</span>
+								<button
+									onclick="copyCommand('pnpm start')"
+									class="text-gray-500 hover:text-white transition-colors"
+								>
+									<i class="far fa-copy"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-    <!-- Footer -->
-    <footer class="border-t border-dark-border py-12 bg-dark-surface/30">
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6"
-      >
-        <div class="flex items-center gap-2">
-          <span class="font-bold text-lg">smdu</span>
-          <span class="text-gray-500 text-sm">© 2026 Scott Morris</span>
-        </div>
+		<!-- Footer -->
+		<footer class="border-t border-dark-border py-12 bg-dark-surface/30">
+			<div
+				class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6"
+			>
+				<div class="flex items-center gap-2">
+					<span class="font-bold text-lg">smdu</span>
+					<span class="text-gray-500 text-sm">© 2026 Scott Morris</span>
+				</div>
 
-        <div class="flex gap-6 text-gray-400">
-          <a
-            href="https://github.com/ScottMorris/smdu"
-            class="hover:text-white transition-colors"
-          >
-            <i class="fab fa-github text-xl"></i>
-          </a>
-          <a href="#" class="hover:text-white transition-colors">
-            <i class="fab fa-twitter text-xl"></i>
-          </a>
-        </div>
-      </div>
-    </footer>
+				<div class="flex gap-6 text-gray-400">
+					<a href="https://github.com/ScottMorris/smdu" class="hover:text-white transition-colors">
+						<i class="fab fa-github text-xl"></i>
+					</a>
+					<a href="#" class="hover:text-white transition-colors">
+						<i class="fab fa-twitter text-xl"></i>
+					</a>
+				</div>
+			</div>
+		</footer>
 
-    <script>
-      function copyInstall() {
-        navigator.clipboard.writeText(
-          "git clone https://github.com/ScottMorris/smdu.git"
-        );
-        const toast = document.getElementById("copy-toast");
-        toast.style.opacity = "1";
-        setTimeout(() => {
-          toast.style.opacity = "0";
-        }, 2000);
-      }
+		<script>
+			function copyInstall() {
+				navigator.clipboard.writeText('git clone https://github.com/ScottMorris/smdu.git');
+				const toast = document.getElementById('copy-toast');
+				toast.style.opacity = '1';
+				setTimeout(() => {
+					toast.style.opacity = '0';
+				}, 2000);
+			}
 
-      function copyCommand(text) {
-        navigator.clipboard.writeText(text);
-        // Simple visual feedback could be added here
-      }
-    </script>
-  </body>
+			function copyCommand(text) {
+				navigator.clipboard.writeText(text);
+				// Simple visual feedback could be added here
+			}
+		</script>
+	</body>
 </html>

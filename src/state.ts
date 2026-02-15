@@ -7,221 +7,233 @@ export type SortOrder = 'asc' | 'desc';
 export type ViewMode = 'tree' | 'flat';
 
 export interface FileSystemState {
-  currentPath: string;
-  currentNode: FileNode | null;
-  selectionIndex: number;
-  sortBy: SortField;
-  sortOrder: SortOrder;
-  viewMode: ViewMode;
-  files: FileNode[];
+	currentPath: string;
+	currentNode: FileNode | null;
+	selectionIndex: number;
+	sortBy: SortField;
+	sortOrder: SortOrder;
+	viewMode: ViewMode;
+	files: FileNode[];
 }
 
 export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = false) => {
-  const [currentNode, setCurrentNode] = useState<FileNode | null>(initialNode);
-  const [selectionIndex, setSelectionIndex] = useState(0);
-  const [sortBy, setSortBy] = useState<SortField>('size');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [viewMode, setViewMode] = useState<ViewMode>('flat');
-  const [error, setError] = useState<string | null>(null);
+	const [currentNode, setCurrentNode] = useState<FileNode | null>(initialNode);
+	const [selectionIndex, setSelectionIndex] = useState(0);
+	const [sortBy, setSortBy] = useState<SortField>('size');
+	const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+	const [viewMode, setViewMode] = useState<ViewMode>('flat');
+	const [error, setError] = useState<string | null>(null);
 
-  const findNodeByPath = useCallback((root: FileNode, targetPath: string): FileNode | null => {
-    const stack = [root];
-    while (stack.length > 0) {
-      const node = stack.pop();
-      if (!node) continue;
-      if (node.path === targetPath) return node;
-      if (node.children) {
-        stack.push(...node.children);
-      }
-    }
-    return null;
-  }, []);
+	const findNodeByPath = useCallback((root: FileNode, targetPath: string): FileNode | null => {
+		const stack = [root];
+		while (stack.length > 0) {
+			const node = stack.pop();
+			if (!node) continue;
+			if (node.path === targetPath) return node;
+			if (node.children) {
+				stack.push(...node.children);
+			}
+		}
+		return null;
+	}, []);
 
-  useEffect(() => {
-    if (!initialNode) {
-      if (currentNode) {
-        setCurrentNode(null);
-      }
-      setSelectionIndex(0);
-      return;
-    }
-    if (!currentNode) {
-      setCurrentNode(initialNode);
-      return;
-    }
+	useEffect(() => {
+		if (!initialNode) {
+			if (currentNode) {
+				setCurrentNode(null);
+			}
+			setSelectionIndex(0);
+			return;
+		}
+		if (!currentNode) {
+			setCurrentNode(initialNode);
+			return;
+		}
 
-    const updatedNode = findNodeByPath(initialNode, currentNode.path);
-    if (updatedNode && updatedNode !== currentNode) {
-      setCurrentNode(updatedNode);
-    }
-  }, [currentNode, findNodeByPath, initialNode]);
+		const updatedNode = findNodeByPath(initialNode, currentNode.path);
+		if (updatedNode && updatedNode !== currentNode) {
+			setCurrentNode(updatedNode);
+		}
+	}, [currentNode, findNodeByPath, initialNode]);
 
-  const compareNodes = useCallback((a: FileNode, b: FileNode) => {
-    let comparison = 0;
-    if (sortBy === 'name') {
-      comparison = a.name.localeCompare(b.name);
-    } else {
-      comparison = a.size - b.size;
-    }
-    return sortOrder === 'asc' ? comparison : -comparison;
-  }, [sortBy, sortOrder]);
+	const compareNodes = useCallback(
+		(a: FileNode, b: FileNode) => {
+			let comparison = 0;
+			if (sortBy === 'name') {
+				comparison = a.name.localeCompare(b.name);
+			} else {
+				comparison = a.size - b.size;
+			}
+			return sortOrder === 'asc' ? comparison : -comparison;
+		},
+		[sortBy, sortOrder],
+	);
 
-  const flattenTree = useCallback((node: FileNode): FileNode[] => {
-    if (!node.children) return [];
-    const collected: FileNode[] = [];
-    const stack: Array<{ children: FileNode[]; index: number }> = [
-      {
-        children: [...node.children]
-          .filter((child) => showHiddenFiles || !child.isHidden)
-          .sort(compareNodes),
-        index: 0,
-      },
-    ];
+	const flattenTree = useCallback(
+		(node: FileNode): FileNode[] => {
+			if (!node.children) return [];
+			const collected: FileNode[] = [];
+			const stack: Array<{ children: FileNode[]; index: number }> = [
+				{
+					children: [...node.children]
+						.filter((child) => showHiddenFiles || !child.isHidden)
+						.sort(compareNodes),
+					index: 0,
+				},
+			];
 
-    while (stack.length > 0) {
-      const frame = stack[stack.length - 1];
-      if (frame.index >= frame.children.length) {
-        stack.pop();
-        continue;
-      }
+			while (stack.length > 0) {
+				const frame = stack[stack.length - 1];
+				if (frame.index >= frame.children.length) {
+					stack.pop();
+					continue;
+				}
 
-      const child = frame.children[frame.index++];
-      collected.push(child);
+				const child = frame.children[frame.index++];
+				collected.push(child);
 
-      if (child.isDirectory && child.children && child.children.length > 0) {
-        const visibleChildren = showHiddenFiles
-          ? child.children
-          : child.children.filter((entry) => !entry.isHidden);
-        if (visibleChildren.length > 0) {
-          stack.push({ children: [...visibleChildren].sort(compareNodes), index: 0 });
-        }
-      }
-    }
+				if (child.isDirectory && child.children && child.children.length > 0) {
+					const visibleChildren = showHiddenFiles
+						? child.children
+						: child.children.filter((entry) => !entry.isHidden);
+					if (visibleChildren.length > 0) {
+						stack.push({ children: [...visibleChildren].sort(compareNodes), index: 0 });
+					}
+				}
+			}
 
-    return collected;
-  }, [compareNodes, showHiddenFiles]);
+			return collected;
+		},
+		[compareNodes, showHiddenFiles],
+	);
 
-  const files = useMemo(() => {
-    if (!currentNode) return [];
+	const files = useMemo(() => {
+		if (!currentNode) return [];
 
-    if (viewMode === 'flat') {
-      const list = currentNode.children ? [...currentNode.children] : [];
-      const visible = showHiddenFiles ? list : list.filter((entry) => !entry.isHidden);
-      return visible.sort(compareNodes);
-    }
+		if (viewMode === 'flat') {
+			const list = currentNode.children ? [...currentNode.children] : [];
+			const visible = showHiddenFiles ? list : list.filter((entry) => !entry.isHidden);
+			return visible.sort(compareNodes);
+		}
 
-    if (viewMode === 'tree') {
-      return flattenTree(currentNode);
-    }
-    return [];
-  }, [currentNode, sortBy, sortOrder, viewMode, flattenTree, compareNodes, showHiddenFiles]);
+		if (viewMode === 'tree') {
+			return flattenTree(currentNode);
+		}
+		return [];
+	}, [currentNode, sortBy, sortOrder, viewMode, flattenTree, compareNodes, showHiddenFiles]);
 
-  const moveSelection = useCallback((delta: number) => {
-    setSelectionIndex((prev) => {
-      const next = prev + delta;
-      if (next < 0) return 0;
-      if (next >= files.length) return Math.max(0, files.length - 1);
-      return next;
-    });
-  }, [files.length]);
+	const moveSelection = useCallback(
+		(delta: number) => {
+			setSelectionIndex((prev) => {
+				const next = prev + delta;
+				if (next < 0) return 0;
+				if (next >= files.length) return Math.max(0, files.length - 1);
+				return next;
+			});
+		},
+		[files.length],
+	);
 
-  const enterDirectory = useCallback(() => {
-    const selectedFile = files[selectionIndex];
-    if (selectedFile && selectedFile.isDirectory) {
-      setCurrentNode(selectedFile);
-      setSelectionIndex(0);
-    }
-  }, [files, selectionIndex]);
+	const enterDirectory = useCallback(() => {
+		const selectedFile = files[selectionIndex];
+		if (selectedFile && selectedFile.isDirectory) {
+			setCurrentNode(selectedFile);
+			setSelectionIndex(0);
+		}
+	}, [files, selectionIndex]);
 
-  const goUp = useCallback(() => {
-    if (currentNode?.parent) {
-      setCurrentNode(currentNode.parent);
-      setSelectionIndex(0);
-    }
-  }, [currentNode]);
+	const goUp = useCallback(() => {
+		if (currentNode?.parent) {
+			setCurrentNode(currentNode.parent);
+			setSelectionIndex(0);
+		}
+	}, [currentNode]);
 
-  const toggleSort = useCallback((field: SortField) => {
-    if (sortBy === field) {
-      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortBy(field);
-      setSortOrder('desc');
-    }
-  }, [sortBy]);
+	const toggleSort = useCallback(
+		(field: SortField) => {
+			if (sortBy === field) {
+				setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+			} else {
+				setSortBy(field);
+				setSortOrder('desc');
+			}
+		},
+		[sortBy],
+	);
 
-  const toggleViewMode = useCallback(() => {
-    const order: ViewMode[] = ['flat', 'tree'];
-    setViewMode((prev) => {
-      const index = order.indexOf(prev);
-      const next = order[(index + 1) % order.length];
-      return next ?? 'flat';
-    });
-    setSelectionIndex(0);
-  }, []);
+	const toggleViewMode = useCallback(() => {
+		const order: ViewMode[] = ['flat', 'tree'];
+		setViewMode((prev) => {
+			const index = order.indexOf(prev);
+			const next = order[(index + 1) % order.length];
+			return next ?? 'flat';
+		});
+		setSelectionIndex(0);
+	}, []);
 
-  const updateSizeUpwards = (node: FileNode, delta: number) => {
-    let curr: FileNode | undefined = node;
-    while (curr) {
-      curr.size += delta;
-      curr = curr.parent;
-    }
-  };
+	const updateSizeUpwards = (node: FileNode, delta: number) => {
+		let curr: FileNode | undefined = node;
+		while (curr) {
+			curr.size += delta;
+			curr = curr.parent;
+		}
+	};
 
-  const deleteSelected = useCallback(async (): Promise<FileNode | null> => {
-      if (!currentNode || !currentNode.children) return null;
+	const deleteSelected = useCallback(async (): Promise<FileNode | null> => {
+		if (!currentNode || !currentNode.children) return null;
 
-      const fileToDelete = files[selectionIndex];
-      if (!fileToDelete) return null;
+		const fileToDelete = files[selectionIndex];
+		if (!fileToDelete) return null;
 
-      try {
-        // Actual deletion
-        await fs.promises.rm(fileToDelete.path, { recursive: true, force: true });
+		try {
+			// Actual deletion
+			await fs.promises.rm(fileToDelete.path, { recursive: true, force: true });
 
-        const parentNode = fileToDelete.parent ?? currentNode;
-        if (!parentNode.children) return null;
+			const parentNode = fileToDelete.parent ?? currentNode;
+			if (!parentNode.children) return null;
 
-        // State update - Mutate in place to preserve tree consistency
-        const index = parentNode.children.indexOf(fileToDelete);
-        if (index > -1) {
-            parentNode.children.splice(index, 1);
-        }
+			// State update - Mutate in place to preserve tree consistency
+			const index = parentNode.children.indexOf(fileToDelete);
+			if (index > -1) {
+				parentNode.children.splice(index, 1);
+			}
 
-        // Propagate size change
-        const sizeDiff = -fileToDelete.size;
-        updateSizeUpwards(parentNode, sizeDiff);
+			// Propagate size change
+			const sizeDiff = -fileToDelete.size;
+			updateSizeUpwards(parentNode, sizeDiff);
 
-        // Force re-render by creating a shallow copy
-        setCurrentNode({ ...currentNode });
+			// Force re-render by creating a shallow copy
+			setCurrentNode({ ...currentNode });
 
-        setSelectionIndex((prev) => Math.max(0, Math.min(prev, files.length - 2)));
-        return fileToDelete;
-      } catch (err: any) {
-        setError(`Failed to delete: ${err.message}`);
-      }
+			setSelectionIndex((prev) => Math.max(0, Math.min(prev, files.length - 2)));
+			return fileToDelete;
+		} catch (err: any) {
+			setError(`Failed to delete: ${err.message}`);
+		}
 
-      return null;
-  }, [currentNode, files, selectionIndex]);
+		return null;
+	}, [currentNode, files, selectionIndex]);
 
-  useEffect(() => {
-    setSelectionIndex((prev) => {
-      if (files.length === 0) return 0;
-      return Math.min(prev, files.length - 1);
-    });
-  }, [files.length]);
+	useEffect(() => {
+		setSelectionIndex((prev) => {
+			if (files.length === 0) return 0;
+			return Math.min(prev, files.length - 1);
+		});
+	}, [files.length]);
 
-  return {
-    currentNode,
-    files,
-    selectionIndex,
-    sortBy,
-    sortOrder,
-    viewMode,
-    error,
-    moveSelection,
-    enterDirectory,
-    goUp,
-    toggleSort,
-    toggleViewMode,
-    deleteSelected
-  };
+	return {
+		currentNode,
+		files,
+		selectionIndex,
+		sortBy,
+		sortOrder,
+		viewMode,
+		error,
+		moveSelection,
+		enterDirectory,
+		goUp,
+		toggleSort,
+		toggleViewMode,
+		deleteSelected,
+	};
 };
