@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useInput, Key } from 'ink';
+import { useInput } from 'ink';
 import { ACTIONS, checkInput, ActionDefinition } from '../keys.js';
 
 interface UseScrollableListProps {

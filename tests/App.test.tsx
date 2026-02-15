@@ -41,7 +41,6 @@ jest.unstable_mockModule('fs', () => ({
 jest.unstable_mockModule('../src/components/Modal.js', () => import('./__mocks__/Modal.js'));
 
 const { App } = await import('../src/App.js');
-const { themes } = await import('../src/themes.js');
 
 describe('App Integration', () => {
 	const mockRootNode = {
@@ -79,14 +78,16 @@ describe('App Integration', () => {
 		],
 	};
 	// Fix parent refs
-	mockRootNode.children.forEach(c => c.parent = mockRootNode as any);
+	mockRootNode.children.forEach((c) => (c.parent = mockRootNode as any));
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-		mockScanDirectory.mockImplementation(async (path, parent, onProgress, progress, signal, onPartial) => {
-			// Simulate immediate result
-			return mockRootNode;
-		});
+		mockScanDirectory.mockImplementation(
+			async (path, parent, onProgress, progress, signal, onPartial) => {
+				// Simulate immediate result
+				return mockRootNode;
+			},
+		);
 	});
 
 	test('renders file list after scan', async () => {
@@ -97,7 +98,7 @@ describe('App Integration', () => {
 		for (let i = 0; i < 20; i++) {
 			output = lastFrame();
 			if (output && output.includes('dir1')) break;
-			await new Promise(r => setTimeout(r, 50));
+			await new Promise((r) => setTimeout(r, 50));
 		}
 
 		expect(output).toContain('dir1');
@@ -110,7 +111,7 @@ describe('App Integration', () => {
 		const { lastFrame, stdin } = render(<App startPath="/root" />);
 
 		// Wait for load
-		await new Promise(r => setTimeout(r, 100)); // Simplified wait
+		await new Promise((r) => setTimeout(r, 100)); // Simplified wait
 
 		// Initial selection is index 0 (dir1 - checking sorting, dir1 is 500, file1 is 300. Sort by size desc default? yes)
 		// Default sort: Size Desc.
@@ -118,7 +119,7 @@ describe('App Integration', () => {
 
 		// dir1 is at top. Enter it.
 		stdin.write('l'); // Right arrow / Enter
-		await new Promise(r => setTimeout(r, 50));
+		await new Promise((r) => setTimeout(r, 50));
 
 		const output2 = lastFrame();
 		// Should show empty dir message or content of dir1 (empty in mock)
@@ -128,15 +129,15 @@ describe('App Integration', () => {
 	// Skipped due to input simulation issues with updated ink-testing-library
 	test.skip('deletes a file', async () => {
 		const { lastFrame, stdin } = render(<App startPath="/root" />);
-		await new Promise(r => setTimeout(r, 100));
+		await new Promise((r) => setTimeout(r, 100));
 
 		// Move to file1.txt (index 1)
 		stdin.write('j');
-		await new Promise(r => setTimeout(r, 50));
+		await new Promise((r) => setTimeout(r, 50));
 
 		// Delete
 		stdin.write('d');
-		await new Promise(r => setTimeout(r, 50));
+		await new Promise((r) => setTimeout(r, 50));
 
 		let output = lastFrame();
 		expect(output).toContain('Delete file1.txt?');
@@ -144,7 +145,7 @@ describe('App Integration', () => {
 		// Confirm
 		mockRm.mockResolvedValue(undefined);
 		stdin.write('y');
-		await new Promise(r => setTimeout(r, 50));
+		await new Promise((r) => setTimeout(r, 50));
 
 		output = lastFrame();
 		// file1.txt should be gone

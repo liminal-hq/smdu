@@ -14,7 +14,7 @@ describe('HelpModal', () => {
 
 		let output = lastFrame();
 		if (!output) {
-			await new Promise(r => setTimeout(r, 100));
+			await new Promise((r) => setTimeout(r, 100));
 			output = lastFrame();
 		}
 
@@ -28,7 +28,7 @@ describe('HelpModal', () => {
 		const { lastFrame } = render(<HelpModal theme={themes.default} />);
 		let output = lastFrame();
 		if (!output) {
-			await new Promise(r => setTimeout(r, 100));
+			await new Promise((r) => setTimeout(r, 100));
 			output = lastFrame();
 		}
 
@@ -41,7 +41,7 @@ describe('HelpModal', () => {
 		const { lastFrame } = render(<HelpModal theme={themes.default} />);
 		let output = lastFrame();
 		if (!output) {
-			await new Promise(r => setTimeout(r, 100));
+			await new Promise((r) => setTimeout(r, 100));
 			output = lastFrame();
 		}
 		expect(output).toBeDefined();

@@ -124,9 +124,10 @@ export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
 					setDetails({ stats, typeLabel });
 					setLoading(false);
 				}
-			} catch (err: any) {
+			} catch (err) {
 				if (!cancelled) {
-					setError(err?.message ?? 'Unable to load file details.');
+					const message = err instanceof Error ? err.message : 'Unable to load file details.';
+					setError(message);
 					setLoading(false);
 				}
 			}

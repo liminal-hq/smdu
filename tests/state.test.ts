@@ -151,7 +151,7 @@ describe('useFileSystem', () => {
 		children[0].parent = largeRoot;
 
 		const { result, rerender } = renderHook(({ root }) => useFileSystem(root), {
-			initialProps: { root: largeRoot }
+			initialProps: { root: largeRoot },
 		});
 
 		// Enter dir0

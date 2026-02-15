@@ -209,8 +209,9 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 
 			setSelectionIndex((prev) => Math.max(0, Math.min(prev, files.length - 2)));
 			return fileToDelete;
-		} catch (err: any) {
-			setError(`Failed to delete: ${err.message}`);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			setError(`Failed to delete: ${message}`);
 		}
 
 		return null;

@@ -13,7 +13,7 @@ describe('ScanStatus', () => {
 				summary={summary}
 				currentPath="/test/path"
 				spinnerFrame="|"
-			/>
+			/>,
 		);
 		const output = lastFrame();
 

@@ -10,7 +10,7 @@ describe('StatusBanner', () => {
 		const { lastFrame } = render(
 			<StatusBanner theme={themes.default}>
 				<Text>Banner Content</Text>
-			</StatusBanner>
+			</StatusBanner>,
 		);
 		const output = lastFrame();
 		expect(output).toContain('Banner Content');
@@ -20,7 +20,7 @@ describe('StatusBanner', () => {
 		const { lastFrame } = render(
 			<StatusBanner theme={themes.default}>
 				<Text>Content</Text>
-			</StatusBanner>
+			</StatusBanner>,
 		);
 		const output = lastFrame();
 		// The divider is a line of dashes

@@ -19,7 +19,7 @@ describe('StatusPanel', () => {
 				units="iec"
 				width={40}
 				height={10}
-			/>
+			/>,
 		);
 		const output = lastFrame();
 
@@ -46,7 +46,7 @@ describe('StatusPanel', () => {
 				units="si"
 				width={40}
 				height={10}
-			/>
+			/>,
 		);
 		const output = lastFrame();
 

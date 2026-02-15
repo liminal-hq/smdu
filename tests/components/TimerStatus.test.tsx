@@ -17,7 +17,7 @@ describe('TimerStatus', () => {
 				deletedItems={0}
 				freedBytes={0}
 				formatSize={formatSize}
-			/>
+			/>,
 		);
 		const output = lastFrame();
 		expect(output).toContain('Timer: Inactive');
@@ -35,7 +35,7 @@ describe('TimerStatus', () => {
 				deletedItems={2}
 				freedBytes={1024}
 				formatSize={formatSize}
-			/>
+			/>,
 		);
 		const output = lastFrame();
 		expect(output).toContain('Timer: 04:59 remaining of 05:00');
@@ -52,7 +52,7 @@ describe('TimerStatus', () => {
 				deletedItems={5}
 				freedBytes={2048}
 				formatSize={formatSize}
-			/>
+			/>,
 		);
 		const output = lastFrame();
 		expect(output).toContain('Time is up!');
