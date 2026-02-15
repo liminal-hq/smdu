@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,14 +29,25 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Build Summary
+        if: always()
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Build Succeeded" >> $GITHUB_STEP_SUMMARY
+            echo "Output size: $(du -sh dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Build Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -50,14 +61,25 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Lint Summary
+        if: always()
+        run: |
+          echo "## Lint Summary" >> $GITHUB_STEP_SUMMARY
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Lint Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Lint Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Check logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
+
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -70,3 +92,14 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "## Test Summary" >> $GITHUB_STEP_SUMMARY
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Tests Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Tests Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Check logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
