@@ -102,7 +102,7 @@ export const App: React.FC<AppProps> = ({
 	const partialUpdateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const timerAlertedRef = useRef(false);
 
-	const [timerIndex, setTimerIndex] = useState(-1);
+	const [, setTimerIndex] = useState(-1);
 	const [timerState, setTimerState] = useState({
 		status: 'idle' as 'idle' | 'running' | 'completed',
 		durationSeconds: 0,
@@ -223,14 +223,15 @@ export const App: React.FC<AppProps> = ({
 				updateRootNode(root);
 				setLoading(false);
 				setIsScanning(false);
-			} catch (err: any) {
+			} catch (err) {
 				if (err instanceof ScanCancelledError) {
 					setLoading(false);
 					setIsScanning(false);
 					exit();
 					return;
 				}
-				setError(err.message);
+				const message = err instanceof Error ? err.message : String(err);
+				setError(message);
 				setLoading(false);
 				setIsScanning(false);
 			}

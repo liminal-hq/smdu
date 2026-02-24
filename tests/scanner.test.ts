@@ -1,8 +1,8 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 // Use generic to type the mock functions correctly
-const mockLstat = jest.fn<(...args: any[]) => Promise<any>>();
-const mockReaddir = jest.fn<(...args: any[]) => Promise<any>>();
+const mockLstat = jest.fn();
+const mockReaddir = jest.fn();
 
 // Mock fs module
 jest.unstable_mockModule('fs', () => ({
@@ -61,7 +61,7 @@ describe('scanDirectory', () => {
 
 	it('should scan a directory with children correctly', async () => {
 		// Mock for root dir
-		mockLstat.mockImplementation(async (p: any) => {
+		mockLstat.mockImplementation(async (p: string) => {
 			if (p === '/test') {
 				return {
 					isDirectory: () => true,

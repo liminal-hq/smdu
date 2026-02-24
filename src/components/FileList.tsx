@@ -257,7 +257,6 @@ export const FileList: React.FC<FileListProps> = ({
 				const barEmpty = Math.max(0, columnLayout.barWidth - barFilled);
 
 				const heatmapColour = getHeatmapColour(barRatio);
-				const barColour = heatmapEnabled ? heatmapColour : theme.colours.bar;
 				const barFilledStr = '#'.repeat(barFilled);
 				const barEmptyStr = '.'.repeat(barEmpty);
 

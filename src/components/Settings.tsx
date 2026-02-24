@@ -135,7 +135,7 @@ export const Settings: React.FC<SettingsProps> = ({
 		return map;
 	}, [rows]);
 
-	const { selectedIndex, scrollOffset } = useScrollableList({
+	const { selectedIndex } = useScrollableList({
 		itemsCount: items.length,
 		height: contentRows,
 		onClose: onBack,
