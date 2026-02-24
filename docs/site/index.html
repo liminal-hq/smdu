@@ -43,11 +43,16 @@
 						animation: {
 							'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 							float: 'float 6s ease-in-out infinite',
+							'fade-in-up': 'fadeInUp 0.7s ease-out both',
 						},
 						keyframes: {
 							float: {
 								'0%, 100%': { transform: 'translateY(0)' },
 								'50%': { transform: 'translateY(-10px)' },
+							},
+							fadeInUp: {
+								'0%': { opacity: '0', transform: 'translateY(10px)' },
+								'100%': { opacity: '1', transform: 'translateY(0)' },
 							},
 						},
 					},
@@ -119,13 +124,14 @@
 								class="hover:text-brand-400 transition-colors px-3 py-2 rounded-md text-sm font-medium"
 								>Install</a
 							>
-							<a
-								href="https://github.com/ScottMorris/smdu"
-								target="_blank"
-								class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2"
-							>
-								<i class="fab fa-github"></i> GitHub
-							</a>
+								<a
+									href="https://github.com/ScottMorris/smdu"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2"
+								>
+									<i class="fab fa-github"></i> GitHub
+								</a>
 						</div>
 					</div>
 
@@ -215,6 +221,7 @@
 					<a
 						href="https://github.com/ScottMorris/smdu"
 						target="_blank"
+						rel="noopener noreferrer"
 						class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-lg font-semibold transition-all"
 					>
 						View on GitHub
@@ -261,83 +268,80 @@
 							</div>
 						</div>
 					</div>
-					<!-- Terminal Body -->
-					<div class="p-6 font-mono text-sm md:text-base leading-relaxed overflow-x-auto">
-						<div class="grid grid-cols-[auto_1fr_auto] gap-x-6 gap-y-1 text-gray-300">
-							<!-- Header Row -->
-							<div class="text-gray-500 border-b border-gray-700 pb-1 mb-2">
-								/home/user/projects/smdu
+						<!-- Terminal Body -->
+						<div class="p-4 md:p-5 font-mono text-[13px] md:text-[14px] leading-6 bg-[#111418]">
+							<div class="flex items-center justify-between gap-4 text-[#8ca3bf]">
+								<div><span>[Flat]</span> <span class="text-gray-300">/home/user/projects/smdu</span></div>
+								<div class="font-bold shrink-0">smdu v0.0.1</div>
 							</div>
-							<div class="text-gray-500 border-b border-gray-700 pb-1 mb-2"></div>
-							<div class="text-gray-500 border-b border-gray-700 pb-1 mb-2 text-right">Size</div>
 
-							<!-- Rows -->
-							<div class="text-brand-400 font-bold flex items-center gap-2">
-								<i class="fas fa-folder text-blue-400"></i> node_modules
-							</div>
-							<div class="text-gray-600">
-								[<span class="text-brand-400">####################</span>] 65%
-							</div>
-							<div class="text-right text-brand-400">450 MB</div>
+							<div class="overflow-hidden whitespace-nowrap text-[#3f4d63]">--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
 
-							<div class="flex items-center gap-2">
-								<i class="fas fa-folder text-blue-400"></i> .git
+							<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 text-[#8ca3bf]">
+								<div>Path</div>
+								<div class="text-right">Size</div>
+								<div></div>
+								<div>Usage</div>
 							</div>
-							<div class="text-gray-600">
-								[<span class="text-brand-400">#####</span>...............] 15%
-							</div>
-							<div class="text-right">105 MB</div>
 
-							<div class="flex items-center gap-2">
-								<i class="fas fa-folder text-blue-400"></i> dist
+							<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 text-[#3f4d63]">
+								<div class="overflow-hidden whitespace-nowrap">----------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap text-right">----------------------</div>
+								<div class="overflow-hidden whitespace-nowrap text-right">----------------</div>
+								<div class="overflow-hidden whitespace-nowrap">----------------------------------------------------------------------------------------------------</div>
 							</div>
-							<div class="text-gray-600">
-								[<span class="text-brand-400">###</span>.................] 10%
-							</div>
-							<div class="text-right">70 MB</div>
 
-							<div class="flex items-center gap-2">
-								<i class="fas fa-folder text-blue-400"></i> src
+							<div class="text-gray-300">
+								<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 items-center">
+									<div><span class="bg-[#2a3340] text-[#dce6f5] px-1">/ node_modules/</span></div>
+									<div class="text-right">450 MB</div>
+									<div class="text-right text-[#8ca3bf]">65%</div>
+									<div class="text-right"><span class="inline-block w-[40ch] text-left whitespace-nowrap">[<span class="text-[#ff7a7a]">########################</span><span class="text-gray-500">..............</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 items-center">
+									<div>/ .git</div>
+									<div class="text-right">105 MB</div>
+									<div class="text-right text-[#8ca3bf]">15%</div>
+									<div class="text-right"><span class="inline-block w-[40ch] text-left whitespace-nowrap">[<span class="text-[#f2de5b]">######</span><span class="text-gray-500">................................</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 items-center">
+									<div>/ dist</div>
+									<div class="text-right">70 MB</div>
+									<div class="text-right text-[#8ca3bf]">10%</div>
+									<div class="text-right"><span class="inline-block w-[40ch] text-left whitespace-nowrap">[<span class="text-[#45d07d]">####</span><span class="text-gray-500">..................................</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 items-center">
+									<div>/ src</div>
+									<div class="text-right">55 MB</div>
+									<div class="text-right text-[#8ca3bf]">8%</div>
+									<div class="text-right"><span class="inline-block w-[40ch] text-left whitespace-nowrap">[<span class="text-gray-500">......................................</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 items-center">
+									<div class="text-[#8bd5ff]">pnpm-lock.yaml</div>
+									<div class="text-right">450 KB</div>
+									<div class="text-right text-[#8ca3bf]">&lt;1%</div>
+									<div class="text-right"><span class="inline-block w-[40ch] text-left whitespace-nowrap">[<span class="text-gray-500">......................................</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 items-center">
+									<div class="text-[#f6d774]">README.md</div>
+									<div class="text-right">4 KB</div>
+									<div class="text-right text-[#8ca3bf]">&lt;1%</div>
+									<div class="text-right"><span class="inline-block w-[40ch] text-left whitespace-nowrap">[<span class="text-gray-500">......................................</span>]</span></div>
+								</div>
 							</div>
-							<div class="text-gray-600">
-								[<span class="text-brand-400">##</span>..................] 8%
-							</div>
-							<div class="text-right">55 MB</div>
 
-							<div class="flex items-center gap-2 text-yellow-200">
-								<i class="fas fa-file text-gray-400"></i> pnpm-lock.yaml
-							</div>
-							<div class="text-gray-600">
-								[<span class="text-brand-400">.</span>...................] <1%
-							</div>
-							<div class="text-right">450 KB</div>
+							<div class="overflow-hidden whitespace-nowrap text-[#3f4d63]">--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
 
-							<div class="flex items-center gap-2 text-purple-300">
-								<i class="fas fa-file-code text-gray-400"></i> README.md
+							<div class="flex items-center justify-between gap-4 text-[11px] md:text-xs">
+								<div class="text-[#d8e1ef]">
+									Total: 680 MB (125 items) | Scan: <span class="text-[#45d07d]">Done</span>
+								</div>
+								<div class="text-[#7d8ca1] whitespace-nowrap">Help: ?  Info: i  Panel: p  Timer: T  Rescan: R</div>
 							</div>
-							<div class="text-gray-600">
-								[<span class="text-brand-400">.</span>...................] <1%
-							</div>
-							<div class="text-right">4 KB</div>
-						</div>
-
-						<!-- Footer Status Bar -->
-						<div
-							class="border-t border-gray-700 mt-6 pt-2 flex flex-wrap justify-between text-gray-400 text-xs md:text-sm"
-						>
-							<div>Total: <span class="text-white">680 MB</span> (125 items)</div>
-							<div>Scan: <span class="text-green-400">Done</span></div>
-						</div>
-						<div class="mt-1 text-gray-500 text-xs flex flex-wrap gap-4">
-							<span>Help: <span class="text-white">?</span></span>
-							<span>Info: <span class="text-white">i</span></span>
-							<span>Panel: <span class="text-white">p</span></span>
-							<span>Timer: <span class="text-white">T</span></span>
 						</div>
 					</div>
 				</div>
-			</div>
-		</section>
+			</section>
 
 		<!-- Features Grid -->
 		<section id="features" class="py-24 bg-dark-surface/50">
@@ -481,16 +485,24 @@
 					<span class="text-gray-500 text-sm">© 2026 Scott Morris</span>
 				</div>
 
-				<div class="flex gap-6 text-gray-400">
-					<a href="https://github.com/ScottMorris/smdu" class="hover:text-white transition-colors">
-						<i class="fab fa-github text-xl"></i>
-					</a>
-					<a href="#" class="hover:text-white transition-colors">
-						<i class="fab fa-twitter text-xl"></i>
-					</a>
+					<div class="flex gap-6 text-gray-400">
+						<a
+							href="https://github.com/ScottMorris/smdu"
+							class="hover:text-white transition-colors"
+							aria-label="GitHub repository"
+						>
+							<i class="fab fa-github text-xl"></i>
+						</a>
+						<a
+							href="https://github.com/ScottMorris/smdu/issues"
+							class="hover:text-white transition-colors"
+							aria-label="Issue tracker"
+						>
+							<i class="fas fa-bug text-xl"></i>
+						</a>
+					</div>
 				</div>
-			</div>
-		</footer>
+			</footer>
 
 		<script>
 			function copyInstall() {
