@@ -1,9 +1,10 @@
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import React from 'react';
 import { render } from 'ink-testing-library';
+import type { FileNode } from '../../src/scanner.js';
 
-const mockLstat = jest.fn<(...args: any[]) => Promise<any>>();
-const mockFileTypeFromFile = jest.fn<(...args: any[]) => Promise<any>>();
+const mockLstat = jest.fn();
+const mockFileTypeFromFile = jest.fn();
 
 jest.unstable_mockModule('fs', () => ({
 	default: {
@@ -47,12 +48,13 @@ describe('InfoModal', () => {
 			atime: mockDate,
 		});
 
-		const node = {
+		const node: FileNode = {
 			name: 'dir1',
 			path: '/path/to/dir1',
 			size: 10240,
 			isDirectory: true,
 			isHidden: false,
+			mtime: mockDate,
 			children: [
 				{
 					name: 'file1',
@@ -60,15 +62,16 @@ describe('InfoModal', () => {
 					size: 100,
 					isDirectory: false,
 					isHidden: false,
-					children: [],
+					mtime: mockDate,
 					parent: undefined,
 				},
 			],
 		};
-		// Circular parent ref
-		node.children[0].parent = node as any;
+		node.children?.forEach((child) => {
+			child.parent = node;
+		});
 
-		const { lastFrame } = render(<InfoModal theme={themes.default} node={node as any} />);
+		const { lastFrame } = render(<InfoModal theme={themes.default} node={node} />);
 
 		// Wait for async loading
 		let output = lastFrame();
@@ -104,15 +107,16 @@ describe('InfoModal', () => {
 			mime: 'image/png',
 		});
 
-		const node = {
+		const node: FileNode = {
 			name: 'image.png',
 			path: '/path/to/image.png',
 			size: 512,
 			isDirectory: false,
 			isHidden: false,
+			mtime: mockDate,
 		};
 
-		const { lastFrame } = render(<InfoModal theme={themes.default} node={node as any} />);
+		const { lastFrame } = render(<InfoModal theme={themes.default} node={node} />);
 
 		let output = lastFrame();
 		for (let i = 0; i < 20; i++) {

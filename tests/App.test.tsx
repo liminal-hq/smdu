@@ -1,6 +1,7 @@
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import React from 'react';
 import { render } from 'ink-testing-library';
+import type { FileNode } from '../src/scanner.js';
 
 // Mock scanner
 const mockScanDirectory = jest.fn();
@@ -43,12 +44,13 @@ jest.unstable_mockModule('../src/components/Modal.js', () => import('./__mocks__
 const { App } = await import('../src/App.js');
 
 describe('App Integration', () => {
-	const mockRootNode = {
+	const mockRootNode: FileNode = {
 		name: 'root',
 		path: '/root',
 		size: 1000,
 		isDirectory: true,
 		isHidden: false,
+		mtime: new Date(),
 		children: [
 			{
 				name: 'dir1',
@@ -56,7 +58,8 @@ describe('App Integration', () => {
 				size: 500,
 				isDirectory: true,
 				isHidden: false,
-				parent: undefined, // Fix circular ref later
+				mtime: new Date(),
+				parent: undefined,
 				children: [],
 			},
 			{
@@ -65,6 +68,7 @@ describe('App Integration', () => {
 				size: 300,
 				isDirectory: false,
 				isHidden: false,
+				mtime: new Date(),
 				parent: undefined,
 			},
 			{
@@ -73,17 +77,19 @@ describe('App Integration', () => {
 				size: 200,
 				isDirectory: false,
 				isHidden: false,
+				mtime: new Date(),
 				parent: undefined,
 			},
 		],
 	};
-	// Fix parent refs
-	mockRootNode.children.forEach((c) => (c.parent = mockRootNode as any));
+	mockRootNode.children?.forEach((child) => {
+		child.parent = mockRootNode;
+	});
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockScanDirectory.mockImplementation(
-			async (path, parent, onProgress, progress, signal, onPartial) => {
+			async (_path, _parent, _onProgress, _progress, _signal, _onPartial) => {
 				// Simulate immediate result
 				return mockRootNode;
 			},

@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
+import type { FileNode } from '../src/scanner.js';
 
 // Mock fs
 const mockRm = jest.fn<() => Promise<void>>();
@@ -19,22 +20,21 @@ jest.unstable_mockModule('fs', () => ({
 
 // Import dynamically after mocking
 const { useFileSystem } = await import('../src/state.js');
-const { FileNode } = await import('../src/scanner.js');
 
 // Helper to create nodes
 const createNode = (
 	name: string,
 	size: number,
 	isDirectory: boolean,
-	children: any[] = [],
-): any => {
-	const node = {
+	children: FileNode[] = [],
+): FileNode => {
+	const node: FileNode = {
 		name,
 		path: `/${name}`,
 		size,
 		isDirectory,
 		isHidden: name.startsWith('.'),
-		children,
+		children: isDirectory ? children : undefined,
 		mtime: new Date(),
 		parent: undefined,
 	};
@@ -43,7 +43,7 @@ const createNode = (
 };
 
 describe('useFileSystem', () => {
-	let root: any;
+	let root: FileNode;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -73,11 +73,11 @@ describe('useFileSystem', () => {
 			},
 		);
 
-		expect(result.current.files.find((entry: any) => entry.name === '.env')).toBeUndefined();
+		expect(result.current.files.find((entry) => entry.name === '.env')).toBeUndefined();
 
 		rerender({ showHidden: true });
 
-		expect(result.current.files.find((entry: any) => entry.name === '.env')).toBeDefined();
+		expect(result.current.files.find((entry) => entry.name === '.env')).toBeDefined();
 	});
 
 	it('should move selection', () => {
@@ -134,7 +134,7 @@ describe('useFileSystem', () => {
 		expect(mockRm).toHaveBeenCalledWith('/file2.txt', { recursive: true, force: true });
 
 		expect(result.current.files).toHaveLength(2);
-		expect(result.current.files.find((f: any) => f.name === 'file2.txt')).toBeUndefined();
+		expect(result.current.files.find((entry) => entry.name === 'file2.txt')).toBeUndefined();
 
 		// Size should update for currentNode (root)
 		expect(result.current.currentNode?.size).toBe(400); // 600 - 200
