@@ -4,6 +4,28 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>SMDU | See My Disk Usage</title>
+		<meta
+			name="description"
+			content="SMDU is a modern terminal-based disk usage analyser inspired by ncdu, built with TypeScript, React, and Ink."
+		/>
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="SMDU | See My Disk Usage" />
+		<meta
+			property="og:description"
+			content="SMDU is a modern terminal-based disk usage analyser inspired by ncdu, built with TypeScript, React, and Ink."
+		/>
+		<meta property="og:site_name" content="SMDU" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="SMDU | See My Disk Usage" />
+		<meta
+			name="twitter:description"
+			content="SMDU is a modern terminal-based disk usage analyser inspired by ncdu, built with TypeScript, React, and Ink."
+		/>
+		<link
+			rel="icon"
+			type="image/svg+xml"
+			href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%23bd93f9'/%3E%3Ctext x='50%25' y='52%25' text-anchor='middle' dominant-baseline='middle' font-family='JetBrains Mono, monospace' font-size='26' font-weight='700' fill='%230b0b0b'%3E%26gt%3B_%3C/text%3E%3C/svg%3E"
+		/>
 		<script src="https://cdn.tailwindcss.com"></script>
 		<link
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -147,24 +169,31 @@
 				</div>
 			</div>
 			<!-- Mobile Menu -->
-			<div id="mobile-menu" class="hidden md:hidden bg-dark-surface border-b border-dark-border">
-				<div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-					<a
-						href="#features"
-						class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
+				<div id="mobile-menu" class="hidden md:hidden bg-dark-surface border-b border-dark-border">
+					<div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+						<a
+							href="#features"
+							class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
 						>Features</a
 					>
 					<a href="#demo" class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
 						>Demo</a
 					>
-					<a
-						href="#install"
-						class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
-						>Install</a
-					>
+						<a
+							href="#install"
+							class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
+							>Install</a
+						>
+						<a
+							href="https://github.com/ScottMorris/smdu"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="block hover:bg-white/5 px-3 py-2 rounded-md text-base font-medium"
+							>GitHub</a
+						>
+					</div>
 				</div>
-			</div>
-		</nav>
+			</nav>
 
 		<!-- Hero Section -->
 		<section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -492,7 +521,7 @@
 
 					<div class="space-y-6">
 						<div>
-							<label class="block text-sm font-medium text-gray-400 mb-2">Clone & Build</label>
+							<label class="block text-sm font-medium text-gray-400 mb-2">Clone Repository</label>
 							<div
 								class="flex items-center gap-4 bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-sm overflow-x-auto"
 							>
@@ -549,15 +578,18 @@
 			</div>
 		</section>
 
-		<!-- Footer -->
-		<footer class="border-t border-dark-border py-12 bg-dark-surface/30">
-			<div
-				class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6"
-			>
-				<div class="flex items-center gap-2">
-					<span class="font-bold text-lg">smdu</span>
-					<span class="text-gray-500 text-sm">© 2026 Scott Morris</span>
-				</div>
+			<!-- Footer -->
+			<footer class="border-t border-dark-border py-12 bg-dark-surface/30">
+				<div
+					class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6"
+				>
+					<div class="text-center md:text-left">
+						<div class="flex items-center justify-center md:justify-start gap-2">
+							<span class="font-bold text-lg">smdu</span>
+							<span class="text-gray-500 text-sm">© 2026 Liminal HQ, Scott Morris</span>
+						</div>
+						<div class="text-gray-500 text-sm mt-1">A Liminal HQ project.</div>
+					</div>
 
 					<div class="flex gap-6 text-gray-400">
 						<a
