@@ -1,3 +1,8 @@
+// Main Ink application container for scan state, navigation, and overlays
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { Header } from './components/Header.js';
@@ -56,9 +61,7 @@ export const App: React.FC<AppProps> = ({
 
 	// Determine initial theme: CLI arg > Config > Default
 	const configTheme = getThemeFromConfig();
-	const [currentThemeName, setCurrentThemeName] = useState(
-		initialThemeName !== 'default' ? initialThemeName : configTheme,
-	);
+	const [currentThemeName, setCurrentThemeName] = useState(initialThemeName ?? configTheme);
 	const theme = getTheme(currentThemeName || 'default');
 
 	// Determine initial units

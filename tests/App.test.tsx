@@ -1,3 +1,8 @@
+// Integration tests for app-level scanning, rendering, and interaction flows
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import React from 'react';
 import { render } from 'ink-testing-library';
@@ -112,7 +117,9 @@ describe('App Integration', () => {
 		expect(output).toContain('file2.log');
 	});
 
-	// Skipped due to input simulation issues with updated ink-testing-library
+	// Intentionally skipped: input simulation is currently unreliable with the React 19 / Ink v6
+	// test stack in ink-testing-library, which causes flaky false negatives in this suite.
+	// Keep this test as documentation of intended behaviour until upstream input handling stabilizes.
 	test.skip('navigates selection', async () => {
 		const { lastFrame, stdin } = render(<App startPath="/root" />);
 
@@ -132,7 +139,9 @@ describe('App Integration', () => {
 		expect(output2).toContain('This directory is empty');
 	});
 
-	// Skipped due to input simulation issues with updated ink-testing-library
+	// Intentionally skipped for the same reason as above: keyboard-driven confirm flows are flaky
+	// in the current ink-testing-library setup and can fail nondeterministically.
+	// We keep the scenario here so expected delete UX remains explicit for future re-enablement.
 	test.skip('deletes a file', async () => {
 		const { lastFrame, stdin } = render(<App startPath="/root" />);
 		await new Promise((r) => setTimeout(r, 100));
