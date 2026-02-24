@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+// CLI entrypoint that parses options and renders the Ink app
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React from 'react';
 import { render } from 'ink';
 import { Command } from 'commander';
@@ -12,7 +17,7 @@ program
 	.description('See My Disk Usage - A clone of ncdu')
 	.version(VERSION, '-v, --version')
 	.argument('[path]', 'Path to scan', process.cwd())
-	.option('-t, --theme <theme>', 'Theme (default, dracula)')
+	.option('-t, --theme <theme>', 'Theme (default, classic, dracula)')
 	.option('-u, --units <units>', 'Display units (iec, si)')
 	.option('--no-fullscreen', 'Do not use alternate screen buffer')
 	.action((pathStr, options) => {

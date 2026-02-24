@@ -28,7 +28,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/smdu.git
+git clone https://github.com/ScottMorris/smdu.git
 cd smdu
 
 # Install dependencies
