@@ -268,8 +268,8 @@
 							</div>
 						</div>
 					</div>
-						<!-- Terminal Body -->
-						<div class="p-4 md:p-5 font-mono text-[13px] md:text-[14px] leading-6 bg-[#111418]">
+						<!-- Terminal Body (Desktop) -->
+						<div class="hidden md:block p-4 md:p-5 font-mono text-[13px] md:text-[14px] leading-6 bg-[#111418]">
 							<div class="flex items-center justify-between gap-4 text-[#8ca3bf]">
 								<div><span>[Flat]</span> <span class="text-gray-300">/home/user/projects/smdu</span></div>
 								<div class="font-bold shrink-0">smdu v0.0.1</div>
@@ -285,10 +285,10 @@
 							</div>
 
 							<div class="grid grid-cols-[minmax(0,1fr)_92px_64px_minmax(220px,1fr)] gap-x-4 text-[#3f4d63]">
-								<div class="overflow-hidden whitespace-nowrap">----------------------------------------------------------------------------------------------------</div>
-								<div class="overflow-hidden whitespace-nowrap text-right">----------------------</div>
-								<div class="overflow-hidden whitespace-nowrap text-right">----------------</div>
-								<div class="overflow-hidden whitespace-nowrap">----------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap">--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap text-right">--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap text-right">--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap">--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
 							</div>
 
 							<div class="text-gray-300">
@@ -337,6 +337,80 @@
 									Total: 680 MB (125 items) | Scan: <span class="text-[#45d07d]">Done</span>
 								</div>
 								<div class="text-[#7d8ca1] whitespace-nowrap">Help: ?  Info: i  Panel: p  Timer: T  Rescan: R</div>
+							</div>
+						</div>
+
+						<!-- Terminal Body (Mobile) -->
+						<div class="md:hidden p-3 font-mono text-[12px] leading-6 bg-[#111418]">
+							<div class="flex items-center justify-between gap-2 text-[#8ca3bf]">
+								<div><span>[Flat]</span> <span class="text-gray-300">/home/user/projects/smdu</span></div>
+								<div class="font-bold shrink-0">smdu v0.0.1</div>
+							</div>
+
+							<div class="overflow-hidden whitespace-nowrap text-[#3f4d63]">--------------------------------------------------------------------------------------------------------------</div>
+
+							<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 text-[#8ca3bf]">
+								<div>Path</div>
+								<div class="text-right">Size</div>
+								<div></div>
+								<div>Usage</div>
+							</div>
+
+							<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 text-[#3f4d63]">
+								<div class="overflow-hidden whitespace-nowrap">--------------------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap text-right">--------------------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap text-right">--------------------------------------------------------------------------------------------------------------</div>
+								<div class="overflow-hidden whitespace-nowrap">--------------------------------------------------------------------------------------------------------------</div>
+							</div>
+
+							<div class="text-gray-300">
+								<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 items-center">
+									<div class="truncate whitespace-nowrap"><span class="bg-[#2a3340] text-[#dce6f5] px-1">/ node_modules/</span></div>
+									<div class="text-right">450 MB</div>
+									<div class="text-right text-[#8ca3bf]">65%</div>
+									<div class="text-right"><span class="inline-block w-[16ch] text-left whitespace-nowrap">[<span class="text-[#ff7a7a]">##########</span><span class="text-gray-500">....</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 items-center">
+									<div class="truncate whitespace-nowrap">/ .git</div>
+									<div class="text-right">105 MB</div>
+									<div class="text-right text-[#8ca3bf]">15%</div>
+									<div class="text-right"><span class="inline-block w-[16ch] text-left whitespace-nowrap">[<span class="text-[#f2de5b]">###</span><span class="text-gray-500">...........</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 items-center">
+									<div class="truncate whitespace-nowrap">/ dist</div>
+									<div class="text-right">70 MB</div>
+									<div class="text-right text-[#8ca3bf]">10%</div>
+									<div class="text-right"><span class="inline-block w-[16ch] text-left whitespace-nowrap">[<span class="text-[#45d07d]">##</span><span class="text-gray-500">............</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 items-center">
+									<div class="truncate whitespace-nowrap">/ src</div>
+									<div class="text-right">55 MB</div>
+									<div class="text-right text-[#8ca3bf]">8%</div>
+									<div class="text-right"><span class="inline-block w-[16ch] text-left whitespace-nowrap">[<span class="text-gray-500">..............</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 items-center">
+									<div class="text-[#8bd5ff] truncate whitespace-nowrap">pnpm-lock.yaml</div>
+									<div class="text-right">450 KB</div>
+									<div class="text-right text-[#8ca3bf]">&lt;1%</div>
+									<div class="text-right"><span class="inline-block w-[16ch] text-left whitespace-nowrap">[<span class="text-gray-500">..............</span>]</span></div>
+								</div>
+								<div class="grid grid-cols-[minmax(0,1fr)_64px_44px_112px] gap-x-2 items-center">
+									<div class="text-[#f6d774] truncate whitespace-nowrap">README.md</div>
+									<div class="text-right">4 KB</div>
+									<div class="text-right text-[#8ca3bf]">&lt;1%</div>
+									<div class="text-right"><span class="inline-block w-[16ch] text-left whitespace-nowrap">[<span class="text-gray-500">..............</span>]</span></div>
+								</div>
+							</div>
+
+							<div class="overflow-hidden whitespace-nowrap text-[#3f4d63]">--------------------------------------------------------------------------------------------------------------</div>
+
+							<div class="text-[11px] leading-6">
+								<div class="text-[#d8e1ef]">
+									Total: 680 MB (125 items) | Scan: <span class="text-[#45d07d]">Done</span>
+								</div>
+								<div class="text-[#7d8ca1] overflow-hidden whitespace-nowrap text-ellipsis">
+									Help: ?  Info: i  Panel: p  Timer: T  Rescan: R
+								</div>
 							</div>
 						</div>
 					</div>
