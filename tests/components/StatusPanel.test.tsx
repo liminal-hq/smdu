@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'ink-testing-library';
-import { StatusPanel } from '../../src/components/StatusPanel.js';
+import { StatusPanel, getTypeDisplay } from '../../src/components/StatusPanel.js';
 import { themes } from '../../src/themes.js';
 import { describe, test, expect } from '@jest/globals';
 import type { FileNode } from '../../src/scanner.js';
@@ -143,5 +143,13 @@ describe('StatusPanel', () => {
 		expect(output).toContain('Created');
 		expect(output).toContain('N/A');
 		expect(output).toContain('Impact: Tiny');
+	});
+
+	test('matches type value colour to file category colour when available', () => {
+		const selectedFile = createSelectedFile(20);
+		const typeDisplay = getTypeDisplay(selectedFile, themes.default, true);
+
+		expect(typeDisplay.label).toBe('file: Documents (.txt)');
+		expect(typeDisplay.colour).toBe(themes.default.colours.fileTypes.documents);
 	});
 });

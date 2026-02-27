@@ -25,6 +25,11 @@ interface StatusPanelProps {
 	height?: number;
 }
 
+interface TypeDisplay {
+	label: string;
+	colour: string;
+}
+
 const truncate = (value: string, maxWidth: number): string => {
 	if (maxWidth <= 0) return '';
 	if (value.length <= maxWidth) return value;
@@ -83,17 +88,47 @@ const getPermissionColour = (char: string, theme: Theme): string => {
 	return theme.colours.muted;
 };
 
-const getTypeLabel = (file?: FileNode): string => {
-	if (!file) return 'None';
-	if (file.isDirectory) return 'directory';
-	if (file.isSymbolicLink) return file.isBrokenSymbolicLink ? 'link (broken)' : 'link';
+export const getTypeDisplay = (
+	file: FileNode | undefined,
+	theme: Theme,
+	fileTypeColoursEnabled: boolean,
+): TypeDisplay => {
+	if (!file) {
+		return { label: 'None', colour: theme.colours.text };
+	}
+	if (file.isDirectory) {
+		return {
+			label: 'directory',
+			colour: fileTypeColoursEnabled ? 'cyan' : theme.colours.text,
+		};
+	}
+	if (file.isSymbolicLink) {
+		if (!fileTypeColoursEnabled) {
+			return {
+				label: file.isBrokenSymbolicLink ? 'link (broken)' : 'link',
+				colour: theme.colours.text,
+			};
+		}
+		return {
+			label: file.isBrokenSymbolicLink ? 'link (broken)' : 'link',
+			colour: file.isBrokenSymbolicLink ? '#ff9f1a' : 'blue',
+		};
+	}
 
 	const category = getFileTypeCategory(file.name, false);
 	const extension = path.extname(file.name).replace('.', '').toLowerCase();
-	if (!category) return extension ? `file (.${extension})` : 'file';
+	if (!category) {
+		return {
+			label: extension ? `file (.${extension})` : 'file',
+			colour: theme.colours.text,
+		};
+	}
 
 	const categoryLabel = FILE_TYPE_LEGEND.find((entry) => entry.category === category)?.label ?? category;
-	return extension ? `file: ${categoryLabel} (.${extension})` : `file: ${categoryLabel}`;
+	return {
+		label: extension ? `file: ${categoryLabel} (.${extension})` : `file: ${categoryLabel}`,
+		colour: fileTypeColoursEnabled ? theme.colours.fileTypes[category] : theme.colours.text,
+	};
 };
 
 export const StatusPanel: React.FC<StatusPanelProps> = ({
@@ -176,19 +211,7 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 			visiblePropertyRows.length -
 			(showHiddenPropertiesRow ? 1 : 0),
 	);
-	const isBrokenLink = Boolean(selectedFile?.isBrokenSymbolicLink);
-	const statusLabel = getTypeLabel(selectedFile);
-	const showTypeColours = fileTypeColoursEnabled;
-	const statusColour =
-		selectedFile && showTypeColours
-			? selectedFile.isDirectory
-				? 'cyan'
-				: selectedFile.isSymbolicLink
-					? isBrokenLink
-						? '#ff9f1a'
-						: 'blue'
-					: theme.colours.text
-			: theme.colours.text;
+	const typeDisplay = getTypeDisplay(selectedFile, theme, fileTypeColoursEnabled);
 
 	return (
 		<Box flexDirection="column" width="100%" height={panelHeight}>
@@ -207,7 +230,7 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 					</Box>
 					<Box paddingX={1}>
 						<Text color={theme.colours.muted}>Type: </Text>
-						<Text color={statusColour}>{statusLabel}</Text>
+						<Text color={typeDisplay.colour}>{typeDisplay.label}</Text>
 					</Box>
 					<Box paddingX={1}>
 						<Text color={theme.colours.muted}>Impact: </Text>
