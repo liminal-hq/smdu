@@ -29,6 +29,23 @@
 - If using `-m`, escape shell-sensitive characters explicitly before running the command.
 - After committing, verify the stored message with `git log -1 --pretty=fuller` and amend immediately if interpolation altered content.
 
+## Pull Request Titles
+
+**Requirement:** PR titles must be human-readable summaries of the PR change.
+
+- Start with a capital letter.
+- Do not use Conventional Commit prefixes in PR titles (for example, no `feat:`, `fix:`, `chore:`).
+- Describe the outcome or behaviour change, not internal process language.
+- Ignore internal planning document notes in PR titles and descriptions unless they directly map to repository changes.
+- Keep title style consistent across every open PR in the same stack.
+- If one title in a stack is updated, update the rest of the open stack titles to match style and scope.
+- Do not rename merged PRs unless explicitly requested.
+- Keep linked issues and merge order aligned after any title changes in a stack.
+
+## Git Workflow
+
+**Requirement:** Do not push changes (especially force pushes) to the repository unless explicitly requested by the user.
+
 ## Testing
 
 - **Mandatory Testing:** Make sure the unit tests are run after changes to the code.

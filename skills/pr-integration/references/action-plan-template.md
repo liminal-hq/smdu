@@ -91,6 +91,15 @@ For each PR, compare expected vs actual touched files.
 1. `#<number>` -> `<label1>, <label2>`
 2. `#<number>` -> `<label1>, <label2>, <label3>`
 
+## PR Title Checks
+
+For each open PR in the stack:
+
+1. Title starts with a capital letter.
+2. Title does not use Conventional Commit prefixes (for example, no `feat:`, `fix:`, `chore:`).
+3. Title describes outcome or behaviour change.
+4. Title style is consistent across the open stack.
+
 ## Merge Order Proposal
 
 1. `#<number>` `<why first>`
@@ -123,6 +132,7 @@ All must pass before `execute` mode:
 3. Required review policy passes.
 4. Working tree is clean.
 5. Plan approved by reviewer.
+6. Push approval explicitly granted by user.
 
 ## Merge Message Format (Required)
 

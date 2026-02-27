@@ -71,7 +71,11 @@ Apply tie-breakers in this order:
 
 1. Label each PR before merging.
 2. Keep or exclude changed files based on allowed-file review for that PR.
-3. Use this merge message format exactly:
+3. Keep PR titles human-readable and outcome-focused:
+   - start with a capital letter
+   - do not use Conventional Commit prefixes in PR titles
+   - keep title style consistent across open PRs in the same stack
+4. Use this merge message format exactly:
 
 ```text
 PR Title (#PRNo.)
@@ -79,7 +83,8 @@ PR Title (#PRNo.)
 PR Description
 ```
 
-4. Use Conventional Commits with bodies for integration commits.
+5. Use Conventional Commits with bodies for integration commits.
+6. Do not push changes unless explicitly requested by the user.
 
 ## Rollback Policy
 
