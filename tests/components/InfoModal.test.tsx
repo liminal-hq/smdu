@@ -4,16 +4,19 @@ import { render } from 'ink-testing-library';
 import type { FileNode } from '../../src/scanner.js';
 
 const mockLstat = jest.fn();
+const mockReadlink = jest.fn();
 const mockFileTypeFromFile = jest.fn();
 
 jest.unstable_mockModule('fs', () => ({
 	default: {
 		promises: {
 			lstat: mockLstat,
+			readlink: mockReadlink,
 		},
 	},
 	promises: {
 		lstat: mockLstat,
+		readlink: mockReadlink,
 	},
 }));
 
@@ -32,6 +35,7 @@ const mockDate = new Date('2023-01-01T12:00:00Z');
 describe('InfoModal', () => {
 	beforeEach(() => {
 		mockLstat.mockReset();
+		mockReadlink.mockReset();
 		mockFileTypeFromFile.mockReset();
 	});
 
@@ -128,5 +132,80 @@ describe('InfoModal', () => {
 		expect(output).toBeDefined();
 		expect(output).toContain('image/png (png)');
 		expect(output).toContain('rw-r--r--');
+	});
+
+	test('renders symbolic link destination details', async () => {
+		mockLstat.mockResolvedValue({
+			isDirectory: () => false,
+			isSymbolicLink: () => true,
+			size: 32,
+			mode: 0o120777,
+			uid: 1000,
+			gid: 1000,
+			birthtime: mockDate,
+			mtime: mockDate,
+			atime: mockDate,
+		});
+		mockReadlink.mockResolvedValue('/var/log/app.log');
+
+		const node: FileNode = {
+			name: 'app.log',
+			path: '/tmp/app.log',
+			size: 32,
+			isDirectory: false,
+			isSymbolicLink: true,
+			isHidden: false,
+			mtime: mockDate,
+		};
+
+		const { lastFrame } = render(<InfoModal theme={themes.default} node={node} />);
+
+		let output = lastFrame();
+		for (let i = 0; i < 20; i++) {
+			output = lastFrame();
+			if (output && output.includes('Destination')) break;
+			await new Promise((resolve) => setTimeout(resolve, 50));
+		}
+
+		expect(output).toContain('Symbolic link');
+		expect(output).toContain('Destination');
+		expect(output).toContain('/var/log/app.log');
+	});
+
+	test('renders unresolved symbolic link state', async () => {
+		mockLstat.mockResolvedValue({
+			isDirectory: () => false,
+			isSymbolicLink: () => true,
+			size: 32,
+			mode: 0o120777,
+			uid: 1000,
+			gid: 1000,
+			birthtime: mockDate,
+			mtime: mockDate,
+			atime: mockDate,
+		});
+		mockReadlink.mockRejectedValue(new Error('ENOENT'));
+
+		const node: FileNode = {
+			name: 'broken.log',
+			path: '/tmp/broken.log',
+			size: 32,
+			isDirectory: false,
+			isSymbolicLink: true,
+			isHidden: false,
+			mtime: mockDate,
+		};
+
+		const { lastFrame } = render(<InfoModal theme={themes.default} node={node} />);
+
+		let output = lastFrame();
+		for (let i = 0; i < 20; i++) {
+			output = lastFrame();
+			if (output && output.includes('Destination')) break;
+			await new Promise((resolve) => setTimeout(resolve, 50));
+		}
+
+		expect(output).toContain('Destination');
+		expect(output).toContain('unresolved (ENOENT)');
 	});
 });

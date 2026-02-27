@@ -78,6 +78,27 @@ const getHeatmapColour = (ratio: number): string => {
 	return hslToHex(hue, 80, 50);
 };
 
+interface EntryColourInput {
+	file: FileNode;
+	theme: Theme;
+	fileTypeColoursEnabled: boolean;
+	fileTypeCategory: ReturnType<typeof getFileTypeCategory>;
+}
+
+export const getEntryColour = ({
+	file,
+	theme,
+	fileTypeColoursEnabled,
+	fileTypeCategory,
+}: EntryColourInput): string => {
+	if (!fileTypeColoursEnabled) return theme.colours.text;
+	if (file.isDirectory) return 'cyan';
+	if (file.isSymbolicLink && file.isBrokenSymbolicLink) return '#ff9f1a';
+	if (file.isSymbolicLink) return 'blue';
+	if (fileTypeCategory) return theme.colours.fileTypes[fileTypeCategory];
+	return theme.colours.text;
+};
+
 export const FileList: React.FC<FileListProps> = ({
 	files,
 	selectedIndex,
@@ -269,10 +290,12 @@ export const FileList: React.FC<FileListProps> = ({
 				const displayName = file.isDirectory ? `${baseName}/` : baseName;
 				const entryLabel = `${indent}${file.isDirectory ? '/' : ' '} ${displayName}`;
 				const fileTypeCategory = getFileTypeCategory(file.name, file.isDirectory);
-				const entryColour =
-					fileTypeColoursEnabled && fileTypeCategory
-						? theme.colours.fileTypes[fileTypeCategory]
-						: theme.colours.text;
+				const entryColour = getEntryColour({
+					file,
+					theme,
+					fileTypeColoursEnabled,
+					fileTypeCategory,
+				});
 
 				return (
 					<Box key={file.path} width="100%">
