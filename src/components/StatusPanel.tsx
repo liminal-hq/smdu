@@ -3,6 +3,8 @@ import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';
 import { SortField, SortOrder, ViewMode } from '../state.js';
 import { FileNode } from '../scanner.js';
+import { getFileTypeCategory, FILE_TYPE_LEGEND } from '../fileTypeColours.js';
+import path from 'path';
 
 interface StatusPanelProps {
 	theme: Theme;
@@ -79,6 +81,19 @@ const getPermissionColour = (char: string, theme: Theme): string => {
 	if (char === 'd') return 'cyan';
 	if (char === 'l') return 'blue';
 	return theme.colours.muted;
+};
+
+const getTypeLabel = (file?: FileNode): string => {
+	if (!file) return 'None';
+	if (file.isDirectory) return 'directory';
+	if (file.isSymbolicLink) return file.isBrokenSymbolicLink ? 'link (broken)' : 'link';
+
+	const category = getFileTypeCategory(file.name, false);
+	const extension = path.extname(file.name).replace('.', '').toLowerCase();
+	if (!category) return extension ? `file (.${extension})` : 'file';
+
+	const categoryLabel = FILE_TYPE_LEGEND.find((entry) => entry.category === category)?.label ?? category;
+	return extension ? `file: ${categoryLabel} (.${extension})` : `file: ${categoryLabel}`;
 };
 
 export const StatusPanel: React.FC<StatusPanelProps> = ({
@@ -162,15 +177,7 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 			(showHiddenPropertiesRow ? 1 : 0),
 	);
 	const isBrokenLink = Boolean(selectedFile?.isBrokenSymbolicLink);
-	const statusLabel = selectedFile
-		? selectedFile.isDirectory
-			? 'directory'
-			: selectedFile.isSymbolicLink
-				? isBrokenLink
-					? 'link (broken)'
-					: 'link'
-				: 'file'
-		: 'None';
+	const statusLabel = getTypeLabel(selectedFile);
 	const showTypeColours = fileTypeColoursEnabled;
 	const statusColour =
 		selectedFile && showTypeColours

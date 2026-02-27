@@ -109,6 +109,7 @@ describe('StatusPanel', () => {
 
 		expect(output).toContain('Selected');
 		expect(output).toContain('Impact: Heavy');
+		expect(output).toContain('Type: file: Documents (.txt)');
 		expect(output).toContain('Perms');
 		expect(output).toContain('-rwxr-xr-x');
 		expect(output).toContain('Created');
