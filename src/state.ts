@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { FileNode } from './scanner.js';
 import fs from 'fs';
+import path from 'path';
 
 export type SortField = 'name' | 'size';
 export type SortOrder = 'asc' | 'desc';
@@ -16,6 +17,40 @@ export interface FileSystemState {
 	files: FileNode[];
 }
 
+export const findNodeByPath = (root: FileNode, targetPath: string): FileNode | null => {
+	if (root.path === targetPath) return root;
+
+	// Check if target is inside root
+	if (!targetPath.startsWith(root.path)) return null;
+
+	const relative = path.relative(root.path, targetPath);
+	if (relative === '') return root;
+	if (relative.startsWith('..')) return null;
+
+	const segments = relative.split(path.sep);
+	let currentNode = root;
+
+	for (const segment of segments) {
+		if (!currentNode.children) return null;
+
+		let foundChild: FileNode | undefined;
+		for (const child of currentNode.children) {
+			if (child.name === segment) {
+				foundChild = child;
+				break;
+			}
+		}
+
+		if (foundChild) {
+			currentNode = foundChild;
+		} else {
+			return null;
+		}
+	}
+
+	return currentNode;
+};
+
 export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = false) => {
 	const [currentNode, setCurrentNode] = useState<FileNode | null>(initialNode);
 	const [selectionIndex, setSelectionIndex] = useState(0);
@@ -23,21 +58,6 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 	const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 	const [viewMode, setViewMode] = useState<ViewMode>('flat');
 	const [error, setError] = useState<string | null>(null);
-
-	const findNodeByPath = useCallback((root: FileNode, targetPath: string): FileNode | null => {
-		const stack = [root];
-		while (stack.length > 0) {
-			const node = stack.pop();
-			if (!node) continue;
-			if (node.path === targetPath) return node;
-			if (node.children) {
-				for (const child of node.children) {
-					stack.push(child);
-				}
-			}
-		}
-		return null;
-	}, []);
 
 	useEffect(() => {
 		if (!initialNode) {
@@ -56,7 +76,7 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 		if (updatedNode && updatedNode !== currentNode) {
 			setCurrentNode(updatedNode);
 		}
-	}, [currentNode, findNodeByPath, initialNode]);
+	}, [currentNode, initialNode]);
 
 	const compareNodes = useCallback(
 		(a: FileNode, b: FileNode) => {
