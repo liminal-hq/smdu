@@ -1,3 +1,8 @@
+// Define built-in UI themes and colour tokens for terminal rendering
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 export interface Theme {
 	name: string;
 	colours: {
@@ -16,9 +21,13 @@ export interface Theme {
 		accent: string;
 		fileTypes: {
 			media: string;
+			text: string;
 			documents: string;
 			code: string;
+			scripts: string;
+			executables: string;
 			archives: string;
+			diskImages: string;
 			system: string;
 		};
 		scanStatus: {
@@ -47,9 +56,13 @@ export const themes: Record<string, Theme> = {
 			accent: '#5aa2ff',
 			fileTypes: {
 				media: '#ffb454',
+				text: '#b0f2c2',
 				documents: '#ffd166',
 				code: '#7dd3fc',
+				scripts: '#86efac',
+				executables: '#fca5a5',
 				archives: '#c4a7e7',
+				diskImages: '#f38ba8',
 				system: '#94a3b8',
 			},
 			scanStatus: {
@@ -76,9 +89,13 @@ export const themes: Record<string, Theme> = {
 			accent: 'cyan',
 			fileTypes: {
 				media: 'red',
+				text: 'white',
 				documents: 'yellow',
 				code: 'green',
+				scripts: 'green',
+				executables: 'red',
 				archives: 'blue',
+				diskImages: 'magenta',
 				system: 'gray',
 			},
 			scanStatus: {
@@ -105,9 +122,13 @@ export const themes: Record<string, Theme> = {
 			accent: '#8be9fd',
 			fileTypes: {
 				media: '#ff5555', // Red
+				text: '#f8f8f2', // Foreground
 				documents: '#f1fa8c', // Yellow
 				code: '#50fa7b', // Green
+				scripts: '#50fa7b', // Green
+				executables: '#ff5555', // Red
 				archives: '#8be9fd', // Cyan
+				diskImages: '#ff79c6', // Pink
 				system: '#6272a4', // Comment
 			},
 			scanStatus: {

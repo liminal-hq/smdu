@@ -1,6 +1,11 @@
+// Component tests for file list rendering and entry-colour mapping behaviour
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React from 'react';
 import { render } from 'ink-testing-library';
-import { FileList } from '../../src/components/FileList.js';
+import { FileList, getEntryColour } from '../../src/components/FileList.js';
 import { Theme } from '../../src/themes.js';
 import { FileNode } from '../../src/scanner.js';
 import { describe, it, expect } from '@jest/globals';
@@ -23,9 +28,13 @@ const mockTheme: Theme = {
 		accent: 'cyan',
 		fileTypes: {
 			media: 'red',
+			text: 'white',
 			documents: 'yellow',
 			code: 'green',
+			scripts: 'cyan',
+			executables: 'red',
 			archives: 'blue',
+			diskImages: 'magenta',
 			system: 'gray',
 		},
 	},
@@ -96,5 +105,121 @@ describe('FileList', () => {
 
 		const output = lastFrame();
 		expect(output).toContain('This directory is empty.');
+	});
+
+	it('uses directory and link entry colours when file type colours are enabled', () => {
+		const directoryColour = getEntryColour({
+			file: {
+				name: 'docs',
+				path: '/root/docs',
+				size: 1,
+				isDirectory: true,
+				isHidden: false,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: true,
+			fileTypeCategory: null,
+		});
+		const linkColour = getEntryColour({
+			file: {
+				name: 'latest.log',
+				path: '/root/latest.log',
+				size: 1,
+				isDirectory: false,
+				isSymbolicLink: true,
+				isHidden: false,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: true,
+			fileTypeCategory: null,
+		});
+		const brokenLinkColour = getEntryColour({
+			file: {
+				name: 'broken.log',
+				path: '/root/broken.log',
+				size: 1,
+				isDirectory: false,
+				isSymbolicLink: true,
+				isBrokenSymbolicLink: true,
+				isHidden: false,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: true,
+			fileTypeCategory: null,
+		});
+
+		expect(directoryColour).toBe('cyan');
+		expect(linkColour).toBe('blue');
+		expect(brokenLinkColour).toBe('#ff9f1a');
+	});
+
+	it('disables directory and link colours when file type colours are disabled', () => {
+		const directoryColour = getEntryColour({
+			file: {
+				name: 'docs',
+				path: '/root/docs',
+				size: 1,
+				isDirectory: true,
+				isHidden: false,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: false,
+			fileTypeCategory: null,
+		});
+		const linkColour = getEntryColour({
+			file: {
+				name: 'latest.log',
+				path: '/root/latest.log',
+				size: 1,
+				isDirectory: false,
+				isSymbolicLink: true,
+				isHidden: false,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: false,
+			fileTypeCategory: null,
+		});
+
+		expect(directoryColour).toBe(mockTheme.colours.text);
+		expect(linkColour).toBe(mockTheme.colours.text);
+	});
+
+	it('uses script colour when executable and muted line colour when not executable', () => {
+		const executableScriptColour = getEntryColour({
+			file: {
+				name: 'build.sh',
+				path: '/root/build.sh',
+				size: 1,
+				isDirectory: false,
+				isHidden: false,
+				mode: 0o100755,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: true,
+			fileTypeCategory: 'scripts',
+		});
+		const nonExecutableScriptColour = getEntryColour({
+			file: {
+				name: 'build.sh',
+				path: '/root/build.sh',
+				size: 1,
+				isDirectory: false,
+				isHidden: false,
+				mode: 0o100644,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: true,
+			fileTypeCategory: 'scripts',
+		});
+
+		expect(executableScriptColour).toBe(mockTheme.colours.fileTypes.scripts);
+		expect(nonExecutableScriptColour).toBe(mockTheme.colours.muted);
 	});
 });

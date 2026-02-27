@@ -1,3 +1,8 @@
+// Show extended metadata details for the selected file or directory in a modal
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Text, useStdout } from 'ink';
 import fs from 'fs';
@@ -17,6 +22,8 @@ interface InfoModalProps {
 interface InfoDetails {
 	stats: fs.Stats;
 	typeLabel: string;
+	linkDestination?: string;
+	linkError?: string;
 }
 
 const formatPermissions = (mode: number): { octal: string; rwx: string } => {
@@ -106,8 +113,19 @@ export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
 			try {
 				const stats = await fs.promises.lstat(node.path);
 				let typeLabel = 'Unknown';
+				let linkDestination: string | undefined;
+				let linkError: string | undefined;
 				if (stats.isSymbolicLink()) {
 					typeLabel = 'Symbolic link';
+					if (node.linkTarget) {
+						linkDestination = node.linkTarget;
+					} else {
+						try {
+							linkDestination = await fs.promises.readlink(node.path);
+						} catch (error) {
+							linkError = error instanceof Error ? error.message : String(error);
+						}
+					}
 				} else if (stats.isDirectory()) {
 					typeLabel = 'Directory';
 				} else {
@@ -121,7 +139,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
 					}
 				}
 				if (!cancelled) {
-					setDetails({ stats, typeLabel });
+					setDetails({ stats, typeLabel, linkDestination, linkError });
 					setLoading(false);
 				}
 			} catch (err) {
@@ -162,6 +180,12 @@ export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
 			{ label: 'Owner/Group', value: `${owner} / ${group}` },
 			...dateRows,
 		];
+		if (details.stats.isSymbolicLink()) {
+			baseRows.splice(2, 0, {
+				label: 'Destination',
+				value: details.linkDestination ?? `unresolved (${details.linkError ?? 'unknown error'})`,
+			});
+		}
 
 		if (node.isDirectory) {
 			const { directCount, totalCount, depth } = calculateDirectoryStats(node);
