@@ -19,6 +19,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **File Type Colours:** Colour-coded file entries by category with an optional legend toggle.
 - **Heatmap Bars:** Green-to-red heatmap colours for size bars with `H` (default on).
 - **Status Panel:** Toggle a right-side panel with `p` for sort/view/flag state.
+- **Status Panel Properties:** Shows selected-file size impact, permissions, and created/modified metadata with refresh feedback.
 - **Hidden Files:** Toggle dotfiles with `.` (Windows hidden attributes are not detected, default on).
 - **Settings:** Persistent configuration for themes, units, file type colours, heatmap colours, and hidden files.
 - **Settings:** Heatmap colours can be toggled for size bars.
@@ -94,13 +95,13 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 ## UI/UX
 
 - **Header:** `/home/user/projects/smdu` with a subtle divider and right-aligned `smdu v<version>` label.
-- **Status Panel:** Right-side panel shows sort/view/units/hidden/heatmap/legend state and key hints.
+- **Status Panel:** Right-side panel shows sort/view/units/hidden/heatmap/legend state and selected-file properties (size impact, permission bits, timestamps).
 - **Footer:** Shows totals with a partial scan indicator while scanning.
 - **Scan Status:** Displays live progress above the footer while scanning.
 - **Timer:** `T` starts a focus timer and shows a countdown or completion message above the footer, with a bell on completion.
 - **Timer Controls:** `t` toggles the timer display (even when idle), `c` cancels the timer.
 - **Help:** `?` opens the keybinding modal.
-- **Info Panel:** `i` opens the information panel for the selected item.
+- **Info Panel:** `i` opens the information panel for the selected item, including symlink destination details and unresolved-link state.
 - **Scan:** `q` cancels the scan and exits.
 - **List:**
   - `[--#-------]  80%  src/` (Selected item highlighted)
@@ -110,6 +111,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Legend:** `L` toggles the file type legend in the list header.
 - **Heatmap:** `H` toggles heatmap colours for size bars.
 - **Status Panel:** `p` toggles the right-side status panel.
+- **Type Cues:** Directories and symbolic links use dedicated browser colours when file type colours are enabled.
 - **Hidden Files:** `.` toggles dotfiles in the list.
 - **Footer:** `Total: 101.21 MiB (15 items) | Scan: Partial` + `Help: ? | Info: i | Panel: p | Timer: T/t | Rescan: R`
 

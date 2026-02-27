@@ -10,7 +10,7 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 - **Theming:** Includes built-in themes (Default, Classic, Dracula) with a sleek default palette.
 - **Fullscreen TUI:** Uses the alternate screen buffer by default to keep scrollback intact after exit.
 - **Adaptive Layout:** Columns adjust to terminal size and keep totals and units visible.
-- **Status Panel:** Right-side panel for sort/view/flag state and key hints (toggle with `p`).
+- **Status Panel:** Right-side panel for sort/view/flag state plus selected-file properties (size impact, permissions, created/modified timestamps) with freshness updates (toggle with `p`).
 - **Live Scan Feedback:** Shows the current scan location with running totals.
 - **Incremental Scan Results:** File list updates as directories finish, with a partial scan indicator and live scan stats above the footer.
 - **File Type Colours:** Colour-codes files by category with an optional legend.
@@ -20,7 +20,8 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 - **Planned:** List view (name-only entries).
 - **View Modes:** Flat (ncdu-style, default) and Tree.
 - **Help Modal:** Press `?` to view keybindings.
-- **Information Panel:** Press `i` to view details for the selected item.
+- **Information Panel:** Press `i` to view extended details for the selected item, including symlink destination state.
+- **Directory/Link Type Cues:** Directories and symbolic links use dedicated colours in the file browser when file type colours are enabled.
 - **Focus Timer:** Press `T` to start a 5/10/15/30 minute focus timer with session stats and a completion bell.
 - **Cross-Platform:** Works on Linux, macOS, and Windows (best on POSIX).
 
