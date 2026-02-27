@@ -191,11 +191,6 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 				</Text>
 			</Box>
 			<Text color={theme.colours.line}>{divider}</Text>
-			{contentLines.slice(0, innerHeight).map((line, index) => (
-				<Box key={`${line}-${index}`} paddingX={1}>
-					<Text color={theme.colours.text}>{line}</Text>
-				</Box>
-			))}
 			{selectedFile && innerHeight > contentLines.length ? (
 				<>
 					<Box paddingX={1}>
@@ -241,6 +236,11 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 					))}
 				</>
 			) : null}
+			{contentLines.slice(0, innerHeight).map((line, index) => (
+				<Box key={`${line}-${index}`} paddingX={1}>
+					<Text color={theme.colours.text}>{line}</Text>
+				</Box>
+			))}
 		</Box>
 	);
 };
