@@ -6,10 +6,16 @@ export interface FileNode {
 	path: string;
 	size: number;
 	isDirectory: boolean;
+	isSymbolicLink?: boolean;
+	isBrokenSymbolicLink?: boolean;
 	isHidden: boolean;
 	children?: FileNode[];
 	parent?: FileNode;
+	mode?: number;
+	birthtime?: Date;
 	mtime: Date;
+	linkTarget?: string;
+	linkError?: string;
 }
 
 export interface ScanProgress {
@@ -107,10 +113,22 @@ const scanDirectoryInternal = async (
 		path: dirPath,
 		size: stats.size,
 		isDirectory: stats.isDirectory(),
+		isSymbolicLink: stats.isSymbolicLink(),
+		isBrokenSymbolicLink: false,
 		isHidden: isHiddenName(name),
+		mode: stats.mode,
+		birthtime: stats.birthtime,
 		mtime: stats.mtime,
 		parent,
 	};
+	if (node.isSymbolicLink) {
+		try {
+			node.linkTarget = await limit(() => fs.promises.readlink(dirPath));
+		} catch (error) {
+			node.isBrokenSymbolicLink = true;
+			node.linkError = error instanceof Error ? error.message : String(error);
+		}
+	}
 	const activeRoot = root ?? node;
 
 	activeProgress.currentPath = dirPath;
