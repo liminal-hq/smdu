@@ -13,6 +13,14 @@ description: Review and integrate pull requests with audit and execute modes, co
 
 Never merge directly from local `main` unless explicitly requested.
 
+## Queue Filter
+
+Use this command to review active integration candidates while excluding deferred work:
+
+```bash
+gh pr list --state open --search "-label:deferred-review"
+```
+
 ## Core Modes
 
 ### Audit Mode
