@@ -1,3 +1,8 @@
+// Map file extensions to display categories used for list colouring and legend labels
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import path from 'path';
 
 export type FileTypeCategory =
@@ -145,18 +150,7 @@ const FILE_TYPE_EXTENSIONS: Record<FileTypeCategory, string[]> = {
 		'rar',
 		'zst',
 	],
-	diskImages: [
-		'iso',
-		'img',
-		'dmg',
-		'vhd',
-		'vhdx',
-		'vmdk',
-		'qcow2',
-		'nrg',
-		'toast',
-		'cdr',
-	],
+	diskImages: ['iso', 'img', 'dmg', 'vhd', 'vhdx', 'vmdk', 'qcow2', 'nrg', 'toast', 'cdr'],
 	system: [
 		'log',
 		'conf',

@@ -1,3 +1,8 @@
+// Render the file list table with sizing, bars, and type-aware entry colouring
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';

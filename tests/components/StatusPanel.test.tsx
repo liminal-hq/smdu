@@ -1,3 +1,8 @@
+// Component tests for status panel content, type display, and count behaviour
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React from 'react';
 import { render } from 'ink-testing-library';
 import {

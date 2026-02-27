@@ -1,3 +1,8 @@
+// Define built-in UI themes and colour tokens for terminal rendering
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 export interface Theme {
 	name: string;
 	colours: {

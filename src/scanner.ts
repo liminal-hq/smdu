@@ -1,3 +1,8 @@
+// Scan filesystem paths into a file tree with size and metadata details
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import fs from 'fs';
 import path from 'path';
 

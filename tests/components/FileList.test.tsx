@@ -1,3 +1,8 @@
+// Component tests for file list rendering and entry-colour mapping behaviour
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React from 'react';
 import { render } from 'ink-testing-library';
 import { FileList, getEntryColour } from '../../src/components/FileList.js';

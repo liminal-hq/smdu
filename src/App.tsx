@@ -127,7 +127,9 @@ export const App: React.FC<AppProps> = ({
 		deletedItems: 0,
 		freedBytes: 0,
 	});
-	const [selectedFileMetadata, setSelectedFileMetadata] = useState<SelectedFileMetadata | null>(null);
+	const [selectedFileMetadata, setSelectedFileMetadata] = useState<SelectedFileMetadata | null>(
+		null,
+	);
 	const [selectedFileMetadataLoading, setSelectedFileMetadataLoading] = useState(false);
 
 	const {

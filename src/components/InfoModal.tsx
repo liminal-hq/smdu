@@ -1,3 +1,8 @@
+// Show extended metadata details for the selected file or directory in a modal
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Text, useStdout } from 'ink';
 import fs from 'fs';

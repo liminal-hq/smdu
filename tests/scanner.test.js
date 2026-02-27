@@ -1,3 +1,8 @@
+// Unit tests for scanner traversal and metadata capture behaviour
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 // Use generic to type the mock functions correctly
 const mockLstat = jest.fn();

@@ -1,3 +1,8 @@
+// Component tests for information modal metadata and symlink details
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import React from 'react';
 import { render } from 'ink-testing-library';

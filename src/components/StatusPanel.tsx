@@ -1,3 +1,8 @@
+// Render the right-side status panel with selected-item properties and state summary
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import React from 'react';
 import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';
@@ -55,7 +60,8 @@ const formatDate = (date?: Date): string => {
 
 const formatPermissions = (mode?: number): string => {
 	if (typeof mode !== 'number') return 'N/A';
-	const fileType = (mode & 0o170000) === 0o040000 ? 'd' : (mode & 0o170000) === 0o120000 ? 'l' : '-';
+	const fileType =
+		(mode & 0o170000) === 0o040000 ? 'd' : (mode & 0o170000) === 0o120000 ? 'l' : '-';
 	const permBits = mode & 0o777;
 	const setuid = (mode & 0o4000) !== 0;
 	const setgid = (mode & 0o2000) !== 0;
@@ -129,7 +135,8 @@ export const getTypeDisplay = (
 		};
 	}
 
-	const categoryLabel = FILE_TYPE_LEGEND.find((entry) => entry.category === category)?.label ?? category;
+	const categoryLabel =
+		FILE_TYPE_LEGEND.find((entry) => entry.category === category)?.label ?? category;
 	const categoryColour =
 		category === 'scripts'
 			? typeof file.mode === 'number' && (file.mode & 0o111) !== 0
@@ -197,7 +204,8 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	const selectedFileSize = selectedFile?.size ?? 0;
 	const selectedFileParentSize = selectedFile?.parent?.size ?? selectedFileSize;
 	const sizeImpact = getSizeImpact(selectedFileSize, selectedFileParentSize);
-	const sizeImpactColour = sizeImpact === 'Heavy' ? 'red' : sizeImpact === 'Medium' ? 'yellow' : 'green';
+	const sizeImpactColour =
+		sizeImpact === 'Heavy' ? 'red' : sizeImpact === 'Medium' ? 'yellow' : 'green';
 	const permissions = formatPermissions(selectedFileMode);
 
 	const title = 'Status';
@@ -207,7 +215,11 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	const headerMetaText = truncate(headerMeta, headerMetaWidth);
 	const divider = '-'.repeat(Math.max(0, panelWidth));
 	const properties: Array<{ label: string; value: string; priority: number }> = [
-		{ label: 'Size', value: selectedFile ? `${selectedFile.size.toLocaleString('en-CA')} B` : 'N/A', priority: 1 },
+		{
+			label: 'Size',
+			value: selectedFile ? `${selectedFile.size.toLocaleString('en-CA')} B` : 'N/A',
+			priority: 1,
+		},
 		{ label: 'Created', value: formatDate(selectedFileBirthtime), priority: 2 },
 		{ label: 'Modified', value: formatDate(selectedFileMtime), priority: 3 },
 		{ label: 'Perms', value: permissions, priority: 4 },
@@ -234,8 +246,11 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	const typeDisplay = getTypeDisplay(selectedFile, theme, fileTypeColoursEnabled);
 	const selectedCounts = getSelectedDirectoryFileCounts(selectedFile);
 	const directoriesLabel =
-		selectedCounts.directories === null ? 'N/A' : selectedCounts.directories.toLocaleString('en-CA');
-	const filesLabel = selectedCounts.files === null ? 'N/A' : selectedCounts.files.toLocaleString('en-CA');
+		selectedCounts.directories === null
+			? 'N/A'
+			: selectedCounts.directories.toLocaleString('en-CA');
+	const filesLabel =
+		selectedCounts.files === null ? 'N/A' : selectedCounts.files.toLocaleString('en-CA');
 
 	return (
 		<Box flexDirection="column" width="100%" height={panelHeight}>
