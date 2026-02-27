@@ -42,6 +42,15 @@
 - Do not rename merged PRs unless explicitly requested.
 - Keep linked issues and merge order aligned after any title changes in a stack.
 
+## Pull Request Content
+
+**Requirement:** PR titles and descriptions must not mention internal workflow artefacts.
+
+- Do not mention deferred-review documents, internal queue labels, or internal-only planning notes in outward PR content.
+- Keep internal triage mechanics in local runbooks, internal labels, and agent workflows only.
+- Use user-facing, outcome-focused language in PR titles and descriptions.
+- Only include internal process details in PR content when explicitly requested by the user.
+
 ## Git Workflow
 
 **Requirement:** Do not push changes (especially force pushes) to the repository unless explicitly requested by the user.

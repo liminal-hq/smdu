@@ -100,6 +100,14 @@ For each open PR in the stack:
 3. Title describes outcome or behaviour change.
 4. Title style is consistent across the open stack.
 
+## PR Description Checks
+
+For each open PR in the stack:
+
+1. Description uses outcome-focused language.
+2. Description does not mention deferred-review documents, internal queue labels, or internal-only planning notes.
+3. Internal process details are only included when explicitly requested.
+
 ## Merge Order Proposal
 
 1. `#<number>` `<why first>`

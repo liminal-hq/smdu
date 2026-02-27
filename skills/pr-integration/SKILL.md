@@ -83,7 +83,10 @@ Apply tie-breakers in this order:
    - start with a capital letter
    - do not use Conventional Commit prefixes in PR titles
    - keep title style consistent across open PRs in the same stack
-4. Use this merge message format exactly:
+4. Keep internal workflow artefacts out of outward PR content:
+   - do not mention deferred-review documents or internal queue labels in public PR titles and descriptions
+   - keep internal triage details in internal workflow artefacts unless explicitly requested
+5. Use this merge message format exactly:
 
 ```text
 PR Title (#PRNo.)
@@ -91,8 +94,8 @@ PR Title (#PRNo.)
 PR Description
 ```
 
-5. Use Conventional Commits with bodies for integration commits.
-6. Do not push changes unless explicitly requested by the user.
+6. Use Conventional Commits with bodies for integration commits.
+7. Do not push changes unless explicitly requested by the user.
 
 ## Rollback Policy
 
