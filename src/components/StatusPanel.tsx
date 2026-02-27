@@ -125,9 +125,15 @@ export const getTypeDisplay = (
 	}
 
 	const categoryLabel = FILE_TYPE_LEGEND.find((entry) => entry.category === category)?.label ?? category;
+	const categoryColour =
+		category === 'scripts'
+			? typeof file.mode === 'number' && (file.mode & 0o111) !== 0
+				? theme.colours.fileTypes.scripts
+				: theme.colours.line
+			: theme.colours.fileTypes[category];
 	return {
 		label: extension ? `file: ${categoryLabel} (.${extension})` : `file: ${categoryLabel}`,
-		colour: fileTypeColoursEnabled ? theme.colours.fileTypes[category] : theme.colours.text,
+		colour: fileTypeColoursEnabled ? categoryColour : theme.colours.text,
 	};
 };
 

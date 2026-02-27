@@ -16,7 +16,7 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 - **Deletion:** Delete files or directories with a confirmation modal.
 - **Focus Timer:** Start a 5/10/15/30 minute timer with session stats and completion alert.
 - **Theming:** Support for multiple colour themes (Default, Classic, Dracula) with a sleek default palette.
-- **File Type Colours:** Colour-coded file entries by category with an optional legend toggle, including separate `Archives` and `Disk Images` categories.
+- **File Type Colours:** Colour-coded file entries by category with an optional legend toggle, including dedicated `Text`, `Scripts`, `Executables/Libraries`, `Archives`, and `Disk Images` categories.
 - **Heatmap Bars:** Green-to-red heatmap colours for size bars with `H` (default on).
 - **Status Panel:** Toggle a right-side panel with `p` for sort/view/flag state.
 - **Status Panel Properties:** Shows selected-file size impact, permissions, and created/modified metadata with refresh feedback.

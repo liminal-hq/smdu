@@ -109,7 +109,7 @@ describe('StatusPanel', () => {
 
 		expect(output).toContain('Selected');
 		expect(output).toContain('Impact: Heavy');
-		expect(output).toContain('Type: file: Documents (.txt)');
+		expect(output).toContain('Type: file: Text (.txt)');
 		expect(output).toContain('Perms');
 		expect(output).toContain('-rwxr-xr-x');
 		expect(output).toContain('Created');
@@ -149,7 +149,20 @@ describe('StatusPanel', () => {
 		const selectedFile = createSelectedFile(20);
 		const typeDisplay = getTypeDisplay(selectedFile, themes.default, true);
 
-		expect(typeDisplay.label).toBe('file: Documents (.txt)');
-		expect(typeDisplay.colour).toBe(themes.default.colours.fileTypes.documents);
+		expect(typeDisplay.label).toBe('file: Text (.txt)');
+		expect(typeDisplay.colour).toBe(themes.default.colours.fileTypes.text);
+	});
+
+	test('uses muted colour for non-executable scripts in type display', () => {
+		const scriptFile = {
+			...createSelectedFile(20),
+			name: 'build.sh',
+			path: '/tmp/build.sh',
+			mode: 0o100644,
+		};
+		const typeDisplay = getTypeDisplay(scriptFile, themes.default, true);
+
+		expect(typeDisplay.label).toBe('file: Scripts (.sh)');
+		expect(typeDisplay.colour).toBe(themes.default.colours.line);
 	});
 });

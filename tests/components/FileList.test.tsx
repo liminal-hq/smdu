@@ -23,8 +23,11 @@ const mockTheme: Theme = {
 		accent: 'cyan',
 		fileTypes: {
 			media: 'red',
+			text: 'white',
 			documents: 'yellow',
 			code: 'green',
+			scripts: 'cyan',
+			executables: 'red',
 			archives: 'blue',
 			diskImages: 'magenta',
 			system: 'gray',
@@ -179,5 +182,39 @@ describe('FileList', () => {
 
 		expect(directoryColour).toBe(mockTheme.colours.text);
 		expect(linkColour).toBe(mockTheme.colours.text);
+	});
+
+	it('uses script colour when executable and muted line colour when not executable', () => {
+		const executableScriptColour = getEntryColour({
+			file: {
+				name: 'build.sh',
+				path: '/root/build.sh',
+				size: 1,
+				isDirectory: false,
+				isHidden: false,
+				mode: 0o100755,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: true,
+			fileTypeCategory: 'scripts',
+		});
+		const nonExecutableScriptColour = getEntryColour({
+			file: {
+				name: 'build.sh',
+				path: '/root/build.sh',
+				size: 1,
+				isDirectory: false,
+				isHidden: false,
+				mode: 0o100644,
+				mtime: new Date(),
+			},
+			theme: mockTheme,
+			fileTypeColoursEnabled: true,
+			fileTypeCategory: 'scripts',
+		});
+
+		expect(executableScriptColour).toBe(mockTheme.colours.fileTypes.scripts);
+		expect(nonExecutableScriptColour).toBe(mockTheme.colours.line);
 	});
 });

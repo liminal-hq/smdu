@@ -1,6 +1,15 @@
 import path from 'path';
 
-export type FileTypeCategory = 'media' | 'documents' | 'code' | 'archives' | 'diskImages' | 'system';
+export type FileTypeCategory =
+	| 'media'
+	| 'text'
+	| 'documents'
+	| 'code'
+	| 'scripts'
+	| 'executables'
+	| 'archives'
+	| 'diskImages'
+	| 'system';
 
 export interface FileTypeLegendItem {
 	category: FileTypeCategory;
@@ -9,8 +18,11 @@ export interface FileTypeLegendItem {
 
 export const FILE_TYPE_LEGEND: FileTypeLegendItem[] = [
 	{ category: 'media', label: 'Media' },
+	{ category: 'text', label: 'Text' },
 	{ category: 'documents', label: 'Documents' },
 	{ category: 'code', label: 'Code' },
+	{ category: 'scripts', label: 'Scripts' },
+	{ category: 'executables', label: 'Executables/Libraries' },
 	{ category: 'archives', label: 'Archives' },
 	{ category: 'diskImages', label: 'Disk Images' },
 	{ category: 'system', label: 'System/Config' },
@@ -54,10 +66,6 @@ const FILE_TYPE_EXTENSIONS: Record<FileTypeCategory, string[]> = {
 		'pdf',
 		'doc',
 		'docx',
-		'txt',
-		'rtf',
-		'md',
-		'markdown',
 		'odt',
 		'xls',
 		'xlsx',
@@ -70,6 +78,7 @@ const FILE_TYPE_EXTENSIONS: Record<FileTypeCategory, string[]> = {
 		'numbers',
 		'epub',
 	],
+	text: ['txt', 'rtf', 'md', 'markdown', 'text'],
 	code: [
 		'js',
 		'jsx',
@@ -89,11 +98,6 @@ const FILE_TYPE_EXTENSIONS: Record<FileTypeCategory, string[]> = {
 		'swift',
 		'kt',
 		'scala',
-		'sh',
-		'bash',
-		'zsh',
-		'fish',
-		'ps1',
 		'html',
 		'css',
 		'scss',
@@ -109,6 +113,21 @@ const FILE_TYPE_EXTENSIONS: Record<FileTypeCategory, string[]> = {
 		'gql',
 		'vue',
 		'svelte',
+	],
+	scripts: ['sh', 'bash', 'zsh', 'fish', 'ps1', 'bat', 'cmd', 'ksh', 'csh'],
+	executables: [
+		'appimage',
+		'exe',
+		'bin',
+		'run',
+		'out',
+		'dll',
+		'dylib',
+		'so',
+		'so.0',
+		'so.1',
+		'lib',
+		'a',
 	],
 	archives: [
 		'zip',

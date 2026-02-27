@@ -16,6 +16,13 @@ describe('getFileTypeCategory', () => {
 		expect(getFileTypeCategory('snapshot.qcow2', false)).toBe('diskImages');
 	});
 
+	test('maps text, script, and executable/library extensions to dedicated categories', () => {
+		expect(getFileTypeCategory('notes.txt', false)).toBe('text');
+		expect(getFileTypeCategory('deploy.sh', false)).toBe('scripts');
+		expect(getFileTypeCategory('runner.appimage', false)).toBe('executables');
+		expect(getFileTypeCategory('libcrypto.so', false)).toBe('executables');
+	});
+
 	test('does not categorise directories by extension', () => {
 		expect(getFileTypeCategory('images.iso', true)).toBeNull();
 	});
