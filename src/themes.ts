@@ -19,6 +19,7 @@ export interface Theme {
 			documents: string;
 			code: string;
 			archives: string;
+			diskImages: string;
 			system: string;
 		};
 		scanStatus: {
@@ -50,6 +51,7 @@ export const themes: Record<string, Theme> = {
 				documents: '#ffd166',
 				code: '#7dd3fc',
 				archives: '#c4a7e7',
+				diskImages: '#f38ba8',
 				system: '#94a3b8',
 			},
 			scanStatus: {
@@ -79,6 +81,7 @@ export const themes: Record<string, Theme> = {
 				documents: 'yellow',
 				code: 'green',
 				archives: 'blue',
+				diskImages: 'magenta',
 				system: 'gray',
 			},
 			scanStatus: {
@@ -108,6 +111,7 @@ export const themes: Record<string, Theme> = {
 				documents: '#f1fa8c', // Yellow
 				code: '#50fa7b', // Green
 				archives: '#8be9fd', // Cyan
+				diskImages: '#ff79c6', // Pink
 				system: '#6272a4', // Comment
 			},
 			scanStatus: {

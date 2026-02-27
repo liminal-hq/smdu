@@ -7,13 +7,13 @@ import { describe, expect, test } from '@jest/globals';
 import { getFileTypeCategory } from '../src/fileTypeColours.js';
 
 describe('getFileTypeCategory', () => {
-	test('maps common disk image extensions to archives', () => {
-		expect(getFileTypeCategory('ubuntu.iso', false)).toBe('archives');
-		expect(getFileTypeCategory('disk.img', false)).toBe('archives');
-		expect(getFileTypeCategory('installer.dmg', false)).toBe('archives');
-		expect(getFileTypeCategory('vm.vhdx', false)).toBe('archives');
-		expect(getFileTypeCategory('machine.vmdk', false)).toBe('archives');
-		expect(getFileTypeCategory('snapshot.qcow2', false)).toBe('archives');
+	test('maps common disk image extensions to diskImages', () => {
+		expect(getFileTypeCategory('ubuntu.iso', false)).toBe('diskImages');
+		expect(getFileTypeCategory('disk.img', false)).toBe('diskImages');
+		expect(getFileTypeCategory('installer.dmg', false)).toBe('diskImages');
+		expect(getFileTypeCategory('vm.vhdx', false)).toBe('diskImages');
+		expect(getFileTypeCategory('machine.vmdk', false)).toBe('diskImages');
+		expect(getFileTypeCategory('snapshot.qcow2', false)).toBe('diskImages');
 	});
 
 	test('does not categorise directories by extension', () => {

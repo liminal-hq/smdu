@@ -26,6 +26,7 @@ const mockTheme: Theme = {
 			documents: 'yellow',
 			code: 'green',
 			archives: 'blue',
+			diskImages: 'magenta',
 			system: 'gray',
 		},
 	},

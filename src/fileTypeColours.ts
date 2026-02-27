@@ -1,6 +1,6 @@
 import path from 'path';
 
-export type FileTypeCategory = 'media' | 'documents' | 'code' | 'archives' | 'system';
+export type FileTypeCategory = 'media' | 'documents' | 'code' | 'archives' | 'diskImages' | 'system';
 
 export interface FileTypeLegendItem {
 	category: FileTypeCategory;
@@ -12,6 +12,7 @@ export const FILE_TYPE_LEGEND: FileTypeLegendItem[] = [
 	{ category: 'documents', label: 'Documents' },
 	{ category: 'code', label: 'Code' },
 	{ category: 'archives', label: 'Archives' },
+	{ category: 'diskImages', label: 'Disk Images' },
 	{ category: 'system', label: 'System/Config' },
 ];
 
@@ -124,6 +125,8 @@ const FILE_TYPE_EXTENSIONS: Record<FileTypeCategory, string[]> = {
 		'7z',
 		'rar',
 		'zst',
+	],
+	diskImages: [
 		'iso',
 		'img',
 		'dmg',
