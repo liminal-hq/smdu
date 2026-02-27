@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import { Theme } from '../themes.js';
+import { sanitize } from '../utils/sanitize.js';
 
 interface ConfirmDeleteProps {
 	fileName: string;
@@ -17,7 +18,7 @@ export const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({ fileName, theme })
 			alignSelf="center"
 		>
 			<Text color="red" bold>
-				Delete {fileName}?
+				Delete {sanitize(fileName)}?
 			</Text>
 			<Box marginTop={1}>
 				<Text color={theme.colours.text}>

@@ -11,6 +11,7 @@ import { ViewMode } from '../state.js';
 import { filesize } from 'filesize';
 import path from 'path';
 import { FILE_TYPE_LEGEND, getFileTypeCategory } from '../fileTypeColours.js';
+import { sanitize } from '../utils/sanitize.js';
 
 interface FileListProps {
 	files: FileNode[];
@@ -297,7 +298,7 @@ export const FileList: React.FC<FileListProps> = ({
 				const indent = viewMode === 'tree' ? '  '.repeat(depth) : '';
 				const baseName = viewMode === 'flat' ? relativePath : file.name;
 				const displayName = file.isDirectory ? `${baseName}/` : baseName;
-				const entryLabel = `${indent}${file.isDirectory ? '/' : ' '} ${displayName}`;
+				const entryLabel = `${indent}${file.isDirectory ? '/' : ' '} ${sanitize(displayName)}`;
 				const fileTypeCategory = getFileTypeCategory(file.name, file.isDirectory);
 				const entryColour = getEntryColour({
 					file,

@@ -13,6 +13,7 @@ import { filesize } from 'filesize';
 import { Theme } from '../themes.js';
 import { FileNode } from '../scanner.js';
 import { Modal } from './Modal.js';
+import { sanitize } from '../utils/sanitize.js';
 
 interface InfoModalProps {
 	theme: Theme;
@@ -173,7 +174,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
 		];
 
 		const baseRows = [
-			{ label: 'Path', value: node.path },
+			{ label: 'Path', value: sanitize(node.path) },
 			{ label: 'Type', value: details.typeLabel },
 			{ label: 'Size', value: `${sizeRaw} B | ${sizeSi} (SI) | ${sizeIec} (IEC)` },
 			{ label: 'Permissions', value: `${permissions.octal} (${permissions.rwx})` },
@@ -183,7 +184,9 @@ export const InfoModal: React.FC<InfoModalProps> = ({ theme, node }) => {
 		if (details.stats.isSymbolicLink()) {
 			baseRows.splice(2, 0, {
 				label: 'Destination',
-				value: details.linkDestination ?? `unresolved (${details.linkError ?? 'unknown error'})`,
+				value: details.linkDestination
+					? sanitize(details.linkDestination)
+					: `unresolved (${details.linkError ? sanitize(details.linkError) : 'unknown error'})`,
 			});
 		}
 
