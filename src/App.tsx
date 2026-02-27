@@ -633,7 +633,12 @@ export const App: React.FC<AppProps> = ({
 			<Box flexDirection="column" height={totalRows} width="100%">
 				<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
 				<Box flexGrow={1} justifyContent="center" alignItems="center">
-					<ConfirmDelete fileName={selectedFile?.name || 'item'} theme={theme} />
+					<ConfirmDelete
+						fileName={selectedFile?.name || 'item'}
+						formattedSize={formatSize(selectedFile?.size || 0)}
+						isDirectory={selectedFile?.isDirectory || false}
+						theme={theme}
+					/>
 				</Box>
 				<Footer
 					totalSize={currentNode.size}
