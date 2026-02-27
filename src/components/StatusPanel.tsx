@@ -21,6 +21,8 @@ interface StatusPanelProps {
 	selectedFileBirthtime?: Date;
 	selectedFileMtime?: Date;
 	metadataLoading?: boolean;
+	directoryCount?: number;
+	fileCount?: number;
 	width?: number;
 	height?: number;
 }
@@ -152,6 +154,8 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	selectedFileBirthtime,
 	selectedFileMtime,
 	metadataLoading = false,
+	directoryCount = 0,
+	fileCount = 0,
 	width,
 	height,
 }) => {
@@ -173,21 +177,12 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	const sizeImpactColour = sizeImpact === 'Heavy' ? 'red' : sizeImpact === 'Medium' ? 'yellow' : 'green';
 	const permissions = formatPermissions(selectedFileMode);
 
-	const statusItems: string[] = [
-		`Sort: ${sortLabel} (${orderLabel})`,
-		`View: ${viewLabel}`,
-		`Units: ${unitsLabel}`,
-		`Hidden [.]: ${hiddenLabel}`,
-		`Heatmap [H]: ${heatmapLabel}`,
-		`Legend [L]: ${legendLabel}`,
-	];
-
 	const title = 'Status';
+	const headerMeta = `Sort: ${sortLabel} (${orderLabel}) | View: ${viewLabel} | Units: ${unitsLabel} | Hidden: ${hiddenLabel} | Heatmap: ${heatmapLabel} | Legend: ${legendLabel}`;
+	const titlePrefix = `${title} | `;
+	const headerMetaWidth = Math.max(0, contentWidth - titlePrefix.length);
+	const headerMetaText = truncate(headerMeta, headerMetaWidth);
 	const divider = '-'.repeat(Math.max(0, panelWidth));
-	const contentLines = statusItems.map((item) => {
-		const trimmed = item.length > contentWidth ? item.slice(0, contentWidth) : item;
-		return trimmed.padEnd(contentWidth, ' ');
-	});
 	const properties: Array<{ label: string; value: string; priority: number }> = [
 		{ label: 'Size', value: selectedFile ? `${selectedFile.size.toLocaleString('en-CA')} B` : 'N/A', priority: 1 },
 		{ label: 'Modified', value: formatDate(selectedFileMtime), priority: 2 },
@@ -203,7 +198,7 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 				value: truncate(property.value, maxValueWidth),
 			};
 		});
-	const fixedRows = selectedFile ? contentLines.length + 3 : contentLines.length;
+	const fixedRows = selectedFile ? 4 : 1;
 	const innerHeight = Math.max(0, panelHeight - 2);
 	const propertyBudget = Math.max(0, innerHeight - fixedRows);
 	const visiblePropertyRows = propertyRows.slice(0, propertyBudget);
@@ -211,27 +206,29 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	const showHiddenPropertiesRow = hiddenPropertyCount > 0 && propertyBudget > 0;
 	const emptyRows = Math.max(
 		0,
-		innerHeight -
-			contentLines.length -
-			(selectedFile ? 3 : 0) -
-			visiblePropertyRows.length -
-			(showHiddenPropertiesRow ? 1 : 0),
+		innerHeight - fixedRows - visiblePropertyRows.length - (showHiddenPropertiesRow ? 1 : 0),
 	);
 	const typeDisplay = getTypeDisplay(selectedFile, theme, fileTypeColoursEnabled);
 
 	return (
 		<Box flexDirection="column" width="100%" height={panelHeight}>
 			<Box paddingX={1}>
-				<Text color={theme.colours.muted} bold>
-					{title}
+				<Text color={theme.colours.muted} bold wrap="truncate-end">
+					{titlePrefix}
+					<Text color={theme.colours.text}>{headerMetaText}</Text>
 				</Text>
 			</Box>
 			<Text color={theme.colours.line}>{divider}</Text>
-			{selectedFile && innerHeight > contentLines.length ? (
+			{selectedFile && innerHeight > 0 ? (
 				<>
 					<Box paddingX={1}>
 						<Text color={theme.colours.muted} bold>
 							Selected
+						</Text>
+					</Box>
+					<Box paddingX={1}>
+						<Text color={theme.colours.muted}>
+							Dirs: {directoryCount.toLocaleString('en-CA')} | Files: {fileCount.toLocaleString('en-CA')}
 						</Text>
 					</Box>
 					<Box paddingX={1}>
@@ -272,11 +269,6 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 					))}
 				</>
 			) : null}
-			{contentLines.slice(0, innerHeight).map((line, index) => (
-				<Box key={`${line}-${index}`} paddingX={1}>
-					<Text color={theme.colours.text}>{line}</Text>
-				</Box>
-			))}
 		</Box>
 	);
 };

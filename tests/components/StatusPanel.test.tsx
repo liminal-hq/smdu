@@ -43,7 +43,7 @@ describe('StatusPanel', () => {
 				fileTypeColoursEnabled={true}
 				showLegend={false}
 				units="iec"
-				width={40}
+				width={120}
 				height={10}
 			/>,
 		);
@@ -53,9 +53,9 @@ describe('StatusPanel', () => {
 		expect(output).toContain('Sort: Size (desc)');
 		expect(output).toContain('View: Tree');
 		expect(output).toContain('Units: IEC');
-		expect(output).toContain('Hidden [.]: On');
-		expect(output).toContain('Heatmap [H]: Off');
-		expect(output).toContain('Legend [L]: Off');
+		expect(output).toContain('Hidden: On');
+		expect(output).toContain('Heatmap: Off');
+		expect(output).toContain('Legend: Off');
 	});
 
 	test('renders different props correctly', () => {
@@ -70,7 +70,7 @@ describe('StatusPanel', () => {
 				fileTypeColoursEnabled={false}
 				showLegend={false}
 				units="si"
-				width={40}
+				width={120}
 				height={10}
 			/>,
 		);
@@ -79,9 +79,9 @@ describe('StatusPanel', () => {
 		expect(output).toContain('Sort: Name (asc)');
 		expect(output).toContain('View: Flat');
 		expect(output).toContain('Units: SI');
-		expect(output).toContain('Hidden [.]: Off');
-		expect(output).toContain('Heatmap [H]: On');
-		expect(output).toContain('Legend [L]: N/A');
+		expect(output).toContain('Hidden: Off');
+		expect(output).toContain('Heatmap: On');
+		expect(output).toContain('Legend: N/A');
 	});
 
 	test('renders selected file properties with impact badge and permissions', () => {
@@ -101,6 +101,8 @@ describe('StatusPanel', () => {
 				selectedFileMode={0o100755}
 				selectedFileBirthtime={mockDate}
 				selectedFileMtime={mockDate}
+				directoryCount={2}
+				fileCount={7}
 				width={44}
 				height={18}
 			/>,
@@ -110,6 +112,7 @@ describe('StatusPanel', () => {
 		expect(output).toContain('Selected');
 		expect(output).toContain('Impact: Heavy');
 		expect(output).toContain('Type: file: Text (.txt)');
+		expect(output).toContain('Dirs: 2 | Files: 7');
 		expect(output).toContain('Perms');
 		expect(output).toContain('-rwxr-xr-x');
 		expect(output).toContain('Created');
