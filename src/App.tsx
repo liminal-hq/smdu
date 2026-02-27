@@ -32,6 +32,7 @@ import {
 import { scanDirectory, FileNode, ScanProgress, ScanCancelledError } from './scanner.js';
 import { ACTIONS, checkInput } from './keys.js';
 import path from 'path';
+import fs from 'fs';
 import { filesize } from 'filesize';
 
 interface AppProps {
@@ -43,6 +44,16 @@ interface AppProps {
 enum ViewState {
 	FileList = 'filelist',
 	Settings = 'settings',
+}
+
+interface SelectedFileMetadata {
+	mode?: number;
+	birthtime?: Date;
+	mtime?: Date;
+	isSymbolicLink?: boolean;
+	isBrokenSymbolicLink?: boolean;
+	linkTarget?: string;
+	linkError?: string;
 }
 
 const TIMER_MINUTES = [5, 10, 15, 30];
@@ -116,6 +127,8 @@ export const App: React.FC<AppProps> = ({
 		deletedItems: 0,
 		freedBytes: 0,
 	});
+	const [selectedFileMetadata, setSelectedFileMetadata] = useState<SelectedFileMetadata | null>(null);
+	const [selectedFileMetadataLoading, setSelectedFileMetadataLoading] = useState(false);
 
 	const {
 		currentNode,
@@ -312,6 +325,69 @@ export const App: React.FC<AppProps> = ({
 		};
 	}, [stdout]);
 
+	const selectedFile = files[selectionIndex];
+
+	useEffect(() => {
+		if (!selectedFile) {
+			setSelectedFileMetadata(null);
+			setSelectedFileMetadataLoading(false);
+			return;
+		}
+		let cancelled = false;
+		const loadMetadata = async () => {
+			setSelectedFileMetadataLoading(true);
+			const fallbackMetadata: SelectedFileMetadata = {
+				mode: selectedFile.mode,
+				birthtime: selectedFile.birthtime,
+				mtime: selectedFile.mtime,
+				isSymbolicLink: selectedFile.isSymbolicLink,
+				isBrokenSymbolicLink: selectedFile.isBrokenSymbolicLink,
+				linkTarget: selectedFile.linkTarget,
+				linkError: selectedFile.linkError,
+			};
+			try {
+				const stats = await fs.promises.lstat(selectedFile.path);
+				let linkTarget = selectedFile.linkTarget;
+				let linkError = selectedFile.linkError;
+				let isBrokenSymbolicLink = Boolean(selectedFile.isBrokenSymbolicLink);
+				if (stats.isSymbolicLink()) {
+					try {
+						linkTarget = await fs.promises.readlink(selectedFile.path);
+						linkError = undefined;
+						isBrokenSymbolicLink = false;
+					} catch (error) {
+						isBrokenSymbolicLink = true;
+						linkTarget = undefined;
+						linkError = error instanceof Error ? error.message : String(error);
+					}
+				}
+				if (!cancelled) {
+					setSelectedFileMetadata({
+						mode: stats.mode,
+						birthtime: stats.birthtime,
+						mtime: stats.mtime,
+						isSymbolicLink: stats.isSymbolicLink(),
+						isBrokenSymbolicLink,
+						linkTarget,
+						linkError,
+					});
+				}
+			} catch {
+				if (!cancelled) {
+					setSelectedFileMetadata(fallbackMetadata);
+				}
+			} finally {
+				if (!cancelled) {
+					setSelectedFileMetadataLoading(false);
+				}
+			}
+		};
+		void loadMetadata();
+		return () => {
+			cancelled = true;
+		};
+	}, [selectedFile]);
+
 	useInput((input, key) => {
 		if (showHelp) {
 			if (checkInput(input, key, ACTIONS.HELP) || key.escape) {
@@ -472,7 +548,6 @@ export const App: React.FC<AppProps> = ({
 		}
 	});
 
-	const selectedFile = files[selectionIndex];
 	const helpOverlay = showHelp ? <HelpModal theme={theme} /> : null;
 	const infoOverlay =
 		showInfo && selectedFile ? <InfoModal theme={theme} node={selectedFile} /> : null;
@@ -606,6 +681,7 @@ export const App: React.FC<AppProps> = ({
 		: 0;
 	const listWidth = showStatusPanel ? Math.max(20, totalColumns - panelWidth) : totalColumns;
 	const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
+	const effectiveSelectedFile = selectedFile ?? undefined;
 	return (
 		<Box flexDirection="column" height={totalRows} width="100%">
 			<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
@@ -642,6 +718,11 @@ export const App: React.FC<AppProps> = ({
 								fileTypeColoursEnabled={fileTypeColoursEnabled}
 								showLegend={showLegend}
 								units={currentUnits}
+								selectedFile={effectiveSelectedFile}
+								selectedFileMode={selectedFileMetadata?.mode}
+								selectedFileBirthtime={selectedFileMetadata?.birthtime}
+								selectedFileMtime={selectedFileMetadata?.mtime}
+								metadataLoading={selectedFileMetadataLoading}
 								width={panelWidth}
 								height={panelHeight}
 							/>

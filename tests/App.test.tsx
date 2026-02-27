@@ -32,14 +32,20 @@ jest.unstable_mockModule('../src/config.js', () => mockConfig);
 
 // Mock fs for deletion
 const mockRm = jest.fn();
+const mockLstat = jest.fn();
+const mockReadlink = jest.fn();
 jest.unstable_mockModule('fs', () => ({
 	default: {
 		promises: {
 			rm: mockRm,
+			lstat: mockLstat,
+			readlink: mockReadlink,
 		},
 	},
 	promises: {
 		rm: mockRm,
+		lstat: mockLstat,
+		readlink: mockReadlink,
 	},
 }));
 
@@ -93,6 +99,13 @@ describe('App Integration', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		mockLstat.mockResolvedValue({
+			mode: 0o100644,
+			birthtime: new Date('2026-02-27T12:00:00Z'),
+			mtime: new Date('2026-02-27T12:00:00Z'),
+			isSymbolicLink: () => false,
+		});
+		mockReadlink.mockResolvedValue('/resolved');
 		mockScanDirectory.mockImplementation(
 			async (_path, _parent, _onProgress, _progress, _signal, _onPartial) => {
 				// Simulate immediate result
