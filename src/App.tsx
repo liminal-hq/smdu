@@ -674,8 +674,6 @@ export const App: React.FC<AppProps> = ({
 	const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
 	const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
-	const directoryCount = files.filter((entry) => entry.isDirectory).length;
-	const fileCount = files.length - directoryCount;
 	const headerRows = 2;
 	const footerRows = 2;
 	const panelWidth = showStatusPanel
@@ -725,8 +723,6 @@ export const App: React.FC<AppProps> = ({
 								selectedFileBirthtime={selectedFileMetadata?.birthtime}
 								selectedFileMtime={selectedFileMetadata?.mtime}
 								metadataLoading={selectedFileMetadataLoading}
-								directoryCount={directoryCount}
-								fileCount={fileCount}
 								width={panelWidth}
 								height={panelHeight}
 							/>

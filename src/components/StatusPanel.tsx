@@ -21,8 +21,6 @@ interface StatusPanelProps {
 	selectedFileBirthtime?: Date;
 	selectedFileMtime?: Date;
 	metadataLoading?: boolean;
-	directoryCount?: number;
-	fileCount?: number;
 	width?: number;
 	height?: number;
 }
@@ -30,6 +28,11 @@ interface StatusPanelProps {
 interface TypeDisplay {
 	label: string;
 	colour: string;
+}
+
+interface DirectoryFileCounts {
+	directories: number | null;
+	files: number | null;
 }
 
 const truncate = (value: string, maxWidth: number): string => {
@@ -139,6 +142,28 @@ export const getTypeDisplay = (
 	};
 };
 
+export const getSelectedDirectoryFileCounts = (file: FileNode | undefined): DirectoryFileCounts => {
+	if (!file || !file.isDirectory) {
+		return { directories: null, files: null };
+	}
+	let directories = 0;
+	let files = 0;
+	const stack = [...(file.children ?? [])];
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (!current) continue;
+		if (current.isDirectory) {
+			directories += 1;
+			if (current.children && current.children.length > 0) {
+				stack.push(...current.children);
+			}
+		} else {
+			files += 1;
+		}
+	}
+	return { directories, files };
+};
+
 export const StatusPanel: React.FC<StatusPanelProps> = ({
 	theme,
 	sortBy,
@@ -154,8 +179,6 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	selectedFileBirthtime,
 	selectedFileMtime,
 	metadataLoading = false,
-	directoryCount = 0,
-	fileCount = 0,
 	width,
 	height,
 }) => {
@@ -185,9 +208,9 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	const divider = '-'.repeat(Math.max(0, panelWidth));
 	const properties: Array<{ label: string; value: string; priority: number }> = [
 		{ label: 'Size', value: selectedFile ? `${selectedFile.size.toLocaleString('en-CA')} B` : 'N/A', priority: 1 },
-		{ label: 'Modified', value: formatDate(selectedFileMtime), priority: 2 },
-		{ label: 'Perms', value: permissions, priority: 3 },
-		{ label: 'Created', value: formatDate(selectedFileBirthtime), priority: 4 },
+		{ label: 'Created', value: formatDate(selectedFileBirthtime), priority: 2 },
+		{ label: 'Modified', value: formatDate(selectedFileMtime), priority: 3 },
+		{ label: 'Perms', value: permissions, priority: 4 },
 	];
 	const propertyRows = [...properties]
 		.sort((a, b) => a.priority - b.priority)
@@ -209,6 +232,10 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 		innerHeight - fixedRows - visiblePropertyRows.length - (showHiddenPropertiesRow ? 1 : 0),
 	);
 	const typeDisplay = getTypeDisplay(selectedFile, theme, fileTypeColoursEnabled);
+	const selectedCounts = getSelectedDirectoryFileCounts(selectedFile);
+	const directoriesLabel =
+		selectedCounts.directories === null ? 'N/A' : selectedCounts.directories.toLocaleString('en-CA');
+	const filesLabel = selectedCounts.files === null ? 'N/A' : selectedCounts.files.toLocaleString('en-CA');
 
 	return (
 		<Box flexDirection="column" width="100%" height={panelHeight}>
@@ -228,7 +255,7 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 					</Box>
 					<Box paddingX={1}>
 						<Text color={theme.colours.muted}>
-							Dirs: {directoryCount.toLocaleString('en-CA')} | Files: {fileCount.toLocaleString('en-CA')}
+							Dirs: {directoriesLabel} | Files: {filesLabel}
 						</Text>
 					</Box>
 					<Box paddingX={1}>
