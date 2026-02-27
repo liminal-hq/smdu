@@ -129,7 +129,7 @@ export const getTypeDisplay = (
 		category === 'scripts'
 			? typeof file.mode === 'number' && (file.mode & 0o111) !== 0
 				? theme.colours.fileTypes.scripts
-				: theme.colours.line
+				: theme.colours.muted
 			: theme.colours.fileTypes[category];
 	return {
 		label: extension ? `file: ${categoryLabel} (.${extension})` : `file: ${categoryLabel}`,

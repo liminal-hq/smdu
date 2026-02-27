@@ -215,6 +215,6 @@ describe('FileList', () => {
 		});
 
 		expect(executableScriptColour).toBe(mockTheme.colours.fileTypes.scripts);
-		expect(nonExecutableScriptColour).toBe(mockTheme.colours.line);
+		expect(nonExecutableScriptColour).toBe(mockTheme.colours.muted);
 	});
 });

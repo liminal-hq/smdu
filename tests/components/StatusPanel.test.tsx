@@ -163,6 +163,6 @@ describe('StatusPanel', () => {
 		const typeDisplay = getTypeDisplay(scriptFile, themes.default, true);
 
 		expect(typeDisplay.label).toBe('file: Scripts (.sh)');
-		expect(typeDisplay.colour).toBe(themes.default.colours.line);
+		expect(typeDisplay.colour).toBe(themes.default.colours.muted);
 	});
 });

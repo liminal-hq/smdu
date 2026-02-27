@@ -97,7 +97,7 @@ export const getEntryColour = ({
 	if (file.isSymbolicLink) return 'blue';
 	if (fileTypeCategory === 'scripts') {
 		const isExecutable = typeof file.mode === 'number' ? (file.mode & 0o111) !== 0 : false;
-		return isExecutable ? theme.colours.fileTypes.scripts : theme.colours.line;
+		return isExecutable ? theme.colours.fileTypes.scripts : theme.colours.muted;
 	}
 	if (fileTypeCategory) return theme.colours.fileTypes[fileTypeCategory];
 	return theme.colours.text;
