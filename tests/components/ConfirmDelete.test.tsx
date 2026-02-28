@@ -28,6 +28,15 @@ describe('ConfirmDelete', () => {
 		expect(output).toContain("Delete file 'large-file.iso' (4.2 GB)?");
 	});
 
+	test('sanitizes escape sequences in the file name', () => {
+		const { lastFrame } = render(
+			<ConfirmDelete fileName={'\u001b[31mbad.txt\u001b[0m'} theme={themes.default} />,
+		);
+		const output = lastFrame();
+		expect(output).toContain("Delete file 'bad.txt'?");
+		expect(output).not.toContain('\u001b[31m');
+	});
+
 	test('renders instruction to confirm or cancel', () => {
 		const { lastFrame } = render(<ConfirmDelete fileName="test-file.txt" theme={themes.default} />);
 		const output = lastFrame();
