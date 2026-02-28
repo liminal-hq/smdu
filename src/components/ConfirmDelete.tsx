@@ -5,10 +5,20 @@ import { sanitize } from '../utils/sanitize.js';
 
 interface ConfirmDeleteProps {
 	fileName: string;
+	formattedSize?: string;
+	isDirectory?: boolean;
 	theme: Theme;
 }
 
-export const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({ fileName, theme }) => {
+export const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({
+	fileName,
+	formattedSize,
+	isDirectory,
+	theme,
+}) => {
+	const typeLabel = isDirectory ? 'directory' : 'file';
+	const sizeLabel = formattedSize ? ` (${formattedSize})` : '';
+
 	return (
 		<Box
 			borderStyle="single"
@@ -18,7 +28,7 @@ export const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({ fileName, theme })
 			alignSelf="center"
 		>
 			<Text color="red" bold>
-				Delete {sanitize(fileName)}?
+				Delete {typeLabel} '{sanitize(fileName)}'{sizeLabel}?
 			</Text>
 			<Box marginTop={1}>
 				<Text color={theme.colours.text}>
