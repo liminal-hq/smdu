@@ -28,6 +28,7 @@ Generate per run in:
 - Current branch: `<branch>`
 - Current `main` head: `<sha> (<subject>)`
 - Working tree clean: `<yes/no>`
+- Audit started from `main`: `<yes/no>`
 - Branch protection: `<summary>`
 - Allowed merge methods: `<merge/squash/rebase>`
 
@@ -108,6 +109,14 @@ For each open PR in the stack:
 2. Description does not mention deferred-review documents, internal queue labels, or internal-only planning notes.
 3. Internal process details are only included when explicitly requested.
 
+## Mergeability Checks
+
+For each open PR in the stack:
+
+1. Merge state: `<clean/dirty/blocked>`
+2. If `DIRTY`, rebase branch onto `origin/main` before merge and rerun checks.
+3. Record conflict resolution notes for touched overlapping files.
+
 ## Merge Order Proposal
 
 1. `#<number>` `<why first>`
@@ -131,6 +140,13 @@ pnpm test
 pnpm build
 ```
 
+Run critical git operations sequentially (no parallel execution) for:
+
+- `git switch`
+- `git merge`
+- `git rebase`
+- `git cherry-pick`
+
 ## Execution Gates
 
 All must pass before `execute` mode:
@@ -141,6 +157,17 @@ All must pass before `execute` mode:
 4. Working tree is clean.
 5. Plan approved by reviewer.
 6. Push approval explicitly granted by user.
+7. Audit started on `main`.
+
+## Post-Merge Finalization
+
+After all merges complete:
+
+1. `git switch main`
+2. `git pull --ff-only`
+3. `pnpm test`
+4. `pnpm build`
+5. Record final status in run summary.
 
 ## Merge Message Format (Required)
 

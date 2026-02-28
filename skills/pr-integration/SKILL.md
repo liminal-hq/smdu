@@ -37,9 +37,15 @@ gh pr list --state open --search "-label:deferred-review"
 
 1. Require explicit approval of the action-plan artifact.
 2. Create and use an integration branch.
-3. Apply PR changes in approved order.
-4. Run validation gates after each integration step and at batch end.
-5. Stop immediately on gate failure and follow rollback policy.
+3. If a PR is `DIRTY` against current `main`, rebase that PR branch onto `origin/main` before merge.
+4. Apply PR changes in approved order.
+5. Run validation gates after each integration step and at batch end.
+6. After all merges, sync local `main` and rerun final validation:
+   - `git switch main`
+   - `git pull --ff-only`
+   - `pnpm test`
+   - `pnpm build`
+7. Stop immediately on gate failure and follow rollback policy.
 
 ## Required Gates
 
@@ -48,6 +54,7 @@ gh pr list --state open --search "-label:deferred-review"
    - `git switch main`
    - `git pull --ff-only`
    - clean working tree
+   - abort if the current branch is not `main` at audit start
 2. Per-PR review
    - scope correctness
    - regression and security review
@@ -56,6 +63,15 @@ gh pr list --state open --search "-label:deferred-review"
 3. Validation
    - `pnpm test`
    - `pnpm build`
+
+## Execution Safety
+
+Run critical git operations sequentially, not in parallel:
+
+- `git switch`
+- `git merge`
+- `git rebase`
+- `git cherry-pick`
 
 ## Prioritization Model
 
