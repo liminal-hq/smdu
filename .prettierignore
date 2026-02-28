@@ -1,3 +1,7 @@
 dist
 node_modules
 coverage
+pnpm-lock.yaml
+docs/site/index.html
+docs/integration-runs/*
+!docs/integration-runs/.gitkeep

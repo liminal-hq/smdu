@@ -648,11 +648,11 @@ SMDU is growing beyond the Unix "do one thing well" principle - and that's okay!
 - Create profile system in config:
   ```json
   {
-	"profiles": {
-		"quick": { "maxDepth": 3, "ignoreHidden": true },
-		"deep": { "maxDepth": -1, "followSymlinks": true },
-		"home": { "path": "~", "excludePatterns": ["node_modules"] }
-	}
+  	"profiles": {
+  		"quick": { "maxDepth": 3, "ignoreHidden": true },
+  		"deep": { "maxDepth": -1, "followSymlinks": true },
+  		"home": { "path": "~", "excludePatterns": ["node_modules"] }
+  	}
   }
   ```
 - Add `--profile <name>` CLI flag
@@ -677,7 +677,7 @@ SMDU is growing beyond the Unix "do one thing well" principle - and that's okay!
 - Add to config:
   ```json
   {
-	"excludePatterns": ["node_modules", ".git", "*.tmp", ".cache"]
+  	"excludePatterns": ["node_modules", ".git", "*.tmp", ".cache"]
   }
   ```
 - Respect `.gitignore` if present (opt-in)

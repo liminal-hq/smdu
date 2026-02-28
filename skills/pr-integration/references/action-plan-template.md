@@ -45,15 +45,15 @@ Generate per run in:
 
 Use the defined model:
 
-| Signal | Score |
-|---|---:|
-| Security fix | +100 |
-| Bug fix | +60 |
-| Performance change | +40 |
-| UX enhancement | +30 |
-| Documentation-only | +10 |
-| Failing CI | -80 |
-| Overlap/conflict risk with higher-priority PR | -20 |
+| Signal                                        | Score |
+| --------------------------------------------- | ----: |
+| Security fix                                  |  +100 |
+| Bug fix                                       |   +60 |
+| Performance change                            |   +40 |
+| UX enhancement                                |   +30 |
+| Documentation-only                            |   +10 |
+| Failing CI                                    |   -80 |
+| Overlap/conflict risk with higher-priority PR |   -20 |
 
 PR scores:
 
@@ -63,9 +63,9 @@ PR scores:
 
 ## Conflict Matrix
 
-| File | PRs touching file | Conflict risk |
-|---|---|---|
-| `<path>` | `#<a>, #<b>` | `<high/medium/low>` |
+| File     | PRs touching file | Conflict risk       |
+| -------- | ----------------- | ------------------- |
+| `<path>` | `#<a>, #<b>`      | `<high/medium/low>` |
 
 Conflict resolution notes:
 

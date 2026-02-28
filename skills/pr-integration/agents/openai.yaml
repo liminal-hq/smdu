@@ -1,4 +1,4 @@
 interface:
-  display_name: "PR Integration"
-  short_description: "Review and integrate PRs safely"
-  default_prompt: "Audit open pull requests, generate an action-plan artifact, and execute integration only after approval."
+  display_name: 'PR Integration'
+  short_description: 'Review and integrate PRs safely'
+  default_prompt: 'Audit open pull requests, generate an action-plan artifact, and execute integration only after approval.'
