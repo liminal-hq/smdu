@@ -8,3 +8,7 @@ coverage
 *.log
 bench_files/
 REVIEW.md
+
+# Internal integration run artefacts
+docs/integration-runs/*
+!docs/integration-runs/.gitkeep
