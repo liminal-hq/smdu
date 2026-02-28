@@ -10,6 +10,7 @@ export interface FileNode {
 	name: string;
 	path: string;
 	size: number;
+	fileCount: number;
 	isDirectory: boolean;
 	isSymbolicLink?: boolean;
 	isBrokenSymbolicLink?: boolean;
@@ -136,6 +137,7 @@ const scanDirectoryInternal = async (
 		name,
 		path: dirPath,
 		size: stats.size,
+		fileCount: stats.isDirectory() ? 0 : 1,
 		isDirectory: stats.isDirectory(),
 		isSymbolicLink: stats.isSymbolicLink(),
 		isBrokenSymbolicLink: false,
@@ -190,6 +192,7 @@ const scanDirectoryInternal = async (
 					);
 					children.push(child);
 					node.size += child.size;
+					node.fileCount += child.fileCount || 0;
 					onPartial?.(activeRoot);
 				}),
 			);
