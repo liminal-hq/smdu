@@ -1,4 +1,4 @@
-# PR Integration Action Plan Artifact Template
+# PR Integration Action Plan Artefact Template
 
 ## Purpose
 
@@ -8,7 +8,7 @@ This file is a generated artefact from the `audit` stage of the PR integration s
 - It is reviewed and approved before `execute` mode runs.
 - A new copy is generated for each integration run.
 
-## Artifact Naming
+## Artefact Naming
 
 Generate per run in:
 
