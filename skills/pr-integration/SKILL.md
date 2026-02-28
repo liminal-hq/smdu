@@ -7,8 +7,8 @@ description: Review and integrate pull requests with audit and execute modes, co
 
 ## Quick Start
 
-1. Run `audit` mode first and produce run artifacts.
-2. Review and approve the action plan artifact.
+1. Run `audit` mode first and produce run artefacts.
+2. Review and approve the action plan artefact.
 3. Run `execute` mode to apply the approved plan on an integration branch.
 
 Never merge directly from local `main` unless explicitly requested.
@@ -29,13 +29,13 @@ gh pr list --state open --search "-label:deferred-review"
 2. Score and rank PRs.
 3. Detect file overlaps and merge risks.
 4. Build a dry-run command plan.
-5. Output action-plan artifacts:
+5. Output action-plan artefacts:
    - `docs/integration-runs/<date>-<batch>-action-plan.md`
    - `docs/integration-runs/<date>-<batch>-action-plan.json`
 
 ### Execute Mode
 
-1. Require explicit approval of the action-plan artifact.
+1. Require explicit approval of the action-plan artefact.
 2. Create and use an integration branch.
 3. If a PR is `DIRTY` against current `main`, rebase that PR branch onto `origin/main` before merge.
 4. Apply PR changes in approved order.
@@ -120,8 +120,8 @@ If any gate fails:
 1. Stop execution.
 2. Revert the last integration commit on the integration branch.
 3. Re-run validation.
-4. Regenerate action-plan artifacts from updated repo state.
+4. Regenerate action-plan artefacts from updated repo state.
 
 ## References
 
-Use [references/action-plan-template.md](references/action-plan-template.md) as the template for per-run planning artifacts.
+Use [references/action-plan-template.md](references/action-plan-template.md) as the template for per-run planning artefacts.

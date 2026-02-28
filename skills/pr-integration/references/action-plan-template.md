@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file is a generated artifact from the `audit` stage of the PR integration skill.
+This file is a generated artefact from the `audit` stage of the PR integration skill.
 
 - It captures repo state, PR analysis, and the exact proposed execution plan.
 - It is reviewed and approved before `execute` mode runs.
@@ -188,7 +188,7 @@ If any gate fails in execution:
 1. Stop execution.
 2. Revert the last integration commit on integration branch.
 3. Re-run `pnpm test` and `pnpm build`.
-4. Regenerate this artifact with updated state.
+4. Regenerate this artefact with updated state.
 
 ## Approval
 
