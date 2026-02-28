@@ -84,9 +84,7 @@ describe('scanDirectory', () => {
 		expect(node.size).toBe(0);
 	});
 	it('should capture symbolic link destination metadata', async () => {
-		mockLstat.mockResolvedValue(
-			createStats({ isDirectory: false, isSymbolicLink: true, size: 12 }),
-		);
+		mockLstat.mockResolvedValue(createStats({ isDirectory: false, isSymbolicLink: true, size: 12 }));
 		mockReadlink.mockResolvedValue('../target.txt');
 		const node = await scanDirectory('/test/link.txt');
 		expect(node.isSymbolicLink).toBe(true);
@@ -94,9 +92,7 @@ describe('scanDirectory', () => {
 		expect(node.isBrokenSymbolicLink).toBe(false);
 	});
 	it('should mark broken symbolic links', async () => {
-		mockLstat.mockResolvedValue(
-			createStats({ isDirectory: false, isSymbolicLink: true, size: 12 }),
-		);
+		mockLstat.mockResolvedValue(createStats({ isDirectory: false, isSymbolicLink: true, size: 12 }));
 		mockReadlink.mockRejectedValue(new Error('ENOENT'));
 		const node = await scanDirectory('/test/broken-link.txt');
 		expect(node.isSymbolicLink).toBe(true);
