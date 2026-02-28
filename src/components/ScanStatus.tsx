@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'ink';
 import { Theme } from '../themes.js';
 import { StatusBanner } from './StatusBanner.js';
+import { sanitize } from '../utils/sanitize.js';
 
 interface ScanStatusProps {
 	theme: Theme;
@@ -18,10 +19,10 @@ export const ScanStatus: React.FC<ScanStatusProps> = ({
 }) => (
 	<StatusBanner theme={theme}>
 		<Text color={theme.colours.muted}>
-			{summary} {spinnerFrame}
+			{sanitize(summary)} {spinnerFrame}
 		</Text>
 		<Text color={theme.colours.text} wrap="truncate-end">
-			Current: {currentPath}
+			Current: {sanitize(currentPath)}
 		</Text>
 	</StatusBanner>
 );

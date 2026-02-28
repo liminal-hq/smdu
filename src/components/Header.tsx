@@ -3,6 +3,7 @@ import { Box, Text, useStdout } from 'ink';
 import { Theme } from '../themes.js';
 import { ViewMode } from '../state.js';
 import { VERSION } from '../version.js';
+import { sanitize } from '../utils/sanitize.js';
 
 interface HeaderProps {
 	path: string;
@@ -30,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ path, theme, width, viewMode }) 
 						</Text>
 					)}
 					<Text color={theme.colours.text} wrap="truncate-end">
-						{path}
+						{sanitize(path)}
 					</Text>
 				</Box>
 				<Text color={theme.colours.muted} bold>

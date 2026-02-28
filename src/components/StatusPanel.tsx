@@ -10,6 +10,7 @@ import { SortField, SortOrder, ViewMode } from '../state.js';
 import { FileNode } from '../scanner.js';
 import { getFileTypeCategory, FILE_TYPE_LEGEND } from '../fileTypeColours.js';
 import path from 'path';
+import { sanitize } from '../utils/sanitize.js';
 
 interface StatusPanelProps {
 	theme: Theme;
@@ -230,7 +231,7 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 			const maxValueWidth = Math.max(0, contentWidth - propertiesLabelWidth - 2);
 			return {
 				label: property.label,
-				value: truncate(property.value, maxValueWidth),
+				value: sanitize(truncate(property.value, maxValueWidth)),
 			};
 		});
 	const fixedRows = selectedFile ? 4 : 1;
