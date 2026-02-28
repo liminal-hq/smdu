@@ -18,7 +18,9 @@
 		"watch": "tsc -w",
 		"start": "node dist/cli.js",
 		"lint": "eslint . --ext .ts,.tsx",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"lint:all": "pnpm lint && pnpm format:check"
 	},
 	"packageManager": "pnpm@10.29.3",
 	"keywords": [],

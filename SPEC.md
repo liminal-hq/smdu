@@ -45,23 +45,23 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
     - Returns a tree structure:
       ```typescript
       interface FileNode {
-	name: string;
-	path: string;
-	size: number;
-	isDirectory: boolean;
-	isHidden: boolean;
-	children?: FileNode[];
-	parent?: FileNode; // Optional, helpful for navigation
+      	name: string;
+      	path: string;
+      	size: number;
+      	isDirectory: boolean;
+      	isHidden: boolean;
+      	children?: FileNode[];
+      	parent?: FileNode; // Optional, helpful for navigation
       }
       ```
     - Scan feedback:
       ```typescript
       interface ScanProgress {
-	currentPath: string;
-	directories: number;
-	files: number;
-	bytes: number;
-	errors: number;
+      	currentPath: string;
+      	directories: number;
+      	files: number;
+      	bytes: number;
+      	errors: number;
       }
       ```
     - Partial scan updates:
