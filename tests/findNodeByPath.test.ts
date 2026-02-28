@@ -1,3 +1,8 @@
+// Unit tests for path-based node lookup in the filesystem state tree
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: MIT
+
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { findNodeByPath } from '../src/state.js';
 import { FileNode } from '../src/scanner.js';
