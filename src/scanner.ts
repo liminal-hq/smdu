@@ -46,15 +46,28 @@ const isHiddenName = (name: string): boolean => {
 	return name.startsWith('.');
 };
 
-// Simple p-limit implementation to avoid adding dependencies
+interface QueueNode {
+	value: () => Promise<void>;
+	next?: QueueNode;
+}
+
+// Simple p-limit implementation to avoid adding dependencies.
+// ⚡ Bolt Optimisation: Uses an O(1) linked-list queue rather than an O(n) array-based
+// queue.shift() to eliminate severe performance degradation when recursively scanning
+// massive directory trees with thousands of queued fs operations.
 const pLimit = (concurrency: number) => {
-	const queue: (() => Promise<void>)[] = [];
+	let head: QueueNode | undefined = undefined;
+	let tail: QueueNode | undefined = undefined;
 	let activeCount = 0;
 
 	const next = () => {
 		activeCount--;
-		if (queue.length > 0) {
-			const job = queue.shift();
+		if (head) {
+			const job = head.value;
+			head = head.next;
+			if (!head) {
+				tail = undefined;
+			}
 			if (job) {
 				activeCount++;
 				job();
@@ -79,7 +92,13 @@ const pLimit = (concurrency: number) => {
 				activeCount++;
 				job();
 			} else {
-				queue.push(job);
+				const node: QueueNode = { value: job };
+				if (tail) {
+					tail.next = node;
+					tail = node;
+				} else {
+					head = tail = node;
+				}
 			}
 		});
 	};

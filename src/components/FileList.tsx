@@ -269,10 +269,15 @@ export const FileList: React.FC<FileListProps> = ({
 			</Box>
 			<Text color={theme.colours.line}>{divider}</Text>
 			{files.length === 0 ? (
-				<Box paddingX={1} paddingTop={1} justifyContent="center">
+				<Box paddingX={1} paddingTop={1} flexDirection="column" alignItems="center">
 					<Text color={theme.colours.muted} italic>
 						This directory is empty.
 					</Text>
+					<Box marginTop={1}>
+						<Text color={theme.colours.muted}>
+							Press <Text bold>Left Arrow</Text> or <Text bold>Backspace</Text> to go back
+						</Text>
+					</Box>
 				</Box>
 			) : null}
 			{visibleFiles.map((file, index) => {
