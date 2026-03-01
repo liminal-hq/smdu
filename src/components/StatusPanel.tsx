@@ -163,7 +163,11 @@ export const getSelectedDirectoryFileCounts = (file: FileNode | undefined): Dire
 		if (current.isDirectory) {
 			directories += 1;
 			if (current.children && current.children.length > 0) {
-				stack.push(...current.children);
+				for (const child of current.children) {
+					// ⚡ Bolt Optimisation: Use loop instead of spread operator to prevent
+					// "Maximum call stack size exceeded" errors on directories with >200k files
+					stack.push(child);
+				}
 			}
 		} else {
 			files += 1;
