@@ -67,6 +67,20 @@ The packaging script outputs artefacts under `dist/` and installs files to distr
 - binary: `/usr/bin/smdu`
 - man page: `/usr/share/man/man1/smdu.1.gz`
 
+### macOS Homebrew Prep Archives (`.tar.gz`)
+
+Build Homebrew-oriented macOS archives locally:
+
+```bash
+pnpm build:macos:package:x64
+pnpm build:macos:package:arm64
+```
+
+Release automation publishes tarball artefacts named `smdu-<tag>-macos-<arch>.tar.gz`. Each archive includes:
+
+- `smdu` (executable)
+- `smdu.1.gz` (manual page payload for formula install)
+
 ### Windows Installer Builds (`.msi`)
 
 Build a Windows MSI locally:

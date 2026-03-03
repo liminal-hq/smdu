@@ -20,6 +20,8 @@
 		"build:linux:packages": "pnpm build && pnpm build:binary && scripts/build-linux-packages.sh",
 		"build:linux:deb": "pnpm build && pnpm build:binary && scripts/build-linux-packages.sh --format deb",
 		"build:linux:rpm": "pnpm build && pnpm build:binary && scripts/build-linux-packages.sh --format rpm",
+		"build:macos:package:x64": "pnpm build && bun build --compile --minify --sourcemap --bytecode src/cli.tsx --outfile dist/smdu --format esm --target bun-darwin-x64 && scripts/build-macos-packages.sh --arch x64",
+		"build:macos:package:arm64": "pnpm build && bun build --compile --minify --sourcemap --bytecode src/cli.tsx --outfile dist/smdu --format esm --target bun-darwin-arm64 && scripts/build-macos-packages.sh --arch arm64",
 		"build:windows:installer:x64": "pnpm build && bun build --compile --minify --sourcemap --bytecode src/cli.tsx --outfile dist/smdu.exe --format esm --target bun-windows-x64 && pwsh -File scripts/build-windows-installer.ps1 -Arch x64",
 		"build:windows:installer:arm64": "pnpm build && bun build --compile --minify --sourcemap --bytecode src/cli.tsx --outfile dist/smdu.exe --format esm --target bun-windows-arm64 && pwsh -File scripts/build-windows-installer.ps1 -Arch arm64",
 		"watch": "tsc -w",
