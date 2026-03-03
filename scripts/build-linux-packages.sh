@@ -156,6 +156,7 @@ Section: utils
 Priority: optional
 Architecture: ${DEB_ARCH}
 Maintainer: Scott Morris <scott.moris@gmail.com>
+Homepage: https://smdu.liminalhq.ca/
 Description: See My Disk Usage - A clone of ncdu
  SMDU is a terminal disk usage analyser inspired by ncdu.
 CONTROL
@@ -202,7 +203,7 @@ Version:        ${VERSION_NO_V}
 Release:        1%{?dist}
 Summary:        See My Disk Usage - A clone of ncdu
 License:        MIT
-URL:            https://github.com/ScottMorris/smdu
+URL:            https://smdu.liminalhq.ca/
 BuildArch:      ${RPM_ARCH}
 
 %description
