@@ -35,12 +35,17 @@ cd smdu
 # Install dependencies
 pnpm install
 
-# Build the project
+# Build JavaScript output (TypeScript -> dist/*.js)
 pnpm build
+
+# Build a standalone executable with Bun
+pnpm build:binary
 
 # Link globally (optional)
 pnpm link --global
 ```
+
+`pnpm build:binary` requires Bun to be installed.
 
 ## Usage
 
@@ -127,6 +132,11 @@ To start the project in development mode:
 4.  **Run tests**:
     ```bash
     pnpm test
+    ```
+
+5.  **Build the standalone executable** (optional):
+    ```bash
+    pnpm build:binary
     ```
 
 ## License

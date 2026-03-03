@@ -33,10 +33,11 @@ SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScrip
 ### Tech Stack
 
 - **Language:** TypeScript
-- **Runtime:** Node.js
+- **Runtime:** Node.js (development/runtime), Bun (standalone executable build)
 - **UI Framework:** Ink (React for CLI)
 - **State Management:** React Hooks / Internal State
 - **Testing:** Jest, Ink Testing Library
+- **Distribution Build:** `bun build --compile --format esm` for a single-file executable
 
 ### Modules
 
