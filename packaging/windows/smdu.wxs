@@ -43,4 +43,4 @@
 			<ComponentRef Id="SmduPathComponent" />
 		</Feature>
 	</Package>
-</Wix>;
+</Wix>
