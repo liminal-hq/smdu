@@ -118,7 +118,7 @@ jobs:
           - os: ubuntu-latest
             target: linux-arm64
             bun_target: bun-linux-arm64
-          - os: macos-13
+          - os: macos-14
             target: macos-x64
             bun_target: bun-darwin-x64
           - os: macos-14
@@ -127,7 +127,7 @@ jobs:
           - os: windows-latest
             target: windows-x64
             bun_target: bun-windows-x64
-          - os: windows-latest
+          - os: ubuntu-latest
             target: windows-arm64
             bun_target: bun-windows-arm64
     steps:
@@ -160,6 +160,9 @@ jobs:
         run: |
           set -euo pipefail
           ASSET="dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}"
+          if [[ "${{ matrix.target }}" == windows-* ]]; then
+            ASSET="${ASSET}.exe"
+          fi
           if [ -f dist/smdu ]; then
             mv dist/smdu "$ASSET"
           elif [ -f dist/smdu.exe ]; then
