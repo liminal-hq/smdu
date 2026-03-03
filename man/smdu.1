@@ -89,6 +89,33 @@ Open settings menu.
 .SH ENVIRONMENT
 .B smdu
 respects standard terminal environment variables.
+.SH FILES
+.TP
+.B Linux binary path
+.I /usr/local/bin/smdu
+(or distro-managed
+.IR /usr/bin/smdu ).
+.TP
+.B Linux man page path
+.I /usr/local/share/man/man1/smdu.1.gz
+(or distro-managed
+.IR /usr/share/man/man1/smdu.1.gz ).
+.TP
+.B macOS binary path
+.I /opt/homebrew/bin/smdu
+(Apple Silicon) or
+.IR /usr/local/bin/smdu " (Intel)."
+.TP
+.B macOS man page path
+.I /opt/homebrew/share/man/man1/smdu.1
+(Apple Silicon) or
+.IR /usr/local/share/man/man1/smdu.1 " (Intel)."
+.TP
+.B Windows binary path
+.I %LOCALAPPDATA%\\Programs\\smdu\\smdu.exe
+.TP
+.B Windows manual
+No \fBman\fR page is installed on Windows; use \fBsmdu --help\fR.
 .SH SEE ALSO
 .BR ncdu (1)
 .SH AUTHOR

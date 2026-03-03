@@ -47,6 +47,22 @@ pnpm link --global
 
 `pnpm build:binary` requires Bun to be installed.
 
+### Install Path Conventions
+
+Canonical install paths are defined in `SPEC.md` and are summarised here for operators:
+
+| Platform | Binary path | Man page path | Notes |
+| --- | --- | --- | --- |
+| Linux | `/usr/local/bin/smdu` (or distro-managed `/usr/bin/smdu`) | `/usr/local/share/man/man1/smdu.1.gz` (or `/usr/share/man/man1/smdu.1.gz`) | Package-managed installs may use distro prefixes. |
+| macOS | `/opt/homebrew/bin/smdu` (Apple Silicon) or `/usr/local/bin/smdu` (Intel) | `/opt/homebrew/share/man/man1/smdu.1` or `/usr/local/share/man/man1/smdu.1` | Homebrew prefix determines final path. |
+| Windows | `%LOCALAPPDATA%\\Programs\\smdu\\smdu.exe` | Not supported | Installer must expose `smdu` on `PATH`. |
+
+### Uninstall Baseline
+
+- Linux: remove the package, or remove both `smdu` and `smdu.1(.gz)` from the same install prefix.
+- macOS: run `brew uninstall smdu`, or remove both `smdu` and `smdu.1` from the active Homebrew prefix.
+- Windows: remove with package manager, then remove `%LOCALAPPDATA%\\Programs\\smdu` if leftovers remain.
+
 ## Usage
 
 Run `smdu` in any directory:

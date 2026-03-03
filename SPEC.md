@@ -4,6 +4,18 @@
 
 SMDU is a TUI disk usage analyser inspired by `ncdu`. It is built with TypeScript, React, and Ink.
 
+## Installation Path Conventions (Canonical)
+
+The following install paths are the canonical defaults for supported platform families. Packaging work must align to these paths unless a platform package manager enforces a different location.
+
+| Platform | Binary path | Man page path | Uninstall baseline |
+| --- | --- | --- | --- |
+| Linux | `/usr/local/bin/smdu` (or distro-managed `/usr/bin/smdu`) | `/usr/local/share/man/man1/smdu.1.gz` (or distro-managed `/usr/share/man/man1/smdu.1.gz`) | Remove package or remove binary and man page from the same prefix. |
+| macOS | `/opt/homebrew/bin/smdu` (Apple Silicon) or `/usr/local/bin/smdu` (Intel) | `/opt/homebrew/share/man/man1/smdu.1` or `/usr/local/share/man/man1/smdu.1` | `brew uninstall smdu` (or remove binary and man page from the same prefix). |
+| Windows | `%LOCALAPPDATA%\\Programs\\smdu\\smdu.exe` (package-managed shim on `PATH`) | Not supported. Use `smdu --help`. | Remove via package manager and remove the install directory if it remains. |
+
+Platform-specific exceptions must be documented in `README.md` and linked to the package method that requires them.
+
 ## Features
 
 - **Directory Scanning:** Recursively scans directories to calculate file sizes.
