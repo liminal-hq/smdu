@@ -47,6 +47,26 @@ pnpm link --global
 
 `pnpm build:binary` requires Bun to be installed.
 
+### Linux Package Builds (`.deb` / `.rpm`)
+
+Build Linux packages locally (host architecture):
+
+```bash
+pnpm build:linux:packages
+```
+
+Or build a single package format:
+
+```bash
+pnpm build:linux:deb
+pnpm build:linux:rpm
+```
+
+The packaging script outputs artefacts under `dist/` and installs files to distro-managed paths inside the package:
+
+- binary: `/usr/bin/smdu`
+- man page: `/usr/share/man/man1/smdu.1.gz`
+
 ### Install Path Conventions
 
 Canonical install paths are defined in `SPEC.md` and are summarised here for operators:
@@ -59,7 +79,10 @@ Canonical install paths are defined in `SPEC.md` and are summarised here for ope
 
 ### Uninstall Baseline
 
-- Linux: remove the package, or remove both `smdu` and `smdu.1(.gz)` from the same install prefix.
+- Linux:
+  - Debian/Ubuntu packages: `sudo apt remove smdu` (or `sudo dpkg -r smdu`)
+  - RPM-based packages: `sudo dnf remove smdu` (or `sudo rpm -e smdu`)
+  - manual cleanup fallback: remove both `smdu` and `smdu.1(.gz)` from the same install prefix
 - macOS: run `brew uninstall smdu`, or remove both `smdu` and `smdu.1` from the active Homebrew prefix.
 - Windows: remove with package manager, then remove `%LOCALAPPDATA%\\Programs\\smdu` if leftovers remain.
 
