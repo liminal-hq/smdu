@@ -130,6 +130,7 @@ To start the project in development mode:
     Note: `pnpm start` runs `node dist/cli.js`, so you need to have the code built (which `pnpm run watch` does automatically).
 
 4.  **Run tests**:
+
     ```bash
     pnpm test
     ```
