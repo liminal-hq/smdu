@@ -51,11 +51,11 @@ pnpm link --global
 
 Canonical install paths are defined in `SPEC.md` and are summarised here for operators:
 
-| Platform | Binary path | Man page path | Notes |
-| --- | --- | --- | --- |
-| Linux | `/usr/local/bin/smdu` (or distro-managed `/usr/bin/smdu`) | `/usr/local/share/man/man1/smdu.1.gz` (or `/usr/share/man/man1/smdu.1.gz`) | Package-managed installs may use distro prefixes. |
-| macOS | `/opt/homebrew/bin/smdu` (Apple Silicon) or `/usr/local/bin/smdu` (Intel) | `/opt/homebrew/share/man/man1/smdu.1` or `/usr/local/share/man/man1/smdu.1` | Homebrew prefix determines final path. |
-| Windows | `%LOCALAPPDATA%\\Programs\\smdu\\smdu.exe` | Not supported | Installer must expose `smdu` on `PATH`. |
+| Platform | Binary path                                                               | Man page path                                                               | Notes                                             |
+| -------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
+| Linux    | `/usr/local/bin/smdu` (or distro-managed `/usr/bin/smdu`)                 | `/usr/local/share/man/man1/smdu.1.gz` (or `/usr/share/man/man1/smdu.1.gz`)  | Package-managed installs may use distro prefixes. |
+| macOS    | `/opt/homebrew/bin/smdu` (Apple Silicon) or `/usr/local/bin/smdu` (Intel) | `/opt/homebrew/share/man/man1/smdu.1` or `/usr/local/share/man/man1/smdu.1` | Homebrew prefix determines final path.            |
+| Windows  | `%LOCALAPPDATA%\\Programs\\smdu\\smdu.exe`                                | Not supported                                                               | Installer must expose `smdu` on `PATH`.           |
 
 ### Uninstall Baseline
 
