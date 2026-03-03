@@ -79,6 +79,7 @@ describe('FileList', () => {
 		);
 
 		const output = lastFrame();
+		expect(output).toMatch(/Size\s+%\s+Usage/);
 		expect(output).toContain('dir1');
 		expect(output).toContain('file1.txt');
 		expect(output).toContain('66.7%'); // dir1: 1000 / 1500

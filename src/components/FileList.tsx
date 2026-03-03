@@ -242,7 +242,7 @@ export const FileList: React.FC<FileListProps> = ({
 					</Box>
 					<Box width={1} />
 					<Box width={columnLayout.percentColumns} justifyContent="flex-end">
-						<Text color={theme.colours.muted}>{columnLayout.showGraph ? '' : 'Usage'}</Text>
+						<Text color={theme.colours.muted}>%</Text>
 					</Box>
 					{columnLayout.showGraph ? (
 						<>
