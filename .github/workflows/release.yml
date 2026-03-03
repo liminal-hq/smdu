@@ -127,7 +127,7 @@ jobs:
           - os: windows-latest
             target: windows-x64
             bun_target: bun-windows-x64
-          - os: ubuntu-latest
+          - os: windows-latest
             target: windows-arm64
             bun_target: bun-windows-arm64
     steps:
@@ -145,6 +145,13 @@ jobs:
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+
+      - name: Setup WiX Toolset (Windows targets)
+        if: startsWith(matrix.target, 'windows-')
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix
+          "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install RPM tooling (Linux targets)
         if: startsWith(matrix.target, 'linux-')
@@ -173,6 +180,20 @@ jobs:
             --arch "${ARCH}" \
             --binary dist/smdu \
             --output-prefix "dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}"
+
+      - name: Build Windows MSI installer
+        if: startsWith(matrix.target, 'windows-')
+        shell: pwsh
+        run: |
+          $arch = 'x64'
+          if ('${{ matrix.target }}' -eq 'windows-arm64') {
+            $arch = 'arm64'
+          }
+          pwsh -File scripts/build-windows-installer.ps1 `
+            -Version '${{ needs.prepare-release.outputs.tag_name }}' `
+            -Arch $arch `
+            -Binary 'dist/smdu.exe' `
+            -OutputPrefix 'dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}'
 
       - name: Prepare release asset (unix)
         if: runner.os != 'Windows'
@@ -217,6 +238,8 @@ jobs:
             dist/*.deb.sha256
             dist/*.rpm
             dist/*.rpm.sha256
+            dist/*.msi
+            dist/*.msi.sha256
           if-no-files-found: error
 
   publish-release:

@@ -67,6 +67,17 @@ The packaging script outputs artefacts under `dist/` and installs files to distr
 - binary: `/usr/bin/smdu`
 - man page: `/usr/share/man/man1/smdu.1.gz`
 
+### Windows Installer Builds (`.msi`)
+
+Build a Windows MSI locally:
+
+```bash
+pnpm build:windows:installer:x64
+pnpm build:windows:installer:arm64
+```
+
+Release automation publishes MSI artefacts named `smdu-<tag>-windows-<arch>.msi`. The installer places `smdu.exe` under `%LOCALAPPDATA%\\Programs\\smdu` and appends this directory to the per-user `PATH`.
+
 ### Install Path Conventions
 
 Canonical install paths are defined in `SPEC.md` and are summarised here for operators:
@@ -84,7 +95,10 @@ Canonical install paths are defined in `SPEC.md` and are summarised here for ope
   - RPM-based packages: `sudo dnf remove smdu` (or `sudo rpm -e smdu`)
   - manual cleanup fallback: remove both `smdu` and `smdu.1(.gz)` from the same install prefix
 - macOS: run `brew uninstall smdu`, or remove both `smdu` and `smdu.1` from the active Homebrew prefix.
-- Windows: remove with package manager, then remove `%LOCALAPPDATA%\\Programs\\smdu` if leftovers remain.
+- Windows:
+  - installer path: uninstall from Windows Settings (Installed apps), or run `msiexec /x smdu-<tag>-windows-<arch>.msi`
+  - if leftovers remain, remove `%LOCALAPPDATA%\\Programs\\smdu`
+  - open a fresh terminal after install/uninstall to pick up `PATH` changes
 
 ## Usage
 

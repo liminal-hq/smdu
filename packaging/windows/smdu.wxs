@@ -1,0 +1,46 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Package
+		Name="smdu"
+		Manufacturer="Liminal HQ"
+		Version="$(var.ProductVersion)"
+		UpgradeCode="7b8a83a6-0614-4d4f-a403-f101d20bc740"
+		Scope="perUser"
+		InstallerVersion="500"
+		Language="1033"
+	>
+		<SummaryInformation Description="See My Disk Usage installer" Manufacturer="Liminal HQ" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of smdu is already installed." />
+
+		<StandardDirectory Id="LocalAppDataFolder">
+			<Directory Id="INSTALLROOT" Name="Programs">
+				<Directory Id="INSTALLFOLDER" Name="smdu">
+					<Component Id="SmduExecutableComponent" Guid="*">
+						<File
+							Id="SmduExecutableFile"
+							Source="$(var.BinarySource)"
+							Name="smdu.exe"
+							KeyPath="yes"
+						/>
+					</Component>
+					<Component Id="SmduPathComponent" Guid="*">
+						<Environment
+							Id="SmduPathEntry"
+							Name="PATH"
+							Value="[INSTALLFOLDER]"
+							Action="set"
+							Part="last"
+							Permanent="no"
+							System="no"
+						/>
+					</Component>
+				</Directory>
+			</Directory>
+		</StandardDirectory>
+
+		<Feature Id="ProductFeature" Title="smdu" Level="1">
+			<ComponentRef Id="SmduExecutableComponent" />
+			<ComponentRef Id="SmduPathComponent" />
+		</Feature>
+	</Package>
+</Wix>;
