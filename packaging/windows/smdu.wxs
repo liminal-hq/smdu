@@ -15,7 +15,7 @@
 		<StandardDirectory Id="LocalAppDataFolder">
 			<Directory Id="INSTALLROOT" Name="Programs">
 				<Directory Id="INSTALLFOLDER" Name="smdu">
-					<Component Id="SmduExecutableComponent" Guid="*">
+					<Component Id="SmduExecutableComponent" Guid="0f223f53-b0fd-458f-a6f9-fd503f873346">
 						<File
 							Id="SmduExecutableFile"
 							Source="$(var.BinarySource)"
@@ -23,7 +23,7 @@
 							KeyPath="yes"
 						/>
 					</Component>
-					<Component Id="SmduPathComponent" Guid="*">
+					<Component Id="SmduPathComponent" Guid="67f64526-ce0a-4d24-b400-ff6f7d15e65a">
 						<Environment
 							Id="SmduPathEntry"
 							Name="PATH"
