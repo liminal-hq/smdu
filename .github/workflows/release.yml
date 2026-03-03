@@ -127,7 +127,7 @@ jobs:
           - os: windows-latest
             target: windows-x64
             bun_target: bun-windows-x64
-          - os: windows-latest
+          - os: ubuntu-latest
             target: windows-arm64
             bun_target: bun-windows-arm64
     steps:
@@ -145,13 +145,6 @@ jobs:
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
-
-      - name: Setup WiX Toolset (Windows targets)
-        if: startsWith(matrix.target, 'windows-')
-        shell: pwsh
-        run: |
-          dotnet tool install --global wix
-          "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install RPM tooling (Linux targets)
         if: startsWith(matrix.target, 'linux-')
@@ -180,20 +173,6 @@ jobs:
             --arch "${ARCH}" \
             --binary dist/smdu \
             --output-prefix "dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}"
-
-      - name: Build Windows MSI installer
-        if: startsWith(matrix.target, 'windows-')
-        shell: pwsh
-        run: |
-          $arch = 'x64'
-          if ('${{ matrix.target }}' -eq 'windows-arm64') {
-            $arch = 'arm64'
-          }
-          pwsh -File scripts/build-windows-installer.ps1 `
-            -Version '${{ needs.prepare-release.outputs.tag_name }}' `
-            -Arch $arch `
-            -Binary 'dist/smdu.exe' `
-            -OutputPrefix 'dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}'
 
       - name: Prepare release asset (unix)
         if: runner.os != 'Windows'
@@ -238,14 +217,63 @@ jobs:
             dist/*.deb.sha256
             dist/*.rpm
             dist/*.rpm.sha256
-            dist/*.msi
-            dist/*.msi.sha256
+          if-no-files-found: error
+
+  build-windows-installers:
+    name: Build Windows installers
+    runs-on: windows-latest
+    needs: [prepare-release, build-binaries]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup WiX Toolset
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix
+          "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Download windows-x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: smdu-windows-x64
+          path: release-assets/windows-x64
+
+      - name: Download windows-arm64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: smdu-windows-arm64
+          path: release-assets/windows-arm64
+
+      - name: Build MSI installers
+        shell: pwsh
+        run: |
+          $tag = '${{ needs.prepare-release.outputs.tag_name }}'
+          pwsh -File scripts/build-windows-installer.ps1 `
+            -Version $tag `
+            -Arch x64 `
+            -Binary "release-assets/windows-x64/smdu-$tag-windows-x64.exe" `
+            -OutputPrefix "release-assets/smdu-$tag-windows-x64"
+
+          pwsh -File scripts/build-windows-installer.ps1 `
+            -Version $tag `
+            -Arch arm64 `
+            -Binary "release-assets/windows-arm64/smdu-$tag-windows-arm64.exe" `
+            -OutputPrefix "release-assets/smdu-$tag-windows-arm64"
+
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: smdu-windows-installers
+          path: |
+            release-assets/*.msi
+            release-assets/*.msi.sha256
           if-no-files-found: error
 
   publish-release:
     name: Publish GitHub Release
     runs-on: ubuntu-latest
-    needs: [prepare-release, build-binaries]
+    needs: [prepare-release, build-binaries, build-windows-installers]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
