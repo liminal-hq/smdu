@@ -51,6 +51,15 @@
 - Use user-facing, outcome-focused language in PR titles and descriptions.
 - Only include internal process details in PR content when explicitly requested by the user.
 
+## Pull Request Labels
+
+**Requirement:** Every PR must include labels that describe the change and map to release-note categories.
+
+- Add at least one category label to every PR: `feat`, `feature`, `enhancement`, `fix`, `bug`, `bugfix`, `docs`, `test`, `ci`, `build`, or `chore`.
+- Add additional scope labels where helpful (for example, `release`, `ui`, `scanner`, `cli`).
+- Use `skip-changelog` only when a change should be excluded from generated release notes.
+- Keep labels accurate as scope changes during review.
+
 ## Git Workflow
 
 **Requirement:** Do not push changes (especially force pushes) to the repository unless explicitly requested by the user.
