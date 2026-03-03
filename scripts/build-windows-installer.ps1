@@ -1,8 +1,5 @@
 #!/usr/bin/env pwsh
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
-
 param(
     [string]$Version,
     [ValidateSet('x64', 'arm64')]
@@ -11,6 +8,9 @@ param(
     [string]$WixSource = 'packaging/windows/smdu.wxs',
     [string]$OutputPrefix
 )
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
 
 function Get-PackageVersion {
     $packageJson = Get-Content -Raw -Path 'package.json' | ConvertFrom-Json
