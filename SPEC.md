@@ -16,6 +16,8 @@ The following install paths are the canonical defaults for supported platform fa
 
 Platform-specific exceptions must be documented in `README.md` and linked to the package method that requires them.
 
+Linux release packaging must produce both `.deb` and `.rpm` artefacts and place files in distro-managed paths (`/usr/bin/smdu`, `/usr/share/man/man1/smdu.1.gz`) unless a platform policy requires an override.
+
 ## Features
 
 - **Directory Scanning:** Recursively scans directories to calculate file sizes.

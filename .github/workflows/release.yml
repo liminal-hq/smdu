@@ -146,6 +146,10 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Install RPM tooling (Linux targets)
+        if: startsWith(matrix.target, 'linux-')
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -154,6 +158,21 @@ jobs:
 
       - name: Build standalone binary
         run: bun build --compile --minify --sourcemap --bytecode src/cli.tsx --outfile dist/smdu --format esm --target ${{ matrix.bun_target }}
+
+      - name: Build Linux packages
+        if: startsWith(matrix.target, 'linux-')
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCH="x64"
+          if [[ "${{ matrix.target }}" == "linux-arm64" ]]; then
+            ARCH="arm64"
+          fi
+          scripts/build-linux-packages.sh \
+            --version "${{ needs.prepare-release.outputs.tag_name }}" \
+            --arch "${ARCH}" \
+            --binary dist/smdu \
+            --output-prefix "dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}"
 
       - name: Prepare release asset (unix)
         if: runner.os != 'Windows'
@@ -192,7 +211,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: smdu-${{ matrix.target }}
-          path: dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}*
+          path: |
+            dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}*
+            dist/*.deb
+            dist/*.deb.sha256
+            dist/*.rpm
+            dist/*.rpm.sha256
           if-no-files-found: error
 
   publish-release:
