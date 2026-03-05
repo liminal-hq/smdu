@@ -29,6 +29,24 @@ resolve_version() {
 	node -p "JSON.parse(require('fs').readFileSync('${REPO_ROOT}/package.json', 'utf8')).version"
 }
 
+write_sha256_file() {
+	local input_file="$1"
+	local output_file="$2"
+
+	if command -v sha256sum >/dev/null 2>&1; then
+		sha256sum "${input_file}" > "${output_file}"
+		return
+	fi
+
+	if command -v shasum >/dev/null 2>&1; then
+		shasum -a 256 "${input_file}" > "${output_file}"
+		return
+	fi
+
+	echo "A SHA-256 utility is required (sha256sum or shasum)." >&2
+	exit 1
+}
+
 normalise_arch() {
 	case "$1" in
 		x64 | amd64 | x86_64)
@@ -121,14 +139,17 @@ fi
 
 DEB_ARCH=""
 RPM_ARCH=""
+RPM_TARGET=""
 case "${ARCH}" in
 	x64)
 		DEB_ARCH="amd64"
 		RPM_ARCH="x86_64"
+		RPM_TARGET="x86_64-linux"
 		;;
 	arm64)
 		DEB_ARCH="arm64"
 		RPM_ARCH="aarch64"
+		RPM_TARGET="aarch64-linux"
 		;;
 esac
 
@@ -181,7 +202,7 @@ POSTRM
 
 	local deb_output="${OUTPUT_PREFIX}.deb"
 	dpkg-deb --build "${deb_root}" "${deb_output}"
-	sha256sum "${deb_output}" > "${deb_output}.sha256"
+	write_sha256_file "${deb_output}" "${deb_output}.sha256"
 	echo "Built ${deb_output}"
 }
 
@@ -236,7 +257,7 @@ SPEC
 	rpmbuild \
 		--define "_topdir ${rpm_root}" \
 		--define "__os_install_post %{nil}" \
-		--target "${RPM_ARCH}" \
+		--target "${RPM_TARGET}" \
 		-bb "${rpm_root}/SPECS/smdu.spec"
 
 	local rpm_built
@@ -248,7 +269,7 @@ SPEC
 
 	local rpm_output="${OUTPUT_PREFIX}.rpm"
 	cp "${rpm_built}" "${rpm_output}"
-	sha256sum "${rpm_output}" > "${rpm_output}.sha256"
+	write_sha256_file "${rpm_output}" "${rpm_output}.sha256"
 	echo "Built ${rpm_output}"
 }
 
