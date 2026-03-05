@@ -3,7 +3,7 @@ import { FileNode } from './scanner.js';
 import fs from 'fs';
 import path from 'path';
 
-export type SortField = 'name' | 'size';
+export type SortField = 'name' | 'size' | 'count';
 export type SortOrder = 'asc' | 'desc';
 export type ViewMode = 'tree' | 'flat';
 
@@ -83,6 +83,8 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 			let comparison = 0;
 			if (sortBy === 'name') {
 				comparison = a.name.localeCompare(b.name);
+			} else if (sortBy === 'count') {
+				comparison = (a.fileCount || 0) - (b.fileCount || 0);
 			} else {
 				comparison = a.size - b.size;
 			}
@@ -193,10 +195,11 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 		setSelectionIndex(0);
 	}, []);
 
-	const updateSizeUpwards = (node: FileNode, delta: number) => {
+	const updateStatsUpwards = (node: FileNode, sizeDelta: number, countDelta: number) => {
 		let curr: FileNode | undefined = node;
 		while (curr) {
-			curr.size += delta;
+			curr.size += sizeDelta;
+			curr.fileCount += countDelta;
 			curr = curr.parent;
 		}
 	};
@@ -222,7 +225,8 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 
 			// Propagate size change
 			const sizeDiff = -fileToDelete.size;
-			updateSizeUpwards(parentNode, sizeDiff);
+			const countDiff = -(fileToDelete.fileCount || 0);
+			updateStatsUpwards(parentNode, sizeDiff, countDiff);
 
 			// Force re-render by creating a shallow copy
 			setCurrentNode({ ...currentNode });
