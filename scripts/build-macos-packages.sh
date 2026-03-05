@@ -27,6 +27,24 @@ resolve_version() {
 	node -p "JSON.parse(require('fs').readFileSync('${REPO_ROOT}/package.json', 'utf8')).version"
 }
 
+write_sha256_file() {
+	local input_file="$1"
+	local output_file="$2"
+
+	if command -v sha256sum >/dev/null 2>&1; then
+		sha256sum "${input_file}" > "${output_file}"
+		return
+	fi
+
+	if command -v shasum >/dev/null 2>&1; then
+		shasum -a 256 "${input_file}" > "${output_file}"
+		return
+	fi
+
+	echo "A SHA-256 utility is required (sha256sum or shasum)." >&2
+	exit 1
+}
+
 normalise_arch() {
 	case "$1" in
 		x64 | amd64 | x86_64)
@@ -118,6 +136,6 @@ gzip -c "${MAN_PAGE_PATH}" > "${PAYLOAD_DIR}/smdu.1.gz"
 
 ARCHIVE_OUTPUT="${OUTPUT_PREFIX}.tar.gz"
 tar -C "${PAYLOAD_DIR}" -czf "${ARCHIVE_OUTPUT}" smdu smdu.1.gz
-sha256sum "${ARCHIVE_OUTPUT}" > "${ARCHIVE_OUTPUT}.sha256"
+write_sha256_file "${ARCHIVE_OUTPUT}" "${ARCHIVE_OUTPUT}.sha256"
 
 echo "Built ${ARCHIVE_OUTPUT}"
