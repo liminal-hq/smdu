@@ -534,6 +534,7 @@ export const App: React.FC<AppProps> = ({
 
 		if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
 		if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
+		if (checkInput(input, key, ACTIONS.SORT_COUNT)) toggleSort('count');
 		if (checkInput(input, key, ACTIONS.VIEW_MODE)) toggleViewMode();
 		if (checkInput(input, key, ACTIONS.TOGGLE_HIDDEN)) {
 			setShowHiddenFiles((prev) => {
@@ -681,6 +682,7 @@ export const App: React.FC<AppProps> = ({
 	const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
 	const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
+	const maxCount = files.reduce((max, f) => Math.max(max, f.fileCount || 0), 0);
 	const headerRows = 2;
 	const footerRows = 2;
 	const panelWidth = showStatusPanel
@@ -701,6 +703,9 @@ export const App: React.FC<AppProps> = ({
 							selectedIndex={selectionIndex}
 							maxSize={maxSize}
 							totalSize={currentNode.size}
+							maxCount={maxCount}
+							totalCount={currentNode.fileCount || 0}
+							sortBy={sortBy}
 							theme={theme}
 							units={currentUnits}
 							viewMode={viewMode}

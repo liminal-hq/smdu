@@ -18,6 +18,9 @@ interface FileListProps {
 	selectedIndex: number;
 	maxSize: number; // Size of the largest file in the list, for bar calculation
 	totalSize: number; // Total size of all files in the directory for percentage calculation
+	maxCount: number; // File count of the largest item in the list
+	totalCount: number; // Total file count in the directory
+	sortBy: 'name' | 'size' | 'count'; // Current sort field
 	theme: Theme;
 	units: 'iec' | 'si';
 	viewMode: ViewMode;
@@ -114,6 +117,9 @@ export const FileList: React.FC<FileListProps> = ({
 	selectedIndex,
 	maxSize,
 	totalSize,
+	maxCount,
+	totalCount,
+	sortBy,
 	theme,
 	units,
 	viewMode,
@@ -238,7 +244,7 @@ export const FileList: React.FC<FileListProps> = ({
 					</Box>
 					<Box width={1} />
 					<Box width={columnLayout.sizeColumns} justifyContent="flex-end">
-						<Text color={theme.colours.muted}>Size</Text>
+						<Text color={theme.colours.muted}>{sortBy === 'count' ? 'Items' : 'Size'}</Text>
 					</Box>
 					<Box width={1} />
 					<Box width={columnLayout.percentColumns} justifyContent="flex-end">
@@ -284,11 +290,25 @@ export const FileList: React.FC<FileListProps> = ({
 				const globalIndex = start + index;
 				const isSelected = globalIndex === selectedIndex;
 
-				// Percentage is relative to the directory total size
-				const percentage = totalSize > 0 ? (file.size / totalSize) * 100 : 0;
+				// Percentage and Bar base
+				const percentage =
+					sortBy === 'count'
+						? totalCount > 0
+							? (file.fileCount / totalCount) * 100
+							: 0
+						: totalSize > 0
+							? (file.size / totalSize) * 100
+							: 0;
 
-				// Bar is relative to the largest item in the directory
-				const barRatio = maxSize > 0 ? file.size / maxSize : 0;
+				const barRatio =
+					sortBy === 'count'
+						? maxCount > 0
+							? file.fileCount / maxCount
+							: 0
+						: maxSize > 0
+							? file.size / maxSize
+							: 0;
+
 				const barFilled = Math.round(barRatio * columnLayout.barWidth);
 				const barEmpty = Math.max(0, columnLayout.barWidth - barFilled);
 
@@ -332,10 +352,14 @@ export const FileList: React.FC<FileListProps> = ({
 									backgroundColor={isSelected ? theme.colours.highlight : undefined}
 									color={isSelected ? theme.colours.selectedText : theme.colours.size}
 								>
-									{filesize(
-										file.size,
-										units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' },
-									)}
+									{sortBy === 'count'
+										? file.fileCount.toLocaleString('en-CA')
+										: filesize(
+												file.size,
+												units === 'si'
+													? { base: 10, standard: 'si' }
+													: { base: 2, standard: 'iec' },
+											)}
 								</Text>
 							</Box>
 

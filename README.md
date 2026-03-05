@@ -158,6 +158,7 @@ Settings available:
 - **i**: Toggle the information panel for the selected item.
 - **n**: Sort by name.
 - **s**: Sort by size.
+- **C**: Sort by file count.
 - **v**: Toggle view mode (flat/tree).
 - **.**: Toggle hidden files.
 - **L**: Toggle the file type legend.
