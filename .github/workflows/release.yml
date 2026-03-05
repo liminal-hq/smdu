@@ -115,7 +115,7 @@ jobs:
           - os: ubuntu-latest
             target: linux-x64
             bun_target: bun-linux-x64
-          - os: ubuntu-latest
+          - os: ubuntu-24.04-arm
             target: linux-arm64
             bun_target: bun-linux-arm64
           - os: macos-14
@@ -165,16 +165,12 @@ jobs:
         run: |
           set -euo pipefail
           ARCH="x64"
-          FORMAT="all"
           if [[ "${{ matrix.target }}" == "linux-arm64" ]]; then
             ARCH="arm64"
-            # ubuntu-latest runners are x86_64, and rpmbuild cannot emit aarch64 RPMs there.
-            FORMAT="deb"
           fi
           scripts/build-linux-packages.sh \
             --version "${{ needs.prepare-release.outputs.tag_name }}" \
             --arch "${ARCH}" \
-            --format "${FORMAT}" \
             --binary dist/smdu \
             --output-prefix "dist/smdu-${{ needs.prepare-release.outputs.tag_name }}-${{ matrix.target }}"
 
