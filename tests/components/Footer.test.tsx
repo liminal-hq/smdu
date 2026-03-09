@@ -48,6 +48,22 @@ describe('Footer', () => {
 		expect(output).toMatch(/Quit:\s*q/);
 	});
 
+	test('renders review mode hints', () => {
+		const { lastFrame } = render(
+			<Footer
+				totalSize={1024}
+				itemCount={10}
+				theme={themes.default}
+				units="iec"
+				isScanning={false}
+				mode="review"
+			/>,
+		);
+		const output = lastFrame();
+		expect(output).toContain('Review:');
+		expect(output).toContain('o/O');
+	});
+
 	test('renders done state correctly', () => {
 		const { lastFrame } = render(
 			<Footer

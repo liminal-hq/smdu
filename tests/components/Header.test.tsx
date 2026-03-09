@@ -27,4 +27,10 @@ describe('Header', () => {
 		const output = lastFrame();
 		expect(output).toContain('[Flat]');
 	});
+
+	test('renders review view mode indicator', () => {
+		const { lastFrame } = render(<Header path="/tmp" theme={themes.default} viewMode="review" />);
+		const output = lastFrame();
+		expect(output).toContain('[Review]');
+	});
 });

@@ -100,6 +100,24 @@ describe('useFileSystem', () => {
 		expect(result.current.files[0].name).toBe('file2.txt');
 	});
 
+	it('should cycle view mode through flat, tree, and review', () => {
+		const { result } = renderHook(() => useFileSystem(root));
+
+		expect(result.current.viewMode).toBe('flat');
+		act(() => {
+			result.current.toggleViewMode();
+		});
+		expect(result.current.viewMode).toBe('tree');
+		act(() => {
+			result.current.toggleViewMode();
+		});
+		expect(result.current.viewMode).toBe('review');
+		act(() => {
+			result.current.toggleViewMode();
+		});
+		expect(result.current.viewMode).toBe('flat');
+	});
+
 	it('should enter directory and go up', () => {
 		const { result } = renderHook(() => useFileSystem(root));
 

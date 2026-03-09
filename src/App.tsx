@@ -15,6 +15,9 @@ import { InfoModal } from './components/InfoModal.js';
 import { ScanStatus } from './components/ScanStatus.js';
 import { StatusPanel } from './components/StatusPanel.js';
 import { TimerStatus } from './components/TimerStatus.js';
+import { ReviewList } from './components/ReviewList.js';
+import { ReviewToolbar } from './components/ReviewToolbar.js';
+import { ReviewFiltersModal } from './components/ReviewFiltersModal.js';
 import { useFileSystem } from './state.js';
 import { getTheme } from './themes.js';
 import {
@@ -96,6 +99,7 @@ export const App: React.FC<AppProps> = ({
 	const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 	const [showHelp, setShowHelp] = useState(false);
 	const [showInfo, setShowInfo] = useState(false);
+	const [showReviewFilters, setShowReviewFilters] = useState(false);
 	const [showLegend, setShowLegend] = useState(false);
 	const [showStatusPanel, setShowStatusPanel] = useState(false);
 	const [showTimerStatus, setShowTimerStatus] = useState(false);
@@ -145,6 +149,23 @@ export const App: React.FC<AppProps> = ({
 		toggleSort,
 		toggleViewMode,
 		deleteSelected,
+		selectedNode,
+		entryPointPath,
+		reviewState,
+		reviewEntries,
+		reviewVisibleRows,
+		cycleReviewPreset,
+		cycleReviewGroup,
+		cycleReviewScope,
+		cycleReviewMinSize,
+		cycleReviewAgeBucket,
+		toggleReviewMediaOnly,
+		toggleReviewIncludeHidden,
+		resetReviewFilters,
+		toggleReviewGroupExpanded,
+		openSelectedInFlat,
+		openSelectedInTree,
+		cycleReviewSort,
 	} = useFileSystem(rootNode, showHiddenFiles);
 
 	const formatSize = useCallback(
@@ -327,7 +348,7 @@ export const App: React.FC<AppProps> = ({
 		};
 	}, [stdout]);
 
-	const selectedFile = files[selectionIndex];
+	const selectedFile = selectedNode;
 
 	useEffect(() => {
 		if (!selectedFile) {
@@ -405,6 +426,13 @@ export const App: React.FC<AppProps> = ({
 			return;
 		}
 
+		if (showReviewFilters) {
+			if (checkInput(input, key, ACTIONS.REVIEW_FILTERS) || key.escape) {
+				setShowReviewFilters(false);
+			}
+			return;
+		}
+
 		if (checkInput(input, key, ACTIONS.HELP)) {
 			setShowHelp(true);
 			return;
@@ -443,9 +471,14 @@ export const App: React.FC<AppProps> = ({
 		}
 
 		if (checkInput(input, key, ACTIONS.INFO)) {
-			if (files[selectionIndex]) {
+			if (selectedFile) {
 				setShowInfo(true);
 			}
+			return;
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_FILTERS)) {
+			setShowReviewFilters(true);
 			return;
 		}
 
@@ -527,21 +560,75 @@ export const App: React.FC<AppProps> = ({
 		}
 
 		if (checkInput(input, key, ACTIONS.DELETE)) {
-			if (files[selectionIndex]) {
+			if (selectedFile) {
 				setShowConfirmDelete(true);
 			}
 		}
 
-		if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
-		if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
-		if (checkInput(input, key, ACTIONS.SORT_COUNT)) toggleSort('count');
+		if (viewMode === 'review') {
+			if (
+				checkInput(input, key, ACTIONS.SORT_NAME) ||
+				checkInput(input, key, ACTIONS.SORT_SIZE) ||
+				checkInput(input, key, ACTIONS.SORT_COUNT)
+			) {
+				cycleReviewSort();
+			}
+		} else {
+			if (checkInput(input, key, ACTIONS.SORT_NAME)) toggleSort('name');
+			if (checkInput(input, key, ACTIONS.SORT_SIZE)) toggleSort('size');
+			if (checkInput(input, key, ACTIONS.SORT_COUNT)) toggleSort('count');
+		}
 		if (checkInput(input, key, ACTIONS.VIEW_MODE)) toggleViewMode();
 		if (checkInput(input, key, ACTIONS.TOGGLE_HIDDEN)) {
-			setShowHiddenFiles((prev) => {
-				const next = !prev;
-				setShowHiddenFilesInConfig(next);
-				return next;
-			});
+			if (viewMode === 'review') {
+				toggleReviewIncludeHidden();
+			} else {
+				setShowHiddenFiles((prev) => {
+					const next = !prev;
+					setShowHiddenFilesInConfig(next);
+					return next;
+				});
+			}
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_PRESET_NEXT)) {
+			cycleReviewPreset();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_GROUP_NEXT)) {
+			cycleReviewGroup();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_GROUP_TOGGLE)) {
+			toggleReviewGroupExpanded();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_SCOPE_CYCLE)) {
+			cycleReviewScope();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MIN_SIZE_CYCLE)) {
+			cycleReviewMinSize();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_AGE_BUCKET_CYCLE)) {
+			cycleReviewAgeBucket();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MEDIA_TOGGLE)) {
+			toggleReviewMediaOnly();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.OPEN_IN_FLAT)) {
+			openSelectedInFlat();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.OPEN_IN_TREE)) {
+			openSelectedInTree();
+		}
+
+		if (viewMode === 'review' && checkInput(input, key, ACTIONS.RESET_REVIEW_FILTERS)) {
+			resetReviewFilters();
 		}
 		if (checkInput(input, key, ACTIONS.RESCAN)) {
 			if (!isScanning) {
@@ -554,6 +641,10 @@ export const App: React.FC<AppProps> = ({
 	const helpOverlay = showHelp ? <HelpModal theme={theme} /> : null;
 	const infoOverlay =
 		showInfo && selectedFile ? <InfoModal theme={theme} node={selectedFile} /> : null;
+	const reviewFiltersOverlay =
+		showReviewFilters && viewMode === 'review' ? (
+			<ReviewFiltersModal theme={theme} state={reviewState} />
+		) : null;
 	const settingsOverlay =
 		view === ViewState.Settings ? (
 			<Settings
@@ -621,15 +712,16 @@ export const App: React.FC<AppProps> = ({
 					isScanning={loading || isScanning}
 					mode="default"
 				/>
-				{helpOverlay}
-				{infoOverlay}
-				{settingsOverlay}
-			</Box>
-		);
+					{helpOverlay}
+					{infoOverlay}
+					{reviewFiltersOverlay}
+					{settingsOverlay}
+				</Box>
+			);
 	}
 
 	if (showConfirmDelete) {
-		const selectedFile = files[selectionIndex];
+		const selectedFile = selectedNode;
 		return (
 			<Box flexDirection="column" height={totalRows} width="100%">
 				<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
@@ -641,19 +733,20 @@ export const App: React.FC<AppProps> = ({
 						theme={theme}
 					/>
 				</Box>
-				<Footer
-					totalSize={currentNode.size}
-					itemCount={files.length}
-					theme={theme}
-					units={currentUnits}
-					isScanning={isScanning}
-					mode="default"
-				/>
-				{helpOverlay}
-				{infoOverlay}
-				{settingsOverlay}
-			</Box>
-		);
+					<Footer
+						totalSize={currentNode.size}
+						itemCount={viewMode === 'review' ? reviewEntries.length : files.length}
+						theme={theme}
+						units={currentUnits}
+						isScanning={isScanning}
+						mode={viewMode === 'review' ? 'review' : 'default'}
+					/>
+					{helpOverlay}
+					{infoOverlay}
+					{reviewFiltersOverlay}
+					{settingsOverlay}
+				</Box>
+			);
 	}
 
 	const scanErrorsLabel = scanStatus.errors > 0 ? ` | Errors: ${scanStatus.errors}` : '';
@@ -681,13 +774,14 @@ export const App: React.FC<AppProps> = ({
 	const STATUS_INDICATOR_ROWS = 3;
 	const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
-	const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
-	const maxCount = files.reduce((max, f) => Math.max(max, f.fileCount || 0), 0);
-	const headerRows = 2;
-	const footerRows = 2;
-	const panelWidth = showStatusPanel
-		? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
-		: 0;
+		const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
+		const maxCount = files.reduce((max, f) => Math.max(max, f.fileCount || 0), 0);
+		const currentItemCount = viewMode === 'review' ? reviewEntries.length : files.length;
+		const headerRows = 2;
+		const footerRows = 2;
+		const panelWidth = showStatusPanel
+			? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
+			: 0;
 	const listWidth = showStatusPanel ? Math.max(20, totalColumns - panelWidth) : totalColumns;
 	const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
 	const effectiveSelectedFile = selectedFile ?? undefined;
@@ -695,31 +789,52 @@ export const App: React.FC<AppProps> = ({
 		<Box flexDirection="column" height={totalRows} width="100%">
 			<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
 
-			<Box flexGrow={1} overflowY="hidden">
-				<Box flexDirection="row" width="100%">
-					<Box width={showStatusPanel ? listWidth : '100%'}>
-						<FileList
-							files={files}
-							selectedIndex={selectionIndex}
-							maxSize={maxSize}
-							totalSize={currentNode.size}
-							maxCount={maxCount}
-							totalCount={currentNode.fileCount || 0}
-							sortBy={sortBy}
-							theme={theme}
-							units={currentUnits}
-							viewMode={viewMode}
-							rootPath={currentNode.path}
-							scanRootPath={rootNode?.path ?? currentNode.path}
-							fileTypeColoursEnabled={fileTypeColoursEnabled}
-							showLegend={showLegend}
-							heatmapEnabled={heatmapEnabled}
-							availableColumns={showStatusPanel ? listWidth : undefined}
-							extraBottomRows={statusIndicatorRows}
-						/>
-					</Box>
-					{showStatusPanel ? (
-						<Box width={panelWidth}>
+				<Box flexGrow={1} overflowY="hidden">
+					<Box flexDirection="row" width="100%">
+						<Box width={showStatusPanel ? listWidth : '100%'}>
+							{viewMode === 'review' ? (
+								<Box flexDirection="column">
+									<ReviewToolbar
+										theme={theme}
+										state={reviewState}
+										resultCount={reviewEntries.length}
+									/>
+									<ReviewList
+										rows={reviewVisibleRows}
+										selectedIndex={selectionIndex}
+										theme={theme}
+										units={currentUnits}
+										rootPath={currentNode.path}
+										availableColumns={showStatusPanel ? listWidth : undefined}
+										extraTopRows={2}
+										extraBottomRows={statusIndicatorRows}
+									/>
+								</Box>
+							) : (
+								<FileList
+									files={files}
+									selectedIndex={selectionIndex}
+									maxSize={maxSize}
+									totalSize={currentNode.size}
+									maxCount={maxCount}
+									totalCount={currentNode.fileCount || 0}
+									sortBy={sortBy}
+									theme={theme}
+									units={currentUnits}
+									viewMode={viewMode}
+									rootPath={currentNode.path}
+									scanRootPath={rootNode?.path ?? currentNode.path}
+									fileTypeColoursEnabled={fileTypeColoursEnabled}
+									showLegend={showLegend}
+									heatmapEnabled={heatmapEnabled}
+									entryPointPath={entryPointPath}
+									availableColumns={showStatusPanel ? listWidth : undefined}
+									extraBottomRows={statusIndicatorRows}
+								/>
+							)}
+						</Box>
+						{showStatusPanel ? (
+							<Box width={panelWidth}>
 							<StatusPanel
 								theme={theme}
 								sortBy={sortBy}
@@ -745,25 +860,28 @@ export const App: React.FC<AppProps> = ({
 
 			{statusIndicator}
 
-			<Footer
-				totalSize={currentNode.size}
-				itemCount={files.length}
-				theme={theme}
-				units={currentUnits}
-				isScanning={isScanning}
-				mode={
-					showHelp
-						? 'help'
-						: showInfo
-							? 'info'
-							: view === ViewState.Settings
-								? 'settings'
-								: 'default'
-				}
-			/>
-			{helpOverlay}
-			{infoOverlay}
-			{settingsOverlay}
-		</Box>
-	);
+				<Footer
+					totalSize={currentNode.size}
+					itemCount={currentItemCount}
+					theme={theme}
+					units={currentUnits}
+					isScanning={isScanning}
+					mode={
+						showHelp
+							? 'help'
+							: showInfo
+								? 'info'
+								: view === ViewState.Settings
+									? 'settings'
+									: viewMode === 'review'
+										? 'review'
+										: 'default'
+					}
+				/>
+				{helpOverlay}
+				{infoOverlay}
+				{reviewFiltersOverlay}
+				{settingsOverlay}
+			</Box>
+		);
 };
