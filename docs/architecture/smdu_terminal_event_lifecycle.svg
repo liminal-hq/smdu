@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">smdu Terminal Event Lifecycle</title>
+  <desc id="desc">Colourful marker-style diagram showing event generation, boundaries, and the read/write lifecycle between terminal, Ink, and smdu.</desc>
+
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f9f4e6"/>
+      <stop offset="100%" stop-color="#fffdf7"/>
+    </linearGradient>
+
+    <filter id="roughen" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6"/>
+    </filter>
+
+    <pattern id="scribbleShadeBlue" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(12)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#3d8bfd28" stroke-width="4"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#5fa6ff24" stroke-width="3"/>
+    </pattern>
+
+    <pattern id="scribbleShadePink" patternUnits="userSpaceOnUse" width="16" height="16" patternTransform="rotate(-14)">
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#ef5da832" stroke-width="4"/>
+      <line x1="8" y1="0" x2="8" y2="16" stroke="#ff80bf2b" stroke-width="3"/>
+    </pattern>
+
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2b7fff"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e66a00"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d9f6e"/>
+    </marker>
+
+    <style>
+      .title { font: 700 42px "Segoe Print", "Comic Sans MS", cursive; fill: #2b2a2f; }
+      .subtitle { font: 600 21px "Segoe Print", "Comic Sans MS", cursive; fill: #56535f; }
+      .laneTitle { font: 700 26px "Segoe Print", "Comic Sans MS", cursive; fill: #1f2430; }
+      .text { font: 600 16px "Segoe Print", "Comic Sans MS", cursive; fill: #2f3442; }
+      .small { font: 600 14px "Segoe Print", "Comic Sans MS", cursive; fill: #4a4f5e; }
+      .note { font: 700 15px "Segoe Print", "Comic Sans MS", cursive; fill: #6a2f46; }
+      .boxStrokeBlue { stroke: #2b7fff; stroke-width: 3; fill: #f0f7ff; }
+      .boxStrokePink { stroke: #ef5da8; stroke-width: 3; fill: #fff3fa; }
+      .boxStrokeTeal { stroke: #1d9f6e; stroke-width: 3; fill: #effff8; }
+      .boxStrokeAmber { stroke: #e66a00; stroke-width: 3; fill: #fff6eb; }
+      .boundary { stroke: #6e7b91; stroke-width: 2.4; stroke-dasharray: 12 10; }
+      .flowBlue { fill: none; stroke: #2b7fff; stroke-width: 4; marker-end: url(#arrowBlue); }
+      .flowOrange { fill: none; stroke: #e66a00; stroke-width: 4; marker-end: url(#arrowOrange); }
+      .flowGreen { fill: none; stroke: #1d9f6e; stroke-width: 4; marker-end: url(#arrowGreen); }
+      .flowDashed { fill: none; stroke: #6a3db0; stroke-width: 3.5; stroke-dasharray: 10 8; marker-end: url(#arrowBlue); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="980" fill="url(#paper)"/>
+
+  <rect x="70" y="140" width="1460" height="760" rx="30" ry="30" fill="#ffffffaa" stroke="#d3d7e0" stroke-width="2" filter="url(#roughen)"/>
+
+  <text x="80" y="74" class="title">smdu Terminal Event Lifecycle</text>
+  <text x="82" y="108" class="subtitle">Marker-map of generation, boundaries, triggers, and Ink response</text>
+
+  <line x1="420" y1="170" x2="420" y2="870" class="boundary"/>
+  <line x1="820" y1="170" x2="820" y2="870" class="boundary"/>
+  <line x1="1180" y1="170" x2="1180" y2="870" class="boundary"/>
+
+  <text x="120" y="200" class="laneTitle">Terminal / OS / PTY</text>
+  <text x="500" y="200" class="laneTitle">Node Streams Boundary</text>
+  <text x="880" y="200" class="laneTitle">Ink Core Runtime</text>
+  <text x="1235" y="200" class="laneTitle">smdu App Logic</text>
+
+  <rect x="95" y="248" width="290" height="110" rx="18" ry="18" class="boxStrokeAmber" filter="url(#roughen)"/>
+  <rect x="103" y="255" width="274" height="95" rx="14" ry="14" fill="url(#scribbleShadePink)"/>
+  <text x="120" y="285" class="text">Event generated</text>
+  <text x="120" y="314" class="small">window resize</text>
+  <text x="120" y="338" class="small">keypress bytes</text>
+
+  <rect x="455" y="248" width="330" height="130" rx="18" ry="18" class="boxStrokeBlue" filter="url(#roughen)"/>
+  <rect x="463" y="255" width="314" height="114" rx="14" ry="14" fill="url(#scribbleShadeBlue)"/>
+  <text x="478" y="286" class="text">Node emits stream events</text>
+  <text x="478" y="315" class="small">stdout: 'resize'</text>
+  <text x="478" y="339" class="small">stdin: readable chunks</text>
+  <text x="478" y="363" class="small">(normalised into UTF-8 data)</text>
+
+  <rect x="860" y="248" width="285" height="150" rx="18" ry="18" class="boxStrokeTeal" filter="url(#roughen)"/>
+  <text x="882" y="285" class="text">Ink ingress</text>
+  <text x="882" y="314" class="small">stdout.on('resize')</text>
+  <text x="882" y="338" class="small">stdin raw mode + readable</text>
+  <text x="882" y="362" class="small">parseKeypress + useInput</text>
+  <text x="882" y="386" class="small">reconciler.batchedUpdates</text>
+
+  <rect x="1210" y="248" width="285" height="170" rx="18" ry="18" class="boxStrokePink" filter="url(#roughen)"/>
+  <text x="1232" y="285" class="text">smdu trigger surface</text>
+  <text x="1232" y="314" class="small">App.useInput routing</text>
+  <text x="1232" y="338" class="small">useFileSystem actions</text>
+  <text x="1232" y="362" class="small">scan/timer/setState</text>
+  <text x="1232" y="386" class="small">component resize listeners</text>
+  <text x="1232" y="410" class="small">(rows/columns recalculated)</text>
+
+  <rect x="860" y="470" width="285" height="195" rx="18" ry="18" class="boxStrokeTeal" filter="url(#roughen)"/>
+  <text x="882" y="508" class="text">Ink response pipeline</text>
+  <text x="882" y="536" class="small">1) calculateLayout (Yoga)</text>
+  <text x="882" y="560" class="small">2) renderer -> Output ops</text>
+  <text x="882" y="584" class="small">3) output.get() frame</text>
+  <text x="882" y="608" class="small">4) log-update ANSI diff</text>
+  <text x="882" y="632" class="small">5) stdout.write(bytes)</text>
+
+  <rect x="1210" y="470" width="285" height="195" rx="18" ry="18" class="boxStrokePink" filter="url(#roughen)"/>
+  <text x="1232" y="508" class="text">smdu outward effects</text>
+  <text x="1232" y="536" class="small">alt screen enter/exit</text>
+  <text x="1232" y="560" class="small">timer bell (BEL)</text>
+  <text x="1232" y="584" class="small">normalised content updates</text>
+  <text x="1232" y="608" class="small">status banners and panels</text>
+  <text x="1232" y="632" class="small">(title sequence: not emitted)</text>
+
+  <rect x="95" y="505" width="690" height="160" rx="20" ry="20" class="boxStrokeAmber" filter="url(#roughen)"/>
+  <text x="120" y="542" class="text">Boundary note</text>
+  <text x="120" y="570" class="small">External world -> Node streams is the hard runtime boundary.</text>
+  <text x="120" y="594" class="small">Ink owns terminal protocol details (raw input, ANSI cursor/erase, cursor visibility).</text>
+  <text x="120" y="618" class="small">smdu owns domain behaviour (navigation, scan state, review filters, timer logic).</text>
+
+  <path d="M 385 304 C 420 304, 430 304, 455 304" class="flowOrange"/>
+  <path d="M 785 318 C 820 318, 835 318, 860 318" class="flowBlue"/>
+  <path d="M 1145 326 C 1175 326, 1188 326, 1210 326" class="flowGreen"/>
+
+  <path d="M 1352 418 C 1330 438, 1240 450, 1145 490" class="flowDashed"/>
+  <path d="M 1210 570 C 1190 570, 1170 570, 1145 570" class="flowBlue"/>
+  <path d="M 1145 620 C 1185 700, 1280 760, 1380 790" class="flowGreen"/>
+
+  <path d="M 1020 665 C 1020 730, 980 765, 880 790" class="flowOrange"/>
+  <rect x="820" y="740" width="710" height="125" rx="20" ry="20" class="boxStrokeBlue" filter="url(#roughen)"/>
+  <text x="845" y="779" class="text">Rendered terminal frame appears here</text>
+  <text x="845" y="807" class="small">ANSI control sequences + text payload become visible terminal state.</text>
+  <text x="845" y="831" class="note">Bell + alt-screen + cursor control are protocol-level side effects.</text>
+
+  <text x="100" y="915" class="note">Scribble legend: orange = generation, blue = boundary crossing, green = runtime response, dashed purple = trigger fan-out.</text>
+</svg>
