@@ -14,6 +14,10 @@ This is the detailed companion to `smdu_architecture_deconstruction.md` and focu
 
 ## Visual Overview
 
+[Open SVG: resize event comic flow](./smdu_resize_event_comic_flow.svg)
+
+[![resize event comic flow preview](./smdu_resize_event_comic_flow.svg)](./smdu_resize_event_comic_flow.svg)
+
 [Open SVG: smdu terminal event lifecycle](./smdu_terminal_event_lifecycle.svg)
 
 [![smdu terminal event lifecycle preview](./smdu_terminal_event_lifecycle.svg)](./smdu_terminal_event_lifecycle.svg)
@@ -33,6 +37,12 @@ These extra diagrams are playful companions that express the same runtime ideas 
 [Open SVG: smdu escape sequence sketch map](./smdu_terminal_escape_sequence_map.svg)
 
 [![smdu escape sequence sketch map preview](./smdu_terminal_escape_sequence_map.svg)](./smdu_terminal_escape_sequence_map.svg)
+
+## Prompt Gallery
+
+Prompt references for these SVGs are tracked in:
+
+- `docs/architecture/smdu_svg_prompt_gallery.md`
 
 ## 1) Runtime boundaries
 

@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 980" role="img" aria-labelledby="title desc">
+  <title id="title">Terminal Resize Event Through Ink Into smdu</title>
+  <desc id="desc">Comic-inspired left-to-right flow showing a terminal resize event entering Node streams, flowing through Ink internals, crossing Ink client APIs, and reaching smdu before rendering back to terminal output.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f2a44"/>
+      <stop offset="50%" stop-color="#3d2a64"/>
+      <stop offset="100%" stop-color="#1c5d74"/>
+      <animateTransform attributeName="gradientTransform" type="rotate" values="0 900 490;5 900 490;0 900 490" dur="26s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <pattern id="dots" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="2" fill="#ffffff26"/>
+    </pattern>
+
+    <pattern id="hatchBlue" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(18)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#79c3ff33" stroke-width="3"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#4f95ff2a" stroke-width="2.4"/>
+    </pattern>
+
+    <filter id="inkBleed" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4"/>
+    </filter>
+
+    <marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="11" markerHeight="11" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#ffd250"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="11" markerHeight="11" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#53d7ff"/>
+    </marker>
+    <marker id="arrC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="11" markerHeight="11" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7ef596"/>
+    </marker>
+
+    <style>
+      .title { font: 700 44px "Bangers", "Segoe Print", "Comic Sans MS", cursive; fill: #fff4c8; letter-spacing: 1px; }
+      .sub { font: 600 21px "Segoe Print", "Comic Sans MS", cursive; fill: #d6e8ff; }
+      .label { font: 700 24px "Bangers", "Segoe Print", "Comic Sans MS", cursive; fill: #1f2338; letter-spacing: 0.8px; }
+      .text { font: 600 15px "Segoe Print", "Comic Sans MS", cursive; fill: #1f2a3d; }
+      .tiny { font: 700 13px "Consolas", "Menlo", monospace; fill: #1d3554; }
+      .note { font: 700 16px "Segoe Print", "Comic Sans MS", cursive; fill: #fff7db; }
+      .panelStroke { stroke: #11152b; stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round; }
+      .flowA { fill: none; stroke: #ffd250; stroke-width: 6; marker-end: url(#arrA); }
+      .flowB { fill: none; stroke: #53d7ff; stroke-width: 5; marker-end: url(#arrB); }
+      .flowC { fill: none; stroke: #7ef596; stroke-width: 5; marker-end: url(#arrC); }
+      .flowDash { fill: none; stroke: #ff7eb7; stroke-width: 4.5; stroke-dasharray: 11 9; marker-end: url(#arrB); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1800" height="980" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1800" height="980" fill="url(#dots)"/>
+
+  <g opacity="0.28">
+    <circle cx="170" cy="170" r="190" fill="#ff6ea3">
+      <animate attributeName="cx" values="170;210;170" dur="22s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="170;140;170" dur="30s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1650" cy="760" r="230" fill="#3cb8ff">
+      <animate attributeName="cx" values="1650;1610;1650" dur="28s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="760;800;760" dur="34s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <text x="70" y="72" class="title">KABOOM! Resize Event Across Ink Into smdu</text>
+  <text x="72" y="106" class="sub">What Ink does between the outside terminal world and client APIs, left to right.</text>
+
+  <!-- Comic strip outer frame -->
+  <path d="M52 148 C120 116 218 130 290 148 C472 192 660 146 848 146 C1052 146 1238 112 1438 150 C1526 168 1706 182 1742 260 C1762 410 1748 550 1742 706 C1738 832 1698 886 1568 916 C1372 962 1176 928 980 926 C768 924 570 958 358 934 C220 918 104 892 78 790 C52 674 60 554 54 438 C50 324 26 214 52 148 Z" fill="#ffffffde" class="panelStroke" filter="url(#inkBleed)"/>
+
+  <!-- 5 comic panels -->
+  <g>
+    <rect x="84" y="196" width="316" height="676" rx="18" ry="18" fill="#ffe9a8" class="panelStroke"/>
+    <rect x="94" y="206" width="296" height="656" rx="12" ry="12" fill="url(#hatchBlue)"/>
+    <text x="108" y="246" class="label">1) OUTSIDE EVENT</text>
+    <text x="108" y="278" class="text">Terminal window is resized</text>
+    <text x="108" y="306" class="text">by the user or OS shell.</text>
+
+    <polygon points="136,360 176,332 214,360 206,404 146,404" fill="#ff5ea9" stroke="#11152b" stroke-width="3"/>
+    <text x="148" y="384" class="label" fill="#fff">WHAM!</text>
+
+    <rect x="108" y="446" width="266" height="110" rx="12" ry="12" fill="#fff6d9" stroke="#11152b" stroke-width="3"/>
+    <text x="124" y="484" class="tiny">PTY updates columns and rows</text>
+    <text x="124" y="512" class="tiny">stdout emits 'resize'</text>
+
+    <rect x="108" y="596" width="266" height="214" rx="12" ry="12" fill="#fff6d9" stroke="#11152b" stroke-width="3"/>
+    <text x="124" y="634" class="text">Boundary crosses into</text>
+    <text x="124" y="660" class="text">Node stream events.</text>
+    <text x="124" y="700" class="tiny">No smdu logic yet.</text>
+  </g>
+
+  <g>
+    <rect x="430" y="196" width="316" height="676" rx="18" ry="18" fill="#d2f1ff" class="panelStroke"/>
+    <text x="454" y="246" class="label">2) NODE STREAMS</text>
+    <text x="454" y="278" class="text">process.stdout sends resize</text>
+    <text x="454" y="304" class="text">to listeners.</text>
+
+    <rect x="452" y="352" width="272" height="120" rx="12" ry="12" fill="#eef9ff" stroke="#11152b" stroke-width="3"/>
+    <text x="468" y="390" class="tiny">stdout.on('resize', ...)</text>
+    <text x="468" y="418" class="tiny">stream-level event dispatch</text>
+
+    <rect x="452" y="512" width="272" height="298" rx="12" ry="12" fill="#eef9ff" stroke="#11152b" stroke-width="3"/>
+    <text x="468" y="548" class="text">This is the hard runtime</text>
+    <text x="468" y="574" class="text">boundary between outside</text>
+    <text x="468" y="600" class="text">terminal and app stack.</text>
+    <text x="468" y="640" class="tiny">stdin and stdout and stderr</text>
+  </g>
+
+  <g>
+    <rect x="776" y="196" width="416" height="676" rx="18" ry="18" fill="#d8ffe7" class="panelStroke"/>
+    <text x="798" y="246" class="label">3) INK INTERNAL ENGINE</text>
+    <text x="798" y="278" class="text">Ink runtime handles resize first.</text>
+
+    <rect x="798" y="320" width="372" height="124" rx="12" ry="12" fill="#f2fff7" stroke="#11152b" stroke-width="3"/>
+    <text x="816" y="358" class="tiny">Ink.resized()</text>
+    <text x="816" y="386" class="tiny">calculateLayout() + onRender()</text>
+    <text x="816" y="414" class="tiny">clear previous output on width shrink</text>
+
+    <rect x="798" y="478" width="372" height="160" rx="12" ry="12" fill="#f2fff7" stroke="#11152b" stroke-width="3"/>
+    <text x="816" y="516" class="tiny">Renderer pipeline:</text>
+    <text x="816" y="544" class="tiny">Yoga layout -> renderNodeToOutput</text>
+    <text x="816" y="572" class="tiny">Output.get() frame string</text>
+    <text x="816" y="600" class="tiny">log-update ANSI diff operations</text>
+
+    <rect x="798" y="668" width="372" height="142" rx="12" ry="12" fill="#f2fff7" stroke="#11152b" stroke-width="3"/>
+    <text x="816" y="706" class="text">Ink owns protocol details:</text>
+    <text x="816" y="734" class="tiny">cursor ops and eraseLines and clearTerminal</text>
+    <text x="816" y="762" class="tiny">stdout.write(bytes)</text>
+  </g>
+
+  <g>
+    <rect x="1222" y="196" width="242" height="676" rx="18" ry="18" fill="#ffd9ef" class="panelStroke"/>
+    <text x="1242" y="246" class="label">4) INK CLIENT APIS</text>
+    <text x="1242" y="278" class="text">Hooks exposed to smdu:</text>
+
+    <rect x="1240" y="330" width="206" height="210" rx="12" ry="12" fill="#ffeef8" stroke="#11152b" stroke-width="3"/>
+    <text x="1254" y="368" class="tiny">useStdout()</text>
+    <text x="1254" y="396" class="tiny">useInput()</text>
+    <text x="1254" y="424" class="tiny">useApp()</text>
+    <text x="1254" y="452" class="tiny">render(App)</text>
+
+    <rect x="1240" y="572" width="206" height="238" rx="12" ry="12" fill="#ffeef8" stroke="#11152b" stroke-width="3"/>
+    <text x="1254" y="610" class="text">Boundary to smdu:</text>
+    <text x="1254" y="638" class="text">normalised events</text>
+    <text x="1254" y="666" class="text">plus stream handles.</text>
+    <text x="1254" y="706" class="tiny">smdu implements behaviour,</text>
+    <text x="1254" y="734" class="tiny">Ink implements terminal transport.</text>
+  </g>
+
+  <g>
+    <rect x="1494" y="196" width="242" height="676" rx="18" ry="18" fill="#ffe6c8" class="panelStroke"/>
+    <text x="1514" y="246" class="label">5) smdu APP</text>
+    <text x="1514" y="278" class="text">Resize response:</text>
+
+    <rect x="1512" y="332" width="206" height="220" rx="12" ry="12" fill="#fff4e3" stroke="#11152b" stroke-width="3"/>
+    <text x="1526" y="370" class="tiny">App.tsx updates</text>
+    <text x="1526" y="398" class="tiny">rows and columns state</text>
+    <text x="1526" y="426" class="tiny">list and panel budgets</text>
+    <text x="1526" y="454" class="tiny">component re-render</text>
+
+    <rect x="1512" y="578" width="206" height="232" rx="12" ry="12" fill="#fff4e3" stroke="#11152b" stroke-width="3"/>
+    <text x="1526" y="616" class="text">Outward effect:</text>
+    <text x="1526" y="644" class="text">new frame is written</text>
+    <text x="1526" y="672" class="text">to terminal with ANSI</text>
+    <text x="1526" y="700" class="text">control bytes.</text>
+    <text x="1526" y="738" class="tiny">visual state changes</text>
+  </g>
+
+  <!-- Arrows between panels -->
+  <path d="M400 534 C414 534 420 534 430 534" class="flowA">
+    <animate attributeName="stroke-dasharray" values="1 0;8 6;1 0" dur="2.8s" repeatCount="indefinite"/>
+  </path>
+  <path d="M746 534 C762 534 766 534 776 534" class="flowB"/>
+  <path d="M1192 534 C1208 534 1212 534 1222 534" class="flowC"/>
+  <path d="M1464 534 C1480 534 1484 534 1494 534" class="flowA"/>
+  <path d="M1636 828 C1560 914 1370 922 1214 888" class="flowDash"/>
+
+  <!-- Comic callouts -->
+  <g>
+    <ellipse cx="980" cy="150" rx="120" ry="46" fill="#fff7c8" stroke="#11152b" stroke-width="4" filter="url(#inkBleed)"/>
+    <text x="914" y="158" class="label" fill="#1f2338">INK DOES THE</text>
+    <text x="896" y="182" class="label" fill="#1f2338">TERMINAL HEAVY LIFTING</text>
+  </g>
+
+  <text x="72" y="936" class="note">Comic legend: yellow = event momentum, blue = transport and render pipeline, green = runtime handling, pink dashed = redraw loop feedback.</text>
+</svg>
