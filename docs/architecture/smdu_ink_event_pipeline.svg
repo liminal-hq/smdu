@@ -1,0 +1,527 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1060" role="img" aria-labelledby="title desc">
+  <title id="title">Resize Event Pipeline: Terminal Through Ink Into smdu</title>
+  <desc id="desc">Left-to-right horizontal pipeline showing a terminal resize event flowing from PTY generation through Node streams, Ink internals (with real function call chains from ink.js, reconciler.js, renderer.js, output.js, log-update.js), Ink client APIs, and smdu response with write-back to terminal.</desc>
+
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0%" stop-color="#0d1b2a"/>
+      <stop offset="30%" stop-color="#1b2838"/>
+      <stop offset="60%" stop-color="#2a1a3e"/>
+      <stop offset="100%" stop-color="#0d2d3a"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="0 0;0.03 0.01;0 0" dur="20s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <!-- Speed line pattern -->
+    <pattern id="speedLines" x="0" y="0" width="60" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-2)">
+      <line x1="0" y1="4" x2="40" y2="4" stroke="#ffffff08" stroke-width="1.5"/>
+    </pattern>
+
+    <!-- Grid dots -->
+    <pattern id="gridDots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="1" fill="#ffffff0d"/>
+    </pattern>
+
+    <!-- Zone gradients -->
+    <linearGradient id="zone1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6b9d"/>
+      <stop offset="100%" stop-color="#c44569"/>
+    </linearGradient>
+    <linearGradient id="zone2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffa751"/>
+      <stop offset="100%" stop-color="#e8850c"/>
+    </linearGradient>
+    <linearGradient id="zone3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#36d1dc"/>
+      <stop offset="100%" stop-color="#1e8a93"/>
+    </linearGradient>
+    <linearGradient id="zone4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a18cd1"/>
+      <stop offset="100%" stop-color="#7b5ea7"/>
+    </linearGradient>
+    <linearGradient id="zone5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#56ab2f"/>
+      <stop offset="100%" stop-color="#3d8b1e"/>
+    </linearGradient>
+
+    <!-- Pipeline track gradient -->
+    <linearGradient id="pipeGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff6b9d"/>
+      <stop offset="20%" stop-color="#ffa751"/>
+      <stop offset="50%" stop-color="#36d1dc"/>
+      <stop offset="75%" stop-color="#a18cd1"/>
+      <stop offset="100%" stop-color="#56ab2f"/>
+    </linearGradient>
+
+    <!-- Return path gradient -->
+    <linearGradient id="returnGrad" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#56ab2f"/>
+      <stop offset="50%" stop-color="#ff7eb3"/>
+      <stop offset="100%" stop-color="#ff6b9d"/>
+    </linearGradient>
+
+    <!-- Arrow markers -->
+    <marker id="arrowFwd" viewBox="0 0 14 10" refX="12" refY="5" markerWidth="14" markerHeight="10" orient="auto">
+      <path d="M0 0 L14 5 L0 10 L3 5 Z" fill="#ffd700"/>
+    </marker>
+    <marker id="arrowRet" viewBox="0 0 14 10" refX="12" refY="5" markerWidth="14" markerHeight="10" orient="auto">
+      <path d="M0 0 L14 5 L0 10 L3 5 Z" fill="#ff7eb3"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 4 L0 8 L2 4 Z" fill="#36d1dc"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 4 L0 8 L2 4 Z" fill="#56ab2f"/>
+    </marker>
+
+    <!-- Glow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Panel shadow -->
+    <filter id="panelShadow">
+      <feDropShadow dx="3" dy="4" stdDeviation="5" flood-color="#00000050"/>
+    </filter>
+
+    <!-- Burst glow -->
+    <filter id="burstGlow">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <style>
+      .heading { font: 800 42px "Bangers", "Impact", "Arial Black", sans-serif; fill: #ffd700; letter-spacing: 2px; }
+      .subheading { font: 600 16px "Segoe UI", "Helvetica Neue", sans-serif; fill: #b8d4e3; }
+      .zoneTitle { font: 800 19px "Bangers", "Impact", "Arial Black", sans-serif; fill: #fff; letter-spacing: 1.5px; }
+      .zoneNum { font: 900 64px "Bangers", "Impact", "Arial Black", sans-serif; fill: #ffffff10; }
+      .fn { font: 700 12.5px "Consolas", "SF Mono", "Fira Code", monospace; fill: #1a1a2e; }
+      .fnLight { font: 600 12px "Consolas", "SF Mono", "Fira Code", monospace; fill: #3a3a5e; }
+      .fnAccent { font: 700 12.5px "Consolas", "SF Mono", "Fira Code", monospace; fill: #c44569; }
+      .detail { font: 600 13px "Consolas", "SF Mono", "Fira Code", monospace; fill: #1a1a2e; }
+      .detailBold { font: 700 13.5px "Consolas", "SF Mono", "Fira Code", monospace; fill: #1a1a2e; }
+      .boundaryLabel { font: 800 12px "Bangers", "Impact", sans-serif; fill: #ffd700; letter-spacing: 1px; }
+      .sfx { font: 900 30px "Bangers", "Impact", "Arial Black", sans-serif; letter-spacing: 3px; }
+      .stageLabel { font: 800 14px "Bangers", "Impact", sans-serif; fill: #0d2d3a; letter-spacing: 1px; }
+      .legend { font: 600 12.5px "Segoe UI", "Helvetica Neue", sans-serif; fill: #8aa8c0; }
+      .note { font: 600 12px "Segoe UI", "Helvetica Neue", sans-serif; }
+      .cardBg { stroke: #1a1a2e; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <!-- Background layers -->
+  <rect width="2400" height="1060" fill="url(#bgGrad)"/>
+  <rect width="2400" height="1060" fill="url(#gridDots)"/>
+  <rect width="2400" height="1060" fill="url(#speedLines)"/>
+
+  <!-- Ambient floating orbs -->
+  <g opacity="0.10">
+    <circle cx="180" cy="200" r="180" fill="#ff6b9d">
+      <animate attributeName="r" values="180;200;180" dur="18s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="900" cy="950" r="160" fill="#36d1dc">
+      <animate attributeName="r" values="160;180;160" dur="22s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1700" cy="130" r="140" fill="#a18cd1">
+      <animate attributeName="r" values="140;155;140" dur="16s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="2200" cy="800" r="150" fill="#56ab2f">
+      <animate attributeName="r" values="150;165;150" dur="24s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="600" cy="100" r="100" fill="#ffa751">
+      <animate attributeName="r" values="100;112;100" dur="20s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Title bar -->
+  <text x="55" y="56" class="heading">RESIZE EVENT PIPELINE</text>
+  <text x="510" y="56" class="heading" style="fill:#ff7eb3; font-size:32px;">&#x25B6;</text>
+  <text x="540" y="56" class="heading" style="fill:#ffa751; font-size:32px;">&#x25B6;</text>
+  <text x="570" y="56" class="heading" style="fill:#36d1dc; font-size:32px;">&#x25B6;</text>
+  <text x="600" y="56" class="heading" style="fill:#a18cd1; font-size:32px;">&#x25B6;</text>
+  <text x="630" y="56" class="heading" style="fill:#56ab2f; font-size:32px;">&#x25B6;</text>
+  <text x="680" y="52" class="subheading">Terminal resize through Ink internals into smdu, with real function call chains from source</text>
+
+  <!-- ═══════ MAIN PIPELINE TRACK ═══════ -->
+  <path d="M70 480 L2330 480" stroke="url(#pipeGrad)" stroke-width="8" fill="none" opacity="0.3" stroke-linecap="round"/>
+
+  <!-- Animated pulse on pipeline -->
+  <circle r="6" fill="#ffd700" opacity="0.8">
+    <animateMotion dur="6s" repeatCount="indefinite" path="M70 480 L2330 480"/>
+    <animate attributeName="opacity" values="0.4;1;0.4" dur="6s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Forward flow arrows on pipeline -->
+  <g filter="url(#glow)">
+    <path d="M370 480 L418 480" fill="none" stroke="#ffd700" stroke-width="5" marker-end="url(#arrowFwd)">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1.8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M768 480 L818 480" fill="none" stroke="#ffd700" stroke-width="5" marker-end="url(#arrowFwd)">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1.8s" begin="0.35s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1508 480 L1558 480" fill="none" stroke="#ffd700" stroke-width="5" marker-end="url(#arrowFwd)">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1.8s" begin="0.7s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1898 480 L1948 480" fill="none" stroke="#ffd700" stroke-width="5" marker-end="url(#arrowFwd)">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1.8s" begin="1.05s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Return path (bottom arc with animated dashes) -->
+  <path d="M2220 640 C2220 890 1800 940 1400 940 C1000 940 500 930 200 890 C100 876 70 810 70 740 L70 580"
+        fill="none" stroke="url(#returnGrad)" stroke-width="4" stroke-dasharray="16 10"
+        marker-end="url(#arrowRet)" opacity="0.65">
+    <animate attributeName="stroke-dashoffset" values="0;-52" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <text x="1050" y="930" class="boundaryLabel" text-anchor="middle" style="font-size:13px;">ANSI DIFF FRAME WRITTEN BACK TO stdout &#x2192; TERMINAL DISPLAYS UPDATED LAYOUT</text>
+
+  <!-- ═══════ BOUNDARY MARKERS ═══════ -->
+  <g opacity="0.45">
+    <line x1="395" y1="90" x2="395" y2="870" stroke="#ffd700" stroke-width="2" stroke-dasharray="6 4"/>
+    <line x1="793" y1="90" x2="793" y2="870" stroke="#ffd700" stroke-width="2" stroke-dasharray="6 4"/>
+    <line x1="1533" y1="90" x2="1533" y2="870" stroke="#ffd700" stroke-width="2" stroke-dasharray="6 4"/>
+    <line x1="1923" y1="90" x2="1923" y2="870" stroke="#ffd700" stroke-width="2" stroke-dasharray="6 4"/>
+  </g>
+  <!-- Boundary labels -->
+  <g>
+    <rect x="362" y="76" width="66" height="20" rx="4" fill="#ffd70025" stroke="#ffd700" stroke-width="1"/>
+    <text x="395" y="91" text-anchor="middle" class="boundaryLabel">PTY / NODE</text>
+    <rect x="756" y="76" width="74" height="20" rx="4" fill="#ffd70025" stroke="#ffd700" stroke-width="1"/>
+    <text x="793" y="91" text-anchor="middle" class="boundaryLabel">NODE / INK</text>
+    <rect x="1494" y="76" width="78" height="20" rx="4" fill="#ffd70025" stroke="#ffd700" stroke-width="1"/>
+    <text x="1533" y="91" text-anchor="middle" class="boundaryLabel">INK / HOOKS</text>
+    <rect x="1882" y="76" width="82" height="20" rx="4" fill="#ffd70025" stroke="#ffd700" stroke-width="1"/>
+    <text x="1923" y="91" text-anchor="middle" class="boundaryLabel">HOOKS / SMDU</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- ZONE 1: TERMINAL + PTY                             -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g filter="url(#panelShadow)">
+    <rect x="50" y="120" width="325" height="730" rx="16" fill="#1a1020" stroke="url(#zone1)" stroke-width="3" opacity="0.94"/>
+    <rect x="50" y="120" width="325" height="48" rx="16" fill="url(#zone1)"/>
+    <rect x="50" y="148" width="325" height="20" fill="url(#zone1)"/>
+    <text x="316" y="810" class="zoneNum">01</text>
+    <text x="80" y="152" class="zoneTitle">TERMINAL + PTY EVENT</text>
+
+    <!-- ZAP burst -->
+    <g transform="translate(210, 228)" filter="url(#burstGlow)">
+      <polygon points="0,-36 9,-14 34,-20 16,0 34,20 9,14 0,36 -9,14 -34,20 -16,0 -34,-20 -9,-14" fill="#ff6b9d" opacity="0.75">
+        <animateTransform attributeName="transform" type="rotate" values="0;10;0" dur="5s" repeatCount="indefinite"/>
+      </polygon>
+      <text x="0" y="7" text-anchor="middle" class="sfx" fill="#fff">ZAP!</text>
+    </g>
+
+    <!-- Steps -->
+    <rect x="70" y="286" width="285" height="34" rx="8" class="cardBg" fill="#fff0f5"/>
+    <text x="84" y="308" class="detailBold">User resizes terminal window</text>
+
+    <path d="M212 322 L212 336" stroke="#ff6b9d" stroke-width="2.5" marker-end="url(#arrowCyan)" style="stroke: #ff6b9d;"/>
+
+    <rect x="70" y="340" width="285" height="34" rx="8" class="cardBg" fill="#fff0f5"/>
+    <text x="84" y="362" class="fn">OS delivers SIGWINCH to process</text>
+
+    <path d="M212 376 L212 390" stroke="#ff6b9d" stroke-width="2.5"/>
+
+    <rect x="70" y="394" width="285" height="34" rx="8" class="cardBg" fill="#fff0f5"/>
+    <text x="84" y="416" class="fn">PTY driver updates dimensions</text>
+
+    <path d="M212 430 L212 444" stroke="#ff6b9d" stroke-width="2.5"/>
+
+    <rect x="70" y="448" width="285" height="50" rx="8" class="cardBg" fill="#fff0f5"/>
+    <text x="84" y="468" class="fn">stdout.columns = newCols</text>
+    <text x="84" y="486" class="fn">stdout.rows    = newRows</text>
+
+    <path d="M212 500 L212 514" stroke="#ff6b9d" stroke-width="2.5"/>
+
+    <rect x="70" y="518" width="285" height="34" rx="8" class="cardBg" fill="#ffe0ec"/>
+    <text x="84" y="540" class="detailBold">stdout emits 'resize' event</text>
+
+    <!-- Callout box -->
+    <rect x="70" y="580" width="285" height="64" rx="10" fill="#2a1028" stroke="#ff6b9d" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="84" y="600" class="note" style="fill: #ffa0c4;">WriteStream (fd 1) wraps TTY</text>
+    <text x="84" y="618" class="note" style="fill: #ffa0c4;">handle. libuv detects ioctl</text>
+    <text x="84" y="636" class="note" style="fill: #ffa0c4;">dimension change on signal.</text>
+
+    <text x="80" y="700" class="legend" style="fill: #ff9dc4;">No app code runs here.</text>
+    <text x="80" y="718" class="legend" style="fill: #ff9dc4;">Pure OS + PTY mechanics.</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- ZONE 2: NODE STREAM DISPATCH                       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g filter="url(#panelShadow)">
+    <rect x="425" y="120" width="348" height="730" rx="16" fill="#1a1a10" stroke="url(#zone2)" stroke-width="3" opacity="0.94"/>
+    <rect x="425" y="120" width="348" height="48" rx="16" fill="url(#zone2)"/>
+    <rect x="425" y="148" width="348" height="20" fill="url(#zone2)"/>
+    <text x="714" y="810" class="zoneNum">02</text>
+    <text x="455" y="152" class="zoneTitle">NODE STREAM DISPATCH</text>
+
+    <rect x="445" y="196" width="308" height="50" rx="8" class="cardBg" fill="#fff8ed"/>
+    <text x="459" y="216" class="detailBold">process.stdout : WriteStream</text>
+    <text x="459" y="234" class="fnLight">TTY stream wrapping fd 1</text>
+
+    <path d="M599 248 L599 264" stroke="#e8850c" stroke-width="2.5"/>
+
+    <rect x="445" y="268" width="308" height="50" rx="8" class="cardBg" fill="#fff8ed"/>
+    <text x="459" y="288" class="fn">stdout.on('resize', handler)</text>
+    <text x="459" y="306" class="fnLight">EventEmitter dispatch to all</text>
+
+    <path d="M599 320 L599 340" stroke="#e8850c" stroke-width="2.5"/>
+
+    <rect x="445" y="344" width="308" height="36" rx="8" class="cardBg" fill="#fff3dc"/>
+    <text x="459" y="368" class="detailBold">TWO listeners registered:</text>
+
+    <!-- Fork diagram -->
+    <path d="M599 382 L599 410" stroke="#e8850c" stroke-width="2.5"/>
+    <path d="M599 410 L510 440" stroke="#e8850c" stroke-width="2"/>
+    <path d="M599 410 L690 440" stroke="#e8850c" stroke-width="2"/>
+
+    <rect x="445" y="444" width="140" height="60" rx="8" class="cardBg" fill="#ffe8c8"/>
+    <text x="457" y="464" class="fn" style="font-weight:700">Ink constructor</text>
+    <text x="457" y="480" class="fnLight">stdout.on(</text>
+    <text x="457" y="494" class="fnLight">  'resize', resized)</text>
+
+    <rect x="615" y="444" width="140" height="60" rx="8" class="cardBg" fill="#ffe8c8"/>
+    <text x="627" y="464" class="fn" style="font-weight:700">smdu components</text>
+    <text x="627" y="480" class="fnLight">useStdout() hook</text>
+    <text x="627" y="494" class="fnLight">from StdoutContext</text>
+
+    <!-- Order note -->
+    <rect x="445" y="534" width="308" height="68" rx="10" fill="#2a1e0a" stroke="#e8850c" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="459" y="554" class="note" style="fill: #f0c878;">Ink registers in constructor</text>
+    <text x="459" y="572" class="note" style="fill: #f0c878;">(ink.js line 90). smdu hooks</text>
+    <text x="459" y="590" class="note" style="fill: #f0c878;">register per-component via React.</text>
+
+    <rect x="445" y="630" width="308" height="50" rx="8" class="cardBg" fill="#fff8ed"/>
+    <text x="459" y="650" class="fn">stdin / stdout / stderr</text>
+    <text x="459" y="668" class="fnLight">Hard boundary to OS world</text>
+
+    <text x="455" y="730" class="legend" style="fill: #e8a840;">Event dispatch layer only.</text>
+    <text x="455" y="748" class="legend" style="fill: #e8a840;">No domain logic executes.</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- ZONE 3: INK INTERNAL RUNTIME                       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g filter="url(#panelShadow)">
+    <rect x="823" y="120" width="690" height="730" rx="16" fill="#0a1a1e" stroke="url(#zone3)" stroke-width="3" opacity="0.94"/>
+    <rect x="823" y="120" width="690" height="48" rx="16" fill="url(#zone3)"/>
+    <rect x="823" y="148" width="690" height="20" fill="url(#zone3)"/>
+    <text x="1440" y="810" class="zoneNum">03</text>
+    <text x="853" y="152" class="zoneTitle">INK INTERNAL RUNTIME (ink.js + reconciler.js + renderer.js)</text>
+
+    <!-- ── Stage A: resized() ── -->
+    <rect x="845" y="192" width="315" height="118" rx="10" class="cardBg" fill="#e0f7fa"/>
+    <text x="859" y="212" class="stageLabel">A. RESIZE HANDLER (ink.js:102)</text>
+    <text x="859" y="232" class="fn">Ink.resized() {</text>
+    <text x="859" y="248" class="fn">  w = getTerminalWidth()</text>
+    <text x="859" y="264" class="fnLight">    // stdout.columns || 80</text>
+    <text x="859" y="280" class="fn">  if (w &lt; lastTerminalWidth)</text>
+    <text x="859" y="296" class="fnAccent">    log.clear()  // prevent overlap</text>
+
+    <!-- Arrow A -> B -->
+    <path d="M1162 250 L1188 250" stroke="#36d1dc" stroke-width="3" fill="none" marker-end="url(#arrowCyan)"/>
+
+    <!-- ── Stage B: calculateLayout() ── -->
+    <rect x="1195" y="192" width="300" height="118" rx="10" class="cardBg" fill="#e0f7fa"/>
+    <text x="1209" y="212" class="stageLabel">B. LAYOUT (ink.js:116)</text>
+    <text x="1209" y="232" class="fn">calculateLayout() {</text>
+    <text x="1209" y="248" class="fn">  w = getTerminalWidth()</text>
+    <text x="1209" y="264" class="fn">  yogaNode.setWidth(w)</text>
+    <text x="1209" y="280" class="fn">  yogaNode.calculateLayout(</text>
+    <text x="1209" y="296" class="fnLight">    undef, undef, DIRECTION_LTR)</text>
+
+    <!-- Arrow B -> C (down) -->
+    <path d="M1050 312 L1050 336" stroke="#36d1dc" stroke-width="3" fill="none" marker-end="url(#arrowCyan)"/>
+
+    <!-- ── Stage C: onRender() ── -->
+    <rect x="845" y="342" width="315" height="136" rx="10" class="cardBg" fill="#d4f5f0"/>
+    <text x="859" y="362" class="stageLabel">C. RENDER (ink.js:121, renderer.js)</text>
+    <text x="859" y="382" class="fn">onRender() {</text>
+    <text x="859" y="398" class="fn">  {output, outputHeight} =</text>
+    <text x="859" y="414" class="fn">    render(rootNode)</text>
+    <text x="859" y="434" class="fnLight">  // Output(computedW, computedH)</text>
+    <text x="859" y="450" class="fnLight">  // renderNodeToOutput(node, out)</text>
+    <text x="859" y="466" class="fnLight">  // output.get() -> frame string</text>
+
+    <!-- Arrow C -> D -->
+    <path d="M1162 410 L1188 410" stroke="#36d1dc" stroke-width="3" fill="none" marker-end="url(#arrowCyan)"/>
+
+    <!-- ── Stage D: log-update diffing ── -->
+    <rect x="1195" y="342" width="300" height="136" rx="10" class="cardBg" fill="#d4f5f0"/>
+    <text x="1209" y="362" class="stageLabel">D. DIFF + WRITE (log-update.js)</text>
+    <text x="1209" y="382" class="fn">if (output === previousOutput)</text>
+    <text x="1209" y="398" class="fnLight">  return  // skip identical frames</text>
+    <text x="1209" y="418" class="fn">eraseLines(previousLineCount)</text>
+    <text x="1209" y="438" class="fn">stdout.write(newFrame)</text>
+    <text x="1209" y="458" class="fnLight">// cursorUp + cursorTo +</text>
+    <text x="1209" y="474" class="fnLight">// eraseEndLine for line diff</text>
+
+    <!-- ── Throttle callout ── -->
+    <rect x="845" y="500" width="315" height="54" rx="10" fill="#0d2b30" stroke="#ffd700" stroke-width="1.5"/>
+    <text x="859" y="520" class="fn" style="fill: #ffd700;">onRender = throttle(fn, 33ms)</text>
+    <text x="859" y="540" class="fnLight" style="fill: #a0dce4;">30 FPS cap, leading + trailing</text>
+
+    <!-- ── Reconciler path note ── -->
+    <rect x="1195" y="500" width="300" height="54" rx="10" fill="#0d2b30" stroke="#36d1dc" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="1209" y="520" class="fn" style="fill: #36d1dc;">reconciler.resetAfterCommit()</text>
+    <text x="1209" y="540" class="fnLight" style="fill: #a0dce4;">calls onComputeLayout + onRender</text>
+
+    <!-- ── Protocol side-effects ── -->
+    <rect x="845" y="576" width="650" height="100" rx="10" fill="#081e22" stroke="#36d1dc" stroke-width="2" stroke-dasharray="5 3"/>
+    <text x="865" y="596" class="stageLabel" style="fill: #36d1dc;">TERMINAL PROTOCOL SIDE-EFFECTS</text>
+
+    <text x="865" y="618" class="fn" style="fill: #a0dce4;">cliCursor.hide(stdout)        // on mount (App.js:92)</text>
+    <text x="865" y="636" class="fn" style="fill: #a0dce4;">cliCursor.show(stdout)        // on unmount (App.js:95)</text>
+    <text x="865" y="654" class="fn" style="fill: #a0dce4;">ansiEscapes.eraseLines + cursorUp + cursorTo + eraseEndLine + clearTerminal</text>
+
+    <!-- ── Write output box ── -->
+    <rect x="845" y="698" width="650" height="38" rx="8" class="cardBg" fill="#b2ebf2"/>
+    <text x="859" y="722" class="detailBold">stdout.write(ANSI diff bytes) &#x2192; terminal refreshes display</text>
+
+    <text x="855" y="776" class="legend" style="fill: #5ec4d0;">Ink owns all terminal protocol. smdu never writes raw escape sequences.</text>
+    <text x="855" y="794" class="legend" style="fill: #5ec4d0;">Source: ink.js, reconciler.js, renderer.js, render-node-to-output.js, output.js, log-update.js</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- ZONE 4: INK CLIENT APIs                            -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g filter="url(#panelShadow)">
+    <rect x="1563" y="120" width="340" height="730" rx="16" fill="#18102a" stroke="url(#zone4)" stroke-width="3" opacity="0.94"/>
+    <rect x="1563" y="120" width="340" height="48" rx="16" fill="url(#zone4)"/>
+    <rect x="1563" y="148" width="340" height="20" fill="url(#zone4)"/>
+    <text x="1840" y="810" class="zoneNum">04</text>
+    <text x="1593" y="152" class="zoneTitle">INK CLIENT APIs (HOOKS)</text>
+
+    <!-- API cards with source refs -->
+    <rect x="1583" y="196" width="300" height="54" rx="8" class="cardBg" fill="#f0e6ff"/>
+    <text x="1597" y="216" class="detailBold">useStdout()</text>
+    <text x="1597" y="238" class="fnLight">from StdoutContext (hooks/use-stdout.js)</text>
+
+    <rect x="1583" y="264" width="300" height="54" rx="8" class="cardBg" fill="#ece0ff"/>
+    <text x="1597" y="284" class="fn">{ stdout, write }</text>
+    <text x="1597" y="304" class="fnLight">stream handle + columns + rows</text>
+
+    <rect x="1583" y="332" width="300" height="54" rx="8" class="cardBg" fill="#f0e6ff"/>
+    <text x="1597" y="352" class="detailBold">useInput(handler, opts?)</text>
+    <text x="1597" y="374" class="fnLight">hooks/use-input.js via StdinContext</text>
+
+    <rect x="1583" y="400" width="300" height="54" rx="8" class="cardBg" fill="#ece0ff"/>
+    <text x="1597" y="420" class="fn">handler(input, key)</text>
+    <text x="1597" y="440" class="fnLight">parseKeypress decodes escapes</text>
+
+    <rect x="1583" y="468" width="300" height="36" rx="8" class="cardBg" fill="#f0e6ff"/>
+    <text x="1597" y="492" class="detailBold">useApp() &#x2192; { exit }</text>
+
+    <rect x="1583" y="518" width="300" height="36" rx="8" class="cardBg" fill="#f0e6ff"/>
+    <text x="1597" y="542" class="detailBold">render(element) &#x2192; Ink tree</text>
+
+    <!-- For resize specifically -->
+    <rect x="1583" y="578" width="300" height="80" rx="10" fill="#2a1840" stroke="#a18cd1" stroke-width="2"/>
+    <text x="1597" y="598" class="stageLabel" style="fill: #d4b8f0;">FOR RESIZE SPECIFICALLY:</text>
+    <text x="1597" y="618" class="fn" style="fill: #c8b0e8;">useStdout().stdout.columns</text>
+    <text x="1597" y="636" class="fn" style="fill: #c8b0e8;">useStdout().stdout.rows</text>
+    <text x="1597" y="654" class="fnLight" style="fill: #a090c0;">updated before 'resize' fires</text>
+
+    <!-- Abstraction note -->
+    <rect x="1583" y="682" width="300" height="54" rx="10" fill="#2a1840" stroke="#a18cd1" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="1597" y="702" class="note" style="fill: #c8b0e8;">smdu sees normalised events</text>
+    <text x="1597" y="720" class="note" style="fill: #c8b0e8;">+ stream handles. No raw protocol.</text>
+
+    <text x="1593" y="776" class="legend" style="fill: #b08ee0;">Clean abstraction boundary.</text>
+    <text x="1593" y="794" class="legend" style="fill: #b08ee0;">Ink hides terminal complexity.</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- ZONE 5: smdu APP RESPONSE                          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g filter="url(#panelShadow)">
+    <rect x="1953" y="120" width="400" height="730" rx="16" fill="#0e1a10" stroke="url(#zone5)" stroke-width="3" opacity="0.94"/>
+    <rect x="1953" y="120" width="400" height="48" rx="16" fill="url(#zone5)"/>
+    <rect x="1953" y="148" width="400" height="20" fill="url(#zone5)"/>
+    <text x="2284" y="810" class="zoneNum">05</text>
+    <text x="1983" y="152" class="zoneTitle">smdu RESPONSE + WRITE-BACK</text>
+
+    <!-- POW burst -->
+    <g transform="translate(2160, 228)" filter="url(#burstGlow)">
+      <polygon points="0,-30 8,-11 28,-16 14,0 28,16 8,11 0,30 -8,11 -28,16 -14,0 -28,-16 -8,-11" fill="#56ab2f" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" values="0;-8;0" dur="5s" repeatCount="indefinite"/>
+      </polygon>
+      <text x="0" y="6" text-anchor="middle" class="sfx" fill="#fff" style="font-size:24px;">POW!</text>
+    </g>
+
+    <!-- Response chain -->
+    <rect x="1973" y="284" width="360" height="50" rx="8" class="cardBg" fill="#e8f5e9"/>
+    <text x="1987" y="304" class="detailBold">App.tsx resize callback fires</text>
+    <text x="1987" y="322" class="fnLight">via useStdout().stdout.on('resize')</text>
+
+    <path d="M2153 336 L2153 352" stroke="#56ab2f" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+
+    <rect x="1973" y="358" width="360" height="50" rx="8" class="cardBg" fill="#e8f5e9"/>
+    <text x="1987" y="378" class="fn">setRows(stdout.rows)</text>
+    <text x="1987" y="396" class="fn">setCols(stdout.columns)</text>
+
+    <path d="M2153 410 L2153 426" stroke="#56ab2f" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+
+    <rect x="1973" y="432" width="360" height="50" rx="8" class="cardBg" fill="#e8f5e9"/>
+    <text x="1987" y="452" class="fn">List/panel height budgets</text>
+    <text x="1987" y="470" class="fn">recalculated from new rows</text>
+
+    <path d="M2153 484 L2153 500" stroke="#56ab2f" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+
+    <rect x="1973" y="506" width="360" height="50" rx="8" class="cardBg" fill="#e8f5e9"/>
+    <text x="1987" y="526" class="detailBold">React state update triggers</text>
+    <text x="1987" y="544" class="fnLight">re-render of entire component tree</text>
+
+    <path d="M2153 558 L2153 574" stroke="#56ab2f" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+
+    <!-- Ink handles the rest -->
+    <rect x="1973" y="580" width="360" height="80" rx="8" class="cardBg" fill="#c8e6c9"/>
+    <text x="1987" y="600" class="detailBold">Ink reconciler takes over:</text>
+    <text x="1987" y="620" class="fn">resetAfterCommit()</text>
+    <text x="1987" y="636" class="fn">  -> calculateLayout(newWidth)</text>
+    <text x="1987" y="652" class="fn">  -> onRender() -> log(frame)</text>
+
+    <path d="M2153 662 L2153 678" stroke="#56ab2f" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+
+    <!-- Final output -->
+    <rect x="1973" y="684" width="360" height="52" rx="10" fill="#1a3a1e" stroke="#56ab2f" stroke-width="2"/>
+    <text x="1987" y="706" class="fn" style="fill: #a0d8a4;">stdout.write(ANSI diff frame)</text>
+    <text x="1987" y="724" class="fn" style="fill: #a0d8a4;">Terminal shows correct layout</text>
+
+    <text x="1983" y="776" class="legend" style="fill: #7cc47f;">smdu handles domain layout decisions.</text>
+    <text x="1983" y="794" class="legend" style="fill: #7cc47f;">Ink handles reconcile + write mechanics.</text>
+  </g>
+
+  <!-- ═══════ DUAL HANDLING CALLOUT (between zones 2-3) ═══════ -->
+  <g transform="translate(500, 870)">
+    <rect x="-8" y="-18" width="540" height="36" rx="8" fill="#ffd70012" stroke="#ffd700" stroke-width="1.5"/>
+    <text x="4" y="4" class="boundaryLabel" style="font-size: 12px;">DUAL RESIZE HANDLING: Ink recomputes root Yoga layout. smdu refines per-component row/column budgets independently.</text>
+  </g>
+
+  <!-- ═══════ LEGEND ═══════ -->
+  <g transform="translate(55, 990)">
+    <line x1="0" y1="0" x2="30" y2="0" stroke="#ffd700" stroke-width="4"/>
+    <text x="38" y="4" class="legend">Forward event flow</text>
+
+    <line x1="200" y1="0" x2="230" y2="0" stroke="#ff7eb3" stroke-width="3" stroke-dasharray="10 6"/>
+    <text x="238" y="4" class="legend">Write-back return path</text>
+
+    <line x1="420" y1="0" x2="450" y2="0" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="458" y="4" class="legend">Runtime boundary</text>
+
+    <rect x="620" y="-7" width="14" height="14" rx="3" fill="#e0f7fa" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="642" y="4" class="legend">Detail card</text>
+
+    <circle cx="780" cy="0" r="5" fill="#ffd700" opacity="0.8"/>
+    <text x="792" y="4" class="legend">Animated pipeline pulse</text>
+
+    <rect x="970" y="-7" width="14" height="14" rx="3" fill="#0d2b30" stroke="#36d1dc" stroke-width="1.5" stroke-dasharray="3 2"/>
+    <text x="992" y="4" class="legend">Protocol / internal note</text>
+  </g>
+
+  <!-- ═══════ Source attribution ═══════ -->
+  <text x="55" y="1040" class="legend" style="fill: #506070;">Source-verified against: ink/build/ink.js, reconciler.js, renderer.js, render-node-to-output.js, output.js, log-update.js, dom.js, hooks/use-*.js, components/App.js</text>
+</svg>
