@@ -26,7 +26,8 @@ Windows release packaging must produce MSI installer artefacts for supported arc
 - **Visual Interface:** Displays a file tree with size bars and percentages.
 - **Navigation:** Navigate through directories using arrow keys (Up/Down to move, Right/Enter to enter, Left/Backspace to go up).
 - **Sorting:** Sort files by name or size.
-- **View Modes:** Toggle between flat (ncdu-style, default) and tree. List mode (name-only entries) is planned but currently disabled.
+- **View Modes:** Toggle between flat (ncdu-style, default), tree, and review. List mode (name-only entries) is planned but currently disabled.
+- **Review Mode:** Analysis-first view for ranked and grouped descendants under the current root, with presets and filter controls.
 - **Help Modal:** Display keybindings with `?`.
 - **Information Panel:** Display details for the selected item with `i`.
 - **Deletion:** Delete files or directories with a confirmation modal.
@@ -36,7 +37,7 @@ Windows release packaging must produce MSI installer artefacts for supported arc
 - **Heatmap Bars:** Green-to-red heatmap colours for size bars with `H` (default on).
 - **Status Panel:** Toggle a right-side panel with `p` for sort/view/flag state.
 - **Status Panel Properties:** Shows selected-file size impact, permissions, and created/modified metadata with refresh feedback.
-- **Hidden Files:** Toggle dotfiles with `.` (Windows hidden attributes are not detected, default on).
+- **Hidden Files:** Toggle dotfiles with `.` (global in flat/tree; review-local in Review mode). Windows hidden attributes are not detected.
 - **Settings:** Persistent configuration for themes, units, file type colours, heatmap colours, and hidden files.
 - **Settings:** Heatmap colours can be toggled for size bars.
 - **Fullscreen:** Uses the alternate screen buffer by default; `--no-fullscreen` opts out.
@@ -88,14 +89,18 @@ Windows release packaging must produce MSI installer artefacts for supported arc
 
 2.  **State Management (`src/state.ts` or Hooks)**
     - `useFileSystem`: Manages the current directory node and full tree.
-    - `useSelection`: Manages the cursor position in the list.
-    - `useSort`: Manages sort order (Name ASC/DESC, Size ASC/DESC).
+    - `useSelection`: Manages cursor position in browse and review lists.
+    - `useSort`: Manages sort order for browse mode.
+    - `useReviewState`: Derived review dataset, filters, grouping, per-root Review state, and cross-view open behaviour.
 
 3.  **UI Components (`src/components/`)**
     - `App`: Main container.
     - `Header`: Displays current path and version label.
-    - `FileList`: Renders the list of files/folders.
+    - `FileList`: Renders flat/tree file listings.
       - Calculates bars relative to the largest item in the directory.
+    - `ReviewToolbar`: Displays active Review preset/scope/sort/group and filter summary.
+    - `ReviewList`: Renders grouped review rows with table-style columns.
+    - `ReviewFiltersModal`: Displays Review filter state and quick controls.
     - `Footer`: Shows key hints and total size.
     - `ConfirmDelete`: Modal for deletion.
     - `InfoModal`: Modal for file and directory details.
@@ -125,12 +130,14 @@ Windows release packaging must produce MSI installer artefacts for supported arc
   - `[----------]  20%  package.json`
   - Tree mode indents nested items.
   - Flat mode shows full relative paths (ncdu-style).
+  - Review mode shows ranked rows (path, size, age, type, percent, count) and optional group rows.
 - **Legend:** `L` toggles the file type legend in the list header.
 - **Heatmap:** `H` toggles heatmap colours for size bars.
 - **Status Panel:** `p` toggles the right-side status panel.
 - **Type Cues:** Directories and symbolic links use dedicated browser colours when file type colours are enabled.
-- **Hidden Files:** `.` toggles dotfiles in the list.
-- **Footer:** `Total: 101.21 MiB (15 items) | Scan: Partial` + `Help: ? | Info: i | Panel: p | Timer: T/t | Rescan: R`
+- **Hidden Files:** `.` toggles dotfiles (global in flat/tree, review-local in Review mode).
+- **Review Controls:** `f` filters modal, `m` preset cycle, `g` group cycle, `G` group collapse/expand, `u` scope cycle, `z` minimum size cycle, `a` age-bucket cycle, `M` media-only toggle, `o`/`O` cross-view open, `x` reset filters.
+- **Footer:** `Total: 101.21 MiB (15 items) | Scan: Partial` with mode-specific hints.
 
 ## Theming
 
