@@ -1,119 +1,144 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1080" role="img" aria-labelledby="title desc">
   <title id="title">smdu Terminal Protocol Surface</title>
-  <desc id="desc">Colourful marker-style protocol map of terminal input parsing and output control sequences used by smdu and Ink.</desc>
+  <desc id="desc">Marker-style protocol surface diagram for smdu terminal input parsing, ANSI output, and side effects such as alternate screen and bell.</desc>
 
   <defs>
-    <linearGradient id="paper2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fffdf8"/>
-      <stop offset="100%" stop-color="#f7fbff"/>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff2d8"/>
+      <stop offset="40%" stop-color="#e3e8ff"/>
+      <stop offset="100%" stop-color="#d4ffe8"/>
+      <animateTransform attributeName="gradientTransform" type="rotate" values="0 840 540;-7 840 540;0 840 540" dur="34s" repeatCount="indefinite"/>
     </linearGradient>
 
-    <filter id="rough2" x="-15%" y="-15%" width="130%" height="130%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="1" seed="13" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.8"/>
+    <filter id="grain2" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="21" result="n"/>
+      <feComponentTransfer in="n" result="faint">
+        <feFuncA type="table" tableValues="0 0.07"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="faint" mode="multiply"/>
     </filter>
 
-    <pattern id="scribbleMint" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(20)">
-      <line x1="0" y1="0" x2="0" y2="12" stroke="#0aa67e22" stroke-width="3"/>
-      <line x1="6" y1="0" x2="6" y2="12" stroke="#0fbf9a1f" stroke-width="2.5"/>
+    <pattern id="pMint" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(17)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#0aa87f26" stroke-width="3.6"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#2fd8b228" stroke-width="2.8"/>
     </pattern>
 
-    <pattern id="scribbleGold" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(-18)">
-      <line x1="0" y1="0" x2="0" y2="14" stroke="#f39c1230" stroke-width="4"/>
-      <line x1="7" y1="0" x2="7" y2="14" stroke="#f1c40f26" stroke-width="3"/>
+    <pattern id="pSun" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(-15)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#ef8f1628" stroke-width="3.8"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#ffc64224" stroke-width="2.8"/>
     </pattern>
 
-    <pattern id="scribbleViolet" patternUnits="userSpaceOnUse" width="13" height="13" patternTransform="rotate(9)">
-      <line x1="0" y1="0" x2="0" y2="13" stroke="#8e44ad2f" stroke-width="3.4"/>
-      <line x1="6.5" y1="0" x2="6.5" y2="13" stroke="#b26dd52a" stroke-width="2.8"/>
+    <pattern id="pViolet" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(11)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#8a42c127" stroke-width="3.6"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#bf72ef24" stroke-width="2.8"/>
     </pattern>
 
-    <marker id="arrTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0a9d73"/>
+    <marker id="aTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#0b9f74"/>
     </marker>
-    <marker id="arrOrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#d87800"/>
+    <marker id="aOrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#d77700"/>
     </marker>
-    <marker id="arrPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a35c0"/>
+    <marker id="aPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7d35be"/>
     </marker>
 
     <style>
-      .title { font: 700 40px "Segoe Print", "Comic Sans MS", cursive; fill: #2d2b3d; }
-      .sub { font: 600 20px "Segoe Print", "Comic Sans MS", cursive; fill: #5f5a73; }
-      .h { font: 700 24px "Segoe Print", "Comic Sans MS", cursive; fill: #28263a; }
-      .t { font: 600 15px "Segoe Print", "Comic Sans MS", cursive; fill: #353247; }
-      .mono { font: 700 14px "Consolas", "Menlo", monospace; fill: #1f2f45; }
-      .note { font: 700 15px "Segoe Print", "Comic Sans MS", cursive; fill: #6c3751; }
-      .boxA { stroke: #0a9d73; stroke-width: 3; fill: #edfff9; }
-      .boxB { stroke: #d87800; stroke-width: 3; fill: #fff8ef; }
-      .boxC { stroke: #7a35c0; stroke-width: 3; fill: #f8f1ff; }
-      .boxD { stroke: #2f7fe8; stroke-width: 3; fill: #eef5ff; }
-      .flowA { fill: none; stroke: #0a9d73; stroke-width: 4; marker-end: url(#arrTeal); }
-      .flowB { fill: none; stroke: #d87800; stroke-width: 4; marker-end: url(#arrOrange); }
-      .flowC { fill: none; stroke: #7a35c0; stroke-width: 4; marker-end: url(#arrPurple); }
-      .dashed { stroke-dasharray: 10 8; }
+      .title { font: 700 40px "Segoe Print", "Comic Sans MS", cursive; fill: #2f2740; }
+      .sub { font: 600 20px "Segoe Print", "Comic Sans MS", cursive; fill: #5f5a70; }
+      .h { font: 700 24px "Segoe Print", "Comic Sans MS", cursive; fill: #2d2f43; }
+      .t { font: 600 15px "Segoe Print", "Comic Sans MS", cursive; fill: #35384b; }
+      .mono { font: 700 14px "Consolas", "Menlo", monospace; fill: #21324a; }
+      .note { font: 700 15px "Segoe Print", "Comic Sans MS", cursive; fill: #6a3552; }
+      .boxA { fill: #edfff8; stroke: #0b9f74; stroke-width: 3; }
+      .boxB { fill: #fff8ef; stroke: #d77700; stroke-width: 3; }
+      .boxC { fill: #f7f1ff; stroke: #7d35be; stroke-width: 3; }
+      .boxD { fill: #eef5ff; stroke: #2f7ee8; stroke-width: 3; }
+      .flowA { fill: none; stroke: #0b9f74; stroke-width: 4; marker-end: url(#aTeal); }
+      .flowB { fill: none; stroke: #d77700; stroke-width: 4; marker-end: url(#aOrange); }
+      .flowC { fill: none; stroke: #7d35be; stroke-width: 4; marker-end: url(#aPurple); }
+      .dash { stroke-dasharray: 10 8; }
     </style>
   </defs>
 
-  <rect x="0" y="0" width="1680" height="1080" fill="url(#paper2)"/>
+  <rect x="0" y="0" width="1680" height="1080" fill="url(#bg2)"/>
 
-  <text x="70" y="70" class="title">smdu Terminal Read/Write Protocol Surface</text>
-  <text x="72" y="102" class="sub">Colourful marker protocol map: input parsing, render output, control sequences, and side-effects</text>
+  <g opacity="0.25">
+    <circle cx="210" cy="860" r="220" fill="#6aa8ff">
+      <animate attributeName="cx" values="210;250;210" dur="28s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="860;820;860" dur="34s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1410" cy="200" r="180" fill="#ff8ec6">
+      <animate attributeName="cx" values="1410;1370;1410" dur="26s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="200;230;200" dur="31s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="830" cy="120" r="130" fill="#ffd062">
+      <animate attributeName="r" values="130;150;130" dur="24s" repeatCount="indefinite"/>
+    </circle>
+  </g>
 
-  <rect x="60" y="140" width="1560" height="870" rx="34" ry="34" fill="#ffffffba" stroke="#d6dcea" stroke-width="2" filter="url(#rough2)"/>
+  <rect x="54" y="140" width="1572" height="885" rx="32" ry="32" fill="#ffffffd9" filter="url(#grain2)"/>
 
-  <rect x="95" y="185" width="710" height="380" rx="24" ry="24" class="boxA" filter="url(#rough2)"/>
-  <rect x="103" y="194" width="694" height="362" rx="20" ry="20" fill="url(#scribbleMint)"/>
-  <text x="122" y="230" class="h">Read side (terminal -> app)</text>
-  <text x="122" y="260" class="t">1) PTY sends bytes on stdin readable chunks</text>
-  <text x="122" y="286" class="t">2) Ink internal App enables raw mode and reads utf8 chunks</text>
-  <text x="122" y="312" class="t">3) Ink parseKeypress decodes escape sequences</text>
-  <text x="122" y="338" class="t">4) useInput emits normalised key object + input string</text>
-  <text x="122" y="364" class="t">5) smdu App routes actions (navigate/sort/filter/delete/timer)</text>
-  <text x="122" y="390" class="mono">stdin.setRawMode(true) -> 'readable' -> parseKeypress(...) -> inputHandler(...)</text>
+  <path d="M66 156 C142 120 256 140 334 160 C498 200 676 156 854 154 C1034 152 1202 118 1398 156 C1484 174 1550 226 1570 302 C1590 438 1586 590 1572 734 C1560 846 1532 926 1410 954 C1200 1002 980 954 760 958 C582 962 418 1002 234 978 C126 962 76 918 66 846 C50 700 56 546 56 398 C56 296 40 214 66 156 Z" fill="none" stroke="#27304d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M76 172 C152 138 262 158 338 176 C500 214 678 170 856 170 C1030 170 1198 132 1392 172 C1470 188 1530 236 1548 308 C1568 442 1566 590 1550 728 C1538 834 1512 906 1398 934 C1194 978 978 938 762 942 C586 946 426 986 246 964 C142 950 96 910 84 842 C70 700 74 552 74 404 C74 308 56 230 76 172 Z" fill="none" stroke="#ff64a3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
 
-  <rect x="875" y="185" width="710" height="380" rx="24" ry="24" class="boxB" filter="url(#rough2)"/>
-  <rect x="883" y="194" width="694" height="362" rx="20" ry="20" fill="url(#scribbleGold)"/>
-  <text x="900" y="230" class="h">Write side (app -> terminal)</text>
-  <text x="900" y="260" class="t">1) React commit enters Ink reconciler</text>
-  <text x="900" y="286" class="t">2) Ink computes Yoga layout for current terminal width</text>
-  <text x="900" y="312" class="t">3) renderer writes operations into Output buffer</text>
-  <text x="900" y="338" class="t">4) output.get() materialises frame text</text>
-  <text x="900" y="364" class="t">5) log-update applies ANSI erase/cursor diff and writes stdout bytes</text>
-  <text x="900" y="390" class="mono">calculateLayout() -> renderNodeToOutput() -> output.get() -> stream.write(...)</text>
+  <text x="72" y="74" class="title">smdu Terminal Read and Write Protocol Surface</text>
+  <text x="74" y="106" class="sub">Marker style with animated colour fields and protocol motifs</text>
 
-  <path d="M 770 420 C 820 420, 845 420, 875 420" class="flowA"/>
+  <rect x="98" y="190" width="724" height="390" rx="24" ry="24" class="boxA"/>
+  <rect x="106" y="198" width="708" height="374" rx="20" ry="20" fill="url(#pMint)"/>
+  <text x="128" y="234" class="h">Read side: terminal to smdu</text>
+  <text x="128" y="264" class="t">1) PTY emits stdin byte chunks</text>
+  <text x="128" y="290" class="t">2) Ink internal App enables raw mode and reads chunks</text>
+  <text x="128" y="316" class="t">3) parseKeypress decodes escape sequences</text>
+  <text x="128" y="342" class="t">4) useInput emits key plus input payload</text>
+  <text x="128" y="368" class="t">5) smdu App routes actions and mutates state</text>
+  <text x="128" y="398" class="mono">stdin.setRawMode true  and  readable loop  and  parseKeypress</text>
 
-  <rect x="95" y="610" width="1490" height="180" rx="24" ry="24" class="boxC" filter="url(#rough2)"/>
-  <rect x="103" y="619" width="1474" height="162" rx="20" ry="20" fill="url(#scribbleViolet)"/>
-  <text x="122" y="648" class="h">Control sequences and terminal protocol side-effects</text>
+  <rect x="860" y="190" width="724" height="390" rx="24" ry="24" class="boxB"/>
+  <rect x="868" y="198" width="708" height="374" rx="20" ry="20" fill="url(#pSun)"/>
+  <text x="890" y="234" class="h">Write side: smdu to terminal</text>
+  <text x="890" y="264" class="t">1) React commit enters Ink reconciler</text>
+  <text x="890" y="290" class="t">2) Yoga computes layout at current width</text>
+  <text x="890" y="316" class="t">3) renderer writes Output operations</text>
+  <text x="890" y="342" class="t">4) output.get builds frame string</text>
+  <text x="890" y="368" class="t">5) log-update writes ANSI diffs to stdout</text>
+  <text x="890" y="398" class="mono">calculateLayout  and  renderNodeToOutput  and  stream.write</text>
 
-  <text x="122" y="678" class="mono">CSI ?1049h</text>
-  <text x="252" y="678" class="t">Enter alternate screen (smdu startup)</text>
+  <path d="M822 430 C842 430 848 430 860 430" class="flowA"/>
 
-  <text x="122" y="704" class="mono">CSI ?1049l</text>
-  <text x="252" y="704" class="t">Leave alternate screen (smdu exit)</text>
+  <rect x="98" y="614" width="1486" height="194" rx="24" ry="24" class="boxC"/>
+  <rect x="106" y="622" width="1470" height="178" rx="20" ry="20" fill="url(#pViolet)"/>
+  <text x="128" y="650" class="h">Control sequence surface and terminal side effects</text>
 
-  <text x="122" y="730" class="mono">BEL (\u0007)</text>
-  <text x="252" y="730" class="t">Timer completion bell (smdu focus timer)</text>
+  <text x="128" y="680" class="mono">CSI ?1049h</text>
+  <text x="278" y="680" class="t">alternate screen enter</text>
+  <text x="128" y="706" class="mono">CSI ?1049l</text>
+  <text x="278" y="706" class="t">alternate screen leave</text>
+  <text x="128" y="732" class="mono">BEL  (\u0007)</text>
+  <text x="278" y="732" class="t">timer completion bell</text>
 
-  <text x="860" y="678" class="mono">eraseLines / cursorUp / cursorTo / eraseEndLine</text>
-  <text x="860" y="704" class="t">Ink log-update diff writes and frame cleanup</text>
+  <text x="856" y="680" class="mono">eraseLines  cursorUp  cursorTo  eraseEndLine</text>
+  <text x="856" y="706" class="t">Ink log-update diff writes</text>
+  <text x="856" y="732" class="mono">clearTerminal  and  cursor hide and show</text>
+  <text x="856" y="758" class="t">redraw safety and interactive cursor behaviour</text>
 
-  <text x="860" y="730" class="mono">clearTerminal</text>
-  <text x="860" y="756" class="t">Used when previous output exceeds rows (Ink safety reset)</text>
+  <rect x="98" y="840" width="1486" height="150" rx="24" ry="24" class="boxD"/>
+  <text x="128" y="874" class="h">Bells and whistles status</text>
+  <text x="128" y="902" class="t">Current build emits alternate screen and bell side effects, with ANSI cursor and erase diffs from Ink.</text>
+  <text x="128" y="928" class="t">Window title sequences (OSC 0 or OSC 2) are not emitted by default at present.</text>
+  <text x="128" y="954" class="note">Motif hint: title control could be added at CLI mount and unmount boundaries if needed.</text>
 
-  <text x="122" y="756" class="mono">Cursor hide/show</text>
-  <text x="252" y="756" class="t">Managed by Ink/cli-cursor during interactive rendering</text>
+  <path d="M450 580 C450 604 450 610 450 614" class="flowC"/>
+  <path d="M1220 580 C1220 604 1220 610 1220 614" class="flowB"/>
+  <path d="M842 808 C842 830 842 834 842 840" class="flowA dash"/>
 
-  <rect x="95" y="825" width="1490" height="150" rx="24" ry="24" class="boxD" filter="url(#rough2)"/>
-  <text x="122" y="860" class="h">Bells and whistles notes</text>
-  <text x="122" y="888" class="t">Current behaviour: strong control-sequence support for screen, cursor, erase, and bell.</text>
-  <text x="122" y="914" class="t">Window title sequences (OSC 0/2) are not currently emitted by smdu or Ink in this build.</text>
-  <text x="122" y="940" class="note">If title updates are added later, that belongs at the smdu CLI boundary before/after Ink mount.</text>
-
-  <path d="M 450 566 C 450 594, 450 602, 450 610" class="flowC"/>
-  <path d="M 1220 566 C 1220 594, 1220 602, 1220 610" class="flowB"/>
-  <path d="M 840 790 C 840 812, 840 816, 840 825" class="flowA dashed"/>
+  <g transform="translate(1430 890)">
+    <rect x="0" y="0" width="120" height="62" rx="12" ry="12" fill="#ffe699" stroke="#d77700" stroke-width="3"/>
+    <text x="20" y="38" class="mono">BEL</text>
+  </g>
+  <g transform="translate(1300 890)">
+    <rect x="0" y="0" width="112" height="62" rx="12" ry="12" fill="#cde8ff" stroke="#2f7ee8" stroke-width="3"/>
+    <text x="16" y="38" class="mono">CSI</text>
+  </g>
 </svg>
