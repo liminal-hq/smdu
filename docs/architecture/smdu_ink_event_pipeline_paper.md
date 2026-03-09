@@ -406,6 +406,10 @@ Both paths converge at the reconciler. The final frame written to the terminal r
 
 ## 7) The Return Path: Write-Back to Terminal
 
+[Open SVG: resize lab experiment](./smdu_resize_lab_experiment.svg)
+
+![resize lab experiment](./smdu_resize_lab_experiment.svg)
+
 The pipeline is not one-directional. After all processing, bytes flow back to the terminal through `stdout.write()`.
 
 ### 7.1 What gets written

@@ -244,3 +244,35 @@ Include a "why dual handling?" callout explaining the architectural rationale.
 Style: same dark tech-forward palette, animated fork burst, coloured path lines
 matching each owner (cyan for Ink, purple for smdu, green for converged output).
 ```
+
+## Resize Lab Experiment
+
+[Open SVG: resize lab experiment](./smdu_resize_lab_experiment.svg)
+
+![resize lab experiment](./smdu_resize_lab_experiment.svg)
+
+**Prompt**
+
+```text
+Create a thematic lab-experiment SVG visualising the resize event pipeline as
+chemistry glassware on a lab bench. A rat scientist with goggles watches the
+resize signal flow through connected flasks representing each pipeline stage
+(PTY, Node streams, Ink runtime, smdu), with the processed frame appearing
+on a terminal monitor at the end. Include a return-path arrow for the ANSI
+write-back.
+
+Style: inspired by liminal-hq/the-lab art direction:
+- deep purple background with halftone dot pattern overlay
+- hard comic drop shadows (feOffset, no blur)
+- bold black outlines (stroke-width 3-4) on all shapes
+- Impact + Comic Sans MS fonts
+- flat fills with opacity layering, no gradients
+- animated bubbles rising in flasks
+- animated speed lines for flow momentum
+- blinking terminal cursor
+- floating bobbing badges (30 FPS, ANSI DIFF)
+- speech bubble from the rat scientist
+- small rat silhouette assistant with glowing red eye
+- paw prints on the lab table
+- slight title rotation for hand-drawn feel
+```
