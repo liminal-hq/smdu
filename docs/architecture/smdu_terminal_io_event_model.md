@@ -14,9 +14,25 @@ This is the detailed companion to `smdu_architecture_deconstruction.md` and focu
 
 ## Visual Overview
 
-![smdu terminal event lifecycle](./smdu_terminal_event_lifecycle.svg)
+[Open SVG: smdu terminal event lifecycle](./smdu_terminal_event_lifecycle.svg)
 
-![smdu terminal protocol surface](./smdu_terminal_protocol_surface.svg)
+[![smdu terminal event lifecycle preview](./smdu_terminal_event_lifecycle.svg)](./smdu_terminal_event_lifecycle.svg)
+
+[Open SVG: smdu terminal protocol surface](./smdu_terminal_protocol_surface.svg)
+
+[![smdu terminal protocol surface preview](./smdu_terminal_protocol_surface.svg)](./smdu_terminal_protocol_surface.svg)
+
+## Concept Motifs
+
+These extra diagrams are playful companions that express the same runtime ideas through visual metaphors.
+
+[Open SVG: smdu event constellation](./smdu_terminal_event_constellation.svg)
+
+[![smdu event constellation preview](./smdu_terminal_event_constellation.svg)](./smdu_terminal_event_constellation.svg)
+
+[Open SVG: smdu escape sequence sketch map](./smdu_terminal_escape_sequence_map.svg)
+
+[![smdu escape sequence sketch map preview](./smdu_terminal_escape_sequence_map.svg)](./smdu_terminal_escape_sequence_map.svg)
 
 ## 1) Runtime boundaries
 
