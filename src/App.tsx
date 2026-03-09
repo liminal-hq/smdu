@@ -805,6 +805,7 @@ export const App: React.FC<AppProps> = ({
 										theme={theme}
 										units={currentUnits}
 										rootPath={currentNode.path}
+										fileTypeColoursEnabled={fileTypeColoursEnabled}
 										availableColumns={showStatusPanel ? listWidth : undefined}
 										extraTopRows={2}
 										extraBottomRows={statusIndicatorRows}

@@ -9,7 +9,9 @@ import path from 'path';
 import { filesize } from 'filesize';
 import { Theme } from '../themes.js';
 import { ReviewVisibleRow } from '../review/types.js';
+import { getFileTypeCategory } from '../fileTypeColours.js';
 import { sanitize } from '../utils/sanitize.js';
+import { getEntryColour } from './FileList.js';
 
 interface ReviewListProps {
 	rows: ReviewVisibleRow[];
@@ -17,6 +19,7 @@ interface ReviewListProps {
 	theme: Theme;
 	units: 'iec' | 'si';
 	rootPath: string;
+	fileTypeColoursEnabled: boolean;
 	availableColumns?: number;
 	extraTopRows?: number;
 	extraBottomRows?: number;
@@ -65,12 +68,40 @@ const formatType = (row: ReviewVisibleRow): string => {
 	return row.entry.inferredType || 'file';
 };
 
+interface ReviewRowColourInput {
+	row: ReviewVisibleRow;
+	theme: Theme;
+	fileTypeColoursEnabled: boolean;
+	isSelected: boolean;
+}
+
+export const getReviewRowColour = ({
+	row,
+	theme,
+	fileTypeColoursEnabled,
+	isSelected,
+}: ReviewRowColourInput): string => {
+	if (isSelected) return theme.colours.selectedText;
+	if (row.kind === 'group') return theme.colours.accent;
+	const fileTypeCategory = getFileTypeCategory(
+		row.entry.basename,
+		row.entry.kind === 'directory',
+	);
+	return getEntryColour({
+		file: row.entry.node,
+		theme,
+		fileTypeColoursEnabled,
+		fileTypeCategory,
+	});
+};
+
 export const ReviewList: React.FC<ReviewListProps> = ({
 	rows,
 	selectedIndex,
 	theme,
 	units,
 	rootPath,
+	fileTypeColoursEnabled,
 	availableColumns,
 	extraTopRows = 0,
 	extraBottomRows = 0,
@@ -163,6 +194,12 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 				const isSelected = globalIndex === selectedIndex;
 				const bg = isSelected ? theme.colours.highlight : undefined;
 				const fg = isSelected ? theme.colours.selectedText : theme.colours.text;
+				const rowColour = getReviewRowColour({
+					row,
+					theme,
+					fileTypeColoursEnabled,
+					isSelected,
+				});
 				const size = row.kind === 'group' ? row.group.totalSize : row.entry.size;
 				const age = row.kind === 'group' ? '-' : formatAge(row.entry.modifiedAt);
 				const percent =
@@ -177,7 +214,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 				return (
 					<Box key={row.kind === 'group' ? row.group.key : row.entry.id} paddingX={1} width="100%">
 						<Box width={columnLayout.pathColumns}>
-							<Text backgroundColor={bg} color={row.kind === 'group' && !isSelected ? theme.colours.accent : fg} wrap="truncate-end">
+							<Text backgroundColor={bg} color={rowColour} wrap="truncate-end">
 								{label}
 							</Text>
 						</Box>
@@ -195,7 +232,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 						</Box>
 						<Box width={1} />
 						<Box width={columnLayout.typeColumns}>
-							<Text backgroundColor={bg} color={fg} wrap="truncate-end">
+							<Text backgroundColor={bg} color={rowColour} wrap="truncate-end">
 								{type}
 							</Text>
 						</Box>

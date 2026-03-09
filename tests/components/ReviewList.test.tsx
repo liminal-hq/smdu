@@ -7,7 +7,7 @@ import React from 'react';
 import { describe, expect, test } from '@jest/globals';
 import { render } from 'ink-testing-library';
 import { themes } from '../../src/themes.js';
-import { ReviewList } from '../../src/components/ReviewList.js';
+import { ReviewList, getReviewRowColour } from '../../src/components/ReviewList.js';
 import type { FileNode } from '../../src/scanner.js';
 import type { ReviewVisibleRow } from '../../src/review/types.js';
 
@@ -72,6 +72,7 @@ describe('ReviewList', () => {
 				theme={themes.default}
 				units="iec"
 				rootPath="/root"
+				fileTypeColoursEnabled={true}
 			/>,
 		);
 		const output = lastFrame();
@@ -88,9 +89,35 @@ describe('ReviewList', () => {
 				theme={themes.default}
 				units="iec"
 				rootPath="/root"
+				fileTypeColoursEnabled={true}
 			/>,
 		);
 		const output = lastFrame();
 		expect(output).toContain('No review results for current filters.');
+	});
+
+	test('uses file type colours for review entries and accent for group rows', () => {
+		const groupColour = getReviewRowColour({
+			row: rows[0],
+			theme: themes.default,
+			fileTypeColoursEnabled: true,
+			isSelected: false,
+		});
+		const mediaEntryColour = getReviewRowColour({
+			row: rows[1],
+			theme: themes.default,
+			fileTypeColoursEnabled: true,
+			isSelected: false,
+		});
+		const disabledColour = getReviewRowColour({
+			row: rows[1],
+			theme: themes.default,
+			fileTypeColoursEnabled: false,
+			isSelected: false,
+		});
+
+		expect(groupColour).toBe(themes.default.colours.accent);
+		expect(mediaEntryColour).toBe(themes.default.colours.fileTypes.media);
+		expect(disabledColour).toBe(themes.default.colours.text);
 	});
 });
