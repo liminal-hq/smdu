@@ -21,30 +21,30 @@ export const HelpModal: React.FC<HelpModalProps> = ({ theme, onBack }) => {
 	const keyWidth = Math.max(12, modalWidth - labelWidth - 4);
 
 	// Group items
-		const sections = useMemo(() => {
-			const navigation = ['Move selection', 'Enter directory', 'Go up', 'Quit'];
-			const view = [
-				'Sort by name',
-				'Sort by size',
-				'Sort by count',
-				'Toggle view mode',
-				'Toggle hidden files',
-				'Review filters',
-				'Review next preset',
-				'Review next group',
-				'Review toggle group',
-				'Review cycle scope',
-				'Review cycle min size',
-				'Review cycle age',
-				'Review toggle media-only',
-				'Open selected in flat',
-				'Open selected in tree',
-				'Review reset filters',
-				'Toggle legend',
-				'Toggle heatmap',
-				'Toggle status panel',
-				'Rescan',
-			];
+	const sections = useMemo(() => {
+		const navigation = ['Move selection', 'Enter directory', 'Go up', 'Quit'];
+		const view = [
+			'Sort by name',
+			'Sort by size',
+			'Sort by count',
+			'Toggle view mode',
+			'Toggle hidden files',
+			'Review filters',
+			'Review next preset',
+			'Review next group',
+			'Review toggle group',
+			'Review cycle scope',
+			'Review cycle min size',
+			'Review cycle age',
+			'Review toggle media-only',
+			'Open selected in flat',
+			'Open selected in tree',
+			'Review reset filters',
+			'Toggle legend',
+			'Toggle heatmap',
+			'Toggle status panel',
+			'Rescan',
+		];
 		const actions = ['Delete item', 'Information panel', 'Settings'];
 		const timer = ['Start focus timer', 'Toggle focus timer display', 'Cancel focus timer'];
 		// Catch-all for others

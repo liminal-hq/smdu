@@ -156,6 +156,7 @@ The main UI should expose a clear way to switch between:
 Review Mode should favour a denser, table-like listing. Suggested columns:
 
 **Wide layout:**
+
 - Path
 - Size
 - Age
@@ -163,6 +164,7 @@ Review Mode should favour a denser, table-like listing. Suggested columns:
 - % of total
 
 **Narrow layout:**
+
 - Path
 - Size
 - Age
@@ -279,6 +281,7 @@ Minimum size is especially important for surfacing only meaningful candidates in
 - **Age bucket** filter
 
 Suggested built-in age buckets:
+
 - modified today (`age >= 0 and < 1 day`)
 - modified this week (`age >= 1 day and < 7 days`)
 - modified this month (`age >= 7 days and < 1 month`)
@@ -296,6 +299,7 @@ Use local timezone boundaries for user-facing age bucket calculations.
 - **Inferred type filter** (if implemented)
 
 Examples:
+
 - `.mkv`
 - `.mp4`
 - `.zip`
@@ -571,17 +575,20 @@ Allow users to save custom review configurations such as:
    - Enter on a selected file is a no-op in V1.
 
 10. **Cross-view open behaviour**
-   - Open parent directory in Flat or Tree.
-   - Preselect the selected child entry.
-   - Keep a persistent entry-point highlight.
+
+- Open parent directory in Flat or Tree.
+- Preselect the selected child entry.
+- Keep a persistent entry-point highlight.
 
 11. **Age bucket boundaries**
-   - Buckets should be non-overlapping.
-   - Use local timezone boundaries for user-facing bucket calculation.
+
+- Buckets should be non-overlapping.
+- Use local timezone boundaries for user-facing bucket calculation.
 
 12. **Source grouping in current architecture**
-   - Source grouping/filtering is still in V1 scope.
-   - In current single-root scans it may collapse to one source or be hidden/disabled in controls.
+
+- Source grouping/filtering is still in V1 scope.
+- In current single-root scans it may collapse to one source or be hidden/disabled in controls.
 
 ## Recommended Incremental Bootstrap (Optional)
 

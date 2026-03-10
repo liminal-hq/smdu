@@ -58,7 +58,9 @@ export const matchesAgeBuckets = (entry: ReviewEntry, ageBuckets: ReviewAgeBucke
 export const matchesExtensions = (entry: ReviewEntry, extensions: string[]): boolean => {
 	if (extensions.length === 0) return true;
 	if (entry.kind !== 'file') return false;
-	const normalised = new Set(extensions.map(normaliseExtension).filter((value) => value.length > 0));
+	const normalised = new Set(
+		extensions.map(normaliseExtension).filter((value) => value.length > 0),
+	);
 	if (normalised.size === 0) return true;
 	return normalised.has(entry.extension);
 };
@@ -66,9 +68,7 @@ export const matchesExtensions = (entry: ReviewEntry, extensions: string[]): boo
 export const matchesType = (entry: ReviewEntry, inferredTypes: string[]): boolean => {
 	if (inferredTypes.length === 0) return true;
 	const wanted = new Set(
-		inferredTypes
-			.map((value) => value.trim().toLowerCase())
-			.filter((value) => value.length > 0),
+		inferredTypes.map((value) => value.trim().toLowerCase()).filter((value) => value.length > 0),
 	);
 	if (wanted.size === 0) return true;
 	return wanted.has(entry.inferredType.toLowerCase());
@@ -95,7 +95,10 @@ export const matchesSourceRoots = (entry: ReviewEntry, sourceRoots: string[]): b
 	return sourceRoots.includes(entry.sourceRoot);
 };
 
-export const filterReviewEntries = (entries: ReviewEntry[], filters: ReviewFilters): ReviewEntry[] => {
+export const filterReviewEntries = (
+	entries: ReviewEntry[],
+	filters: ReviewFilters,
+): ReviewEntry[] => {
 	return entries.filter((entry) => {
 		if (!matchesScope(entry, filters.scope)) return false;
 		if (!matchesMinSize(entry, filters.minSizeBytes)) return false;

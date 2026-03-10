@@ -712,12 +712,12 @@ export const App: React.FC<AppProps> = ({
 					isScanning={loading || isScanning}
 					mode="default"
 				/>
-					{helpOverlay}
-					{infoOverlay}
-					{reviewFiltersOverlay}
-					{settingsOverlay}
-				</Box>
-			);
+				{helpOverlay}
+				{infoOverlay}
+				{reviewFiltersOverlay}
+				{settingsOverlay}
+			</Box>
+		);
 	}
 
 	if (showConfirmDelete) {
@@ -733,20 +733,20 @@ export const App: React.FC<AppProps> = ({
 						theme={theme}
 					/>
 				</Box>
-					<Footer
-						totalSize={currentNode.size}
-						itemCount={viewMode === 'review' ? reviewEntries.length : files.length}
-						theme={theme}
-						units={currentUnits}
-						isScanning={isScanning}
-						mode={viewMode === 'review' ? 'review' : 'default'}
-					/>
-					{helpOverlay}
-					{infoOverlay}
-					{reviewFiltersOverlay}
-					{settingsOverlay}
-				</Box>
-			);
+				<Footer
+					totalSize={currentNode.size}
+					itemCount={viewMode === 'review' ? reviewEntries.length : files.length}
+					theme={theme}
+					units={currentUnits}
+					isScanning={isScanning}
+					mode={viewMode === 'review' ? 'review' : 'default'}
+				/>
+				{helpOverlay}
+				{infoOverlay}
+				{reviewFiltersOverlay}
+				{settingsOverlay}
+			</Box>
+		);
 	}
 
 	const scanErrorsLabel = scanStatus.errors > 0 ? ` | Errors: ${scanStatus.errors}` : '';
@@ -774,14 +774,14 @@ export const App: React.FC<AppProps> = ({
 	const STATUS_INDICATOR_ROWS = 3;
 	const statusIndicatorRows = statusIndicator ? STATUS_INDICATOR_ROWS : 0;
 
-		const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
-		const maxCount = files.reduce((max, f) => Math.max(max, f.fileCount || 0), 0);
-		const currentItemCount = viewMode === 'review' ? reviewEntries.length : files.length;
-		const headerRows = 2;
-		const footerRows = 2;
-		const panelWidth = showStatusPanel
-			? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
-			: 0;
+	const maxSize = files.reduce((max, f) => Math.max(max, f.size), 0);
+	const maxCount = files.reduce((max, f) => Math.max(max, f.fileCount || 0), 0);
+	const currentItemCount = viewMode === 'review' ? reviewEntries.length : files.length;
+	const headerRows = 2;
+	const footerRows = 2;
+	const panelWidth = showStatusPanel
+		? Math.max(26, Math.min(38, Math.floor(totalColumns * 0.32)))
+		: 0;
 	const listWidth = showStatusPanel ? Math.max(20, totalColumns - panelWidth) : totalColumns;
 	const panelHeight = Math.max(3, totalRows - headerRows - footerRows - statusIndicatorRows);
 	const effectiveSelectedFile = selectedFile ?? undefined;
@@ -789,53 +789,53 @@ export const App: React.FC<AppProps> = ({
 		<Box flexDirection="column" height={totalRows} width="100%">
 			<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
 
-				<Box flexGrow={1} overflowY="hidden">
-					<Box flexDirection="row" width="100%">
-						<Box width={showStatusPanel ? listWidth : '100%'}>
-							{viewMode === 'review' ? (
-								<Box flexDirection="column">
-									<ReviewToolbar
-										theme={theme}
-										state={reviewState}
-										resultCount={reviewEntries.length}
-									/>
-									<ReviewList
-										rows={reviewVisibleRows}
-										selectedIndex={selectionIndex}
-										theme={theme}
-										units={currentUnits}
-										rootPath={currentNode.path}
-										fileTypeColoursEnabled={fileTypeColoursEnabled}
-										availableColumns={showStatusPanel ? listWidth : undefined}
-										extraTopRows={2}
-										extraBottomRows={statusIndicatorRows}
-									/>
-								</Box>
-							) : (
-								<FileList
-									files={files}
+			<Box flexGrow={1} overflowY="hidden">
+				<Box flexDirection="row" width="100%">
+					<Box width={showStatusPanel ? listWidth : '100%'}>
+						{viewMode === 'review' ? (
+							<Box flexDirection="column">
+								<ReviewToolbar
+									theme={theme}
+									state={reviewState}
+									resultCount={reviewEntries.length}
+								/>
+								<ReviewList
+									rows={reviewVisibleRows}
 									selectedIndex={selectionIndex}
-									maxSize={maxSize}
-									totalSize={currentNode.size}
-									maxCount={maxCount}
-									totalCount={currentNode.fileCount || 0}
-									sortBy={sortBy}
 									theme={theme}
 									units={currentUnits}
-									viewMode={viewMode}
 									rootPath={currentNode.path}
-									scanRootPath={rootNode?.path ?? currentNode.path}
 									fileTypeColoursEnabled={fileTypeColoursEnabled}
-									showLegend={showLegend}
-									heatmapEnabled={heatmapEnabled}
-									entryPointPath={entryPointPath}
 									availableColumns={showStatusPanel ? listWidth : undefined}
+									extraTopRows={2}
 									extraBottomRows={statusIndicatorRows}
 								/>
-							)}
-						</Box>
-						{showStatusPanel ? (
-							<Box width={panelWidth}>
+							</Box>
+						) : (
+							<FileList
+								files={files}
+								selectedIndex={selectionIndex}
+								maxSize={maxSize}
+								totalSize={currentNode.size}
+								maxCount={maxCount}
+								totalCount={currentNode.fileCount || 0}
+								sortBy={sortBy}
+								theme={theme}
+								units={currentUnits}
+								viewMode={viewMode}
+								rootPath={currentNode.path}
+								scanRootPath={rootNode?.path ?? currentNode.path}
+								fileTypeColoursEnabled={fileTypeColoursEnabled}
+								showLegend={showLegend}
+								heatmapEnabled={heatmapEnabled}
+								entryPointPath={entryPointPath}
+								availableColumns={showStatusPanel ? listWidth : undefined}
+								extraBottomRows={statusIndicatorRows}
+							/>
+						)}
+					</Box>
+					{showStatusPanel ? (
+						<Box width={panelWidth}>
 							<StatusPanel
 								theme={theme}
 								sortBy={sortBy}
@@ -861,28 +861,28 @@ export const App: React.FC<AppProps> = ({
 
 			{statusIndicator}
 
-				<Footer
-					totalSize={currentNode.size}
-					itemCount={currentItemCount}
-					theme={theme}
-					units={currentUnits}
-					isScanning={isScanning}
-					mode={
-						showHelp
-							? 'help'
-							: showInfo
-								? 'info'
-								: view === ViewState.Settings
-									? 'settings'
-									: viewMode === 'review'
-										? 'review'
-										: 'default'
-					}
-				/>
-				{helpOverlay}
-				{infoOverlay}
-				{reviewFiltersOverlay}
-				{settingsOverlay}
-			</Box>
-		);
+			<Footer
+				totalSize={currentNode.size}
+				itemCount={currentItemCount}
+				theme={theme}
+				units={currentUnits}
+				isScanning={isScanning}
+				mode={
+					showHelp
+						? 'help'
+						: showInfo
+							? 'info'
+							: view === ViewState.Settings
+								? 'settings'
+								: viewMode === 'review'
+									? 'review'
+									: 'default'
+				}
+			/>
+			{helpOverlay}
+			{infoOverlay}
+			{reviewFiltersOverlay}
+			{settingsOverlay}
+		</Box>
+	);
 };

@@ -81,7 +81,10 @@ const buildDirectoryCountMap = (
 	return counts;
 };
 
-export function countDirectoryDescendants(node: FileNode): { fileCount: number; directoryCount: number } {
+export function countDirectoryDescendants(node: FileNode): {
+	fileCount: number;
+	directoryCount: number;
+} {
 	if (!node.isDirectory) {
 		return { fileCount: 1, directoryCount: 0 };
 	}
@@ -159,9 +162,12 @@ export function createReviewEntry(
 	const now = options?.now ?? new Date();
 	const depthFromRoot = options?.depthFromRoot ?? 0;
 	const hiddenByAncestry = options?.hiddenByAncestry ?? false;
-	const directoryCountMap = options?.directoryCountMap ?? new Map<FileNode, { fileCount: number; directoryCount: number }>();
+	const directoryCountMap =
+		options?.directoryCountMap ??
+		new Map<FileNode, { fileCount: number; directoryCount: number }>();
 
-	const counts = directoryCountMap.get(node) ??
+	const counts =
+		directoryCountMap.get(node) ??
 		(node.isDirectory
 			? countDirectoryDescendants(node)
 			: {
@@ -197,7 +203,10 @@ export function createReviewEntry(
 	};
 }
 
-export function deriveReviewEntries(root: FileNode, options: DeriveReviewOptions = {}): ReviewEntry[] {
+export function deriveReviewEntries(
+	root: FileNode,
+	options: DeriveReviewOptions = {},
+): ReviewEntry[] {
 	const now = options.now ?? new Date();
 	const sourceRoot = options.sourceRoot ?? root.path;
 	const includeRoot = options.includeRoot ?? false;

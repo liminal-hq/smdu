@@ -255,7 +255,8 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 	);
 
 	const reviewGroups = useMemo(
-		() => groupReviewEntries(reviewSortedEntries, activeReviewState.groupBy, currentNode?.size ?? 0),
+		() =>
+			groupReviewEntries(reviewSortedEntries, activeReviewState.groupBy, currentNode?.size ?? 0),
 		[activeReviewState.groupBy, currentNode?.size, reviewSortedEntries],
 	);
 
@@ -266,7 +267,8 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 
 	const reviewSelectionIndex = activeReviewState.selectionIndex;
 	const reviewSelectedRow = reviewVisibleRows[reviewSelectionIndex];
-	const reviewSelectedEntry = reviewSelectedRow?.kind === 'entry' ? reviewSelectedRow.entry : undefined;
+	const reviewSelectedEntry =
+		reviewSelectedRow?.kind === 'entry' ? reviewSelectedRow.entry : undefined;
 	const selectedNode = viewMode === 'review' ? reviewSelectedEntry?.node : files[selectionIndex];
 	const effectiveSelectionIndex = viewMode === 'review' ? reviewSelectionIndex : selectionIndex;
 
@@ -400,8 +402,7 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 	const cycleReviewSort = useCallback(() => {
 		updateReviewState((state) => {
 			const currentIndex = REVIEW_SORT_ORDER.indexOf(state.sortBy);
-			const nextIndex =
-				currentIndex >= 0 ? (currentIndex + 1) % REVIEW_SORT_ORDER.length : 0;
+			const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % REVIEW_SORT_ORDER.length : 0;
 			const nextSortBy = REVIEW_SORT_ORDER[nextIndex];
 			const defaultOrder = nextSortBy === 'path' || nextSortBy === 'type' ? 'asc' : 'desc';
 			return {
@@ -426,8 +427,7 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 	const cycleReviewGroup = useCallback(() => {
 		updateReviewState((state) => {
 			const currentIndex = REVIEW_GROUP_ORDER.indexOf(state.groupBy);
-			const nextIndex =
-				currentIndex >= 0 ? (currentIndex + 1) % REVIEW_GROUP_ORDER.length : 0;
+			const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % REVIEW_GROUP_ORDER.length : 0;
 			return {
 				...state,
 				groupBy: REVIEW_GROUP_ORDER[nextIndex],
@@ -439,8 +439,7 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 	const cycleReviewScope = useCallback(() => {
 		updateReviewState((state) => {
 			const currentIndex = REVIEW_SCOPE_ORDER.indexOf(state.filters.scope);
-			const nextIndex =
-				currentIndex >= 0 ? (currentIndex + 1) % REVIEW_SCOPE_ORDER.length : 0;
+			const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % REVIEW_SCOPE_ORDER.length : 0;
 			return {
 				...state,
 				filters: {
@@ -476,7 +475,9 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 
 	const cycleReviewMinSize = useCallback(() => {
 		updateReviewFilters((filters) => {
-			const currentIndex = REVIEW_MIN_SIZE_ORDER.findIndex((value) => value === filters.minSizeBytes);
+			const currentIndex = REVIEW_MIN_SIZE_ORDER.findIndex(
+				(value) => value === filters.minSizeBytes,
+			);
 			const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % REVIEW_MIN_SIZE_ORDER.length : 0;
 			return {
 				...filters,
@@ -488,7 +489,9 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 	const cycleReviewAgeBucket = useCallback(() => {
 		updateReviewFilters((filters) => {
 			const currentIndex = REVIEW_AGE_FILTER_ORDER.findIndex(
-				(value) => value.length === filters.ageBuckets.length && value.every((bucket) => filters.ageBuckets.includes(bucket)),
+				(value) =>
+					value.length === filters.ageBuckets.length &&
+					value.every((bucket) => filters.ageBuckets.includes(bucket)),
 			);
 			const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % REVIEW_AGE_FILTER_ORDER.length : 0;
 			return {

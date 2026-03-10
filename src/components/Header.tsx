@@ -20,7 +20,13 @@ export const Header: React.FC<HeaderProps> = ({ path, theme, width, viewMode }) 
 	const title = `smdu${versionSuffix}`;
 
 	const viewModeLabel =
-		viewMode === 'tree' ? '[Tree]' : viewMode === 'flat' ? '[Flat]' : viewMode === 'review' ? '[Review]' : '';
+		viewMode === 'tree'
+			? '[Tree]'
+			: viewMode === 'flat'
+				? '[Flat]'
+				: viewMode === 'review'
+					? '[Review]'
+					: '';
 
 	return (
 		<Box flexDirection="column" width={width ?? '100%'}>

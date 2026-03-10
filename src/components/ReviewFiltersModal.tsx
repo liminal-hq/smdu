@@ -36,16 +36,12 @@ export const ReviewFiltersModal: React.FC<ReviewFiltersModalProps> = ({ theme, s
 	const activeSources = filters.sourceRoots.length > 0 ? filters.sourceRoots.join(', ') : 'all';
 
 	return (
-		<Modal
-			theme={theme}
-			title="Review Filters"
-			hint="Close: Esc or f"
-			width={78}
-			height={20}
-		>
+		<Modal theme={theme} title="Review Filters" hint="Close: Esc or f" width={78} height={20}>
 			<Box flexDirection="column">
 				<Text color={theme.colours.text}>Scope: {scopeLabel(filters.scope)}</Text>
-				<Text color={theme.colours.text}>Hidden: {filters.includeHidden ? 'included' : 'excluded'}</Text>
+				<Text color={theme.colours.text}>
+					Hidden: {filters.includeHidden ? 'included' : 'excluded'}
+				</Text>
 				<Text color={theme.colours.text}>Media-only: {filters.mediaOnly ? 'on' : 'off'}</Text>
 				<Text color={theme.colours.text}>Minimum size: {formatMinSize(filters.minSizeBytes)}</Text>
 				<Text color={theme.colours.text}>Age bucket: {activeAge}</Text>
@@ -65,7 +61,9 @@ export const ReviewFiltersModal: React.FC<ReviewFiltersModalProps> = ({ theme, s
 				<Box marginTop={1} flexDirection="column">
 					<Text color={theme.colours.muted}>Quick controls:</Text>
 					<Text color={theme.colours.muted}>m preset | g group | u scope | . hidden</Text>
-					<Text color={theme.colours.muted}>M media-only | z min size | a age bucket | x reset</Text>
+					<Text color={theme.colours.muted}>
+						M media-only | z min size | a age bucket | x reset
+					</Text>
 				</Box>
 			</Box>
 		</Modal>

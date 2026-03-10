@@ -83,10 +83,7 @@ export const getReviewRowColour = ({
 }: ReviewRowColourInput): string => {
 	if (isSelected) return theme.colours.selectedText;
 	if (row.kind === 'group') return theme.colours.accent;
-	const fileTypeCategory = getFileTypeCategory(
-		row.entry.basename,
-		row.entry.kind === 'directory',
-	);
+	const fileTypeCategory = getFileTypeCategory(row.entry.basename, row.entry.kind === 'directory');
 	return getEntryColour({
 		file: row.entry.node,
 		theme,
@@ -202,8 +199,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 				});
 				const size = row.kind === 'group' ? row.group.totalSize : row.entry.size;
 				const age = row.kind === 'group' ? '-' : formatAge(row.entry.modifiedAt);
-				const percent =
-					row.kind === 'group' ? row.group.percentOfRoot : row.entry.percentOfRoot;
+				const percent = row.kind === 'group' ? row.group.percentOfRoot : row.entry.percentOfRoot;
 				const count = formatCount(row);
 				const type = formatType(row);
 				const label =
@@ -221,7 +217,10 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 						<Box width={1} />
 						<Box width={columnLayout.sizeColumns} justifyContent="flex-end">
 							<Text backgroundColor={bg} color={fg}>
-								{filesize(size, units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' })}
+								{filesize(
+									size,
+									units === 'si' ? { base: 10, standard: 'si' } : { base: 2, standard: 'iec' },
+								)}
 							</Text>
 						</Box>
 						<Box width={1} />

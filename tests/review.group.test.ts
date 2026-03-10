@@ -73,7 +73,10 @@ describe('review group', () => {
 	});
 
 	it('returns a single all-results group when grouping is none', () => {
-		const entries = [makeEntry('/root/one.txt', { size: 10 }), makeEntry('/root/two.txt', { size: 20 })];
+		const entries = [
+			makeEntry('/root/one.txt', { size: 10 }),
+			makeEntry('/root/two.txt', { size: 20 }),
+		];
 		const groups = groupReviewEntries(entries, 'none', 100);
 		expect(groups).toHaveLength(1);
 		expect(groups[0].key).toBe('__all__');

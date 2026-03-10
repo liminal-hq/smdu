@@ -44,14 +44,19 @@ describe('review derive', () => {
 			isDirectory: false,
 			isHidden: false,
 		});
-		const hiddenDir = makeNode('.cache', { path: '/root/.cache', size: 25, isHidden: true }, [cacheFile]);
+		const hiddenDir = makeNode('.cache', { path: '/root/.cache', size: 25, isHidden: true }, [
+			cacheFile,
+		]);
 		const visibleFile = makeNode('movie.mkv', {
 			path: '/root/movie.mkv',
 			size: 100,
 			isDirectory: false,
 			isHidden: false,
 		});
-		const root = makeNode('root', { path: '/root', size: 125, isDirectory: true }, [hiddenDir, visibleFile]);
+		const root = makeNode('root', { path: '/root', size: 125, isDirectory: true }, [
+			hiddenDir,
+			visibleFile,
+		]);
 
 		const entries = deriveReviewEntries(root, { now: new Date('2026-03-09T12:00:00Z') });
 

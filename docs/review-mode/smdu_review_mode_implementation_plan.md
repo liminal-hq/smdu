@@ -86,88 +86,88 @@ Suggested types:
 export type ReviewScope = 'files' | 'directories' | 'both';
 
 export type ReviewSortField =
-  | 'size'
-  | 'modified'
-  | 'created'
-  | 'path'
-  | 'type'
-  | 'count'
-  | 'percent';
+	| 'size'
+	| 'modified'
+	| 'created'
+	| 'path'
+	| 'type'
+	| 'count'
+	| 'percent';
 
 export type ReviewSortOrder = 'asc' | 'desc';
 
 export type ReviewGroupField = 'none' | 'type' | 'parent' | 'age' | 'source';
 
 export type ReviewAgeBucket =
-  | 'today'
-  | 'week'
-  | 'month'
-  | 'older-1m'
-  | 'older-3m'
-  | 'older-6m'
-  | 'older-1y';
+	| 'today'
+	| 'week'
+	| 'month'
+	| 'older-1m'
+	| 'older-3m'
+	| 'older-6m'
+	| 'older-1y';
 
 export interface ReviewFilters {
-  scope: ReviewScope;
-  minSizeBytes?: number;
-  ageBuckets: ReviewAgeBucket[];
-  extensions: string[];
-  inferredTypes: string[];
-  pathPrefix?: string;
-  mediaOnly: boolean;
-  includeHidden: boolean;
-  sourceRoots: string[];
+	scope: ReviewScope;
+	minSizeBytes?: number;
+	ageBuckets: ReviewAgeBucket[];
+	extensions: string[];
+	inferredTypes: string[];
+	pathPrefix?: string;
+	mediaOnly: boolean;
+	includeHidden: boolean;
+	sourceRoots: string[];
 }
 
 export interface ReviewPreset {
-  id: string;
-  label: string;
-  sortBy: ReviewSortField;
-  sortOrder: ReviewSortOrder;
-  groupBy: ReviewGroupField;
-  filters: Partial<ReviewFilters>;
+	id: string;
+	label: string;
+	sortBy: ReviewSortField;
+	sortOrder: ReviewSortOrder;
+	groupBy: ReviewGroupField;
+	filters: Partial<ReviewFilters>;
 }
 
 export interface ReviewEntry {
-  id: string;
-  node: FileNode;
-  path: string;
-  parentPath: string;
-  basename: string;
-  kind: 'file' | 'directory';
-  size: number;
-  percentOfRoot: number;
-  modifiedAt?: Date;
-  createdAt?: Date;
-  extension: string;
-  inferredType: string;
-  fileCount: number;
-  directoryCount: number;
-  sourceRoot: string;
-  depthFromRoot: number;
-  isHidden: boolean;
-  ageBucket?: ReviewAgeBucket;
+	id: string;
+	node: FileNode;
+	path: string;
+	parentPath: string;
+	basename: string;
+	kind: 'file' | 'directory';
+	size: number;
+	percentOfRoot: number;
+	modifiedAt?: Date;
+	createdAt?: Date;
+	extension: string;
+	inferredType: string;
+	fileCount: number;
+	directoryCount: number;
+	sourceRoot: string;
+	depthFromRoot: number;
+	isHidden: boolean;
+	ageBucket?: ReviewAgeBucket;
 }
 
 export interface ReviewGroup {
-  key: string;
-  label: string;
-  entries: ReviewEntry[];
-  totalSize: number;
-  itemCount: number;
-  fileCount: number;
-  directoryCount: number;
-  percentOfRoot: number;
+	key: string;
+	label: string;
+	entries: ReviewEntry[];
+	totalSize: number;
+	itemCount: number;
+	fileCount: number;
+	directoryCount: number;
+	percentOfRoot: number;
 }
 
 export interface ReviewViewState {
-  presetId: string;
-  sortBy: ReviewSortField;
-  sortOrder: ReviewSortOrder;
-  groupBy: ReviewGroupField;
-  filters: ReviewFilters;
-  selectionIndex: number;
-  expandedGroups: Record<string, boolean>;
+	presetId: string;
+	sortBy: ReviewSortField;
+	sortOrder: ReviewSortOrder;
+	groupBy: ReviewGroupField;
+	filters: ReviewFilters;
+	selectionIndex: number;
+	expandedGroups: Record<string, boolean>;
 }
 ```
 
@@ -241,13 +241,16 @@ Responsibilities:
 Suggested functions:
 
 ```ts
-export function deriveReviewEntries(root: FileNode, options: DeriveReviewOptions): ReviewEntry[]
-export function createReviewEntry(node: FileNode, root: FileNode, sourceRoot: string): ReviewEntry
-export function getAgeBucket(date: Date | undefined, now: Date): ReviewAgeBucket | undefined
-export function inferReviewType(node: FileNode): string
-export function getExtension(name: string): string
-export function countDirectoryDescendants(node: FileNode): { fileCount: number; directoryCount: number }
-export function isEffectivelyHidden(node: FileNode): boolean
+export function deriveReviewEntries(root: FileNode, options: DeriveReviewOptions): ReviewEntry[];
+export function createReviewEntry(node: FileNode, root: FileNode, sourceRoot: string): ReviewEntry;
+export function getAgeBucket(date: Date | undefined, now: Date): ReviewAgeBucket | undefined;
+export function inferReviewType(node: FileNode): string;
+export function getExtension(name: string): string;
+export function countDirectoryDescendants(node: FileNode): {
+	fileCount: number;
+	directoryCount: number;
+};
+export function isEffectivelyHidden(node: FileNode): boolean;
 ```
 
 ### 2.2 Reuse existing metadata where possible
@@ -305,16 +308,16 @@ Create:
 Suggested functions:
 
 ```ts
-export function filterReviewEntries(entries: ReviewEntry[], filters: ReviewFilters): ReviewEntry[]
-export function matchesScope(entry: ReviewEntry, scope: ReviewScope): boolean
-export function matchesMinSize(entry: ReviewEntry, minSizeBytes?: number): boolean
-export function matchesAgeBuckets(entry: ReviewEntry, ageBuckets: ReviewAgeBucket[]): boolean
-export function matchesExtensions(entry: ReviewEntry, extensions: string[]): boolean
-export function matchesType(entry: ReviewEntry, inferredTypes: string[]): boolean
-export function matchesPathPrefix(entry: ReviewEntry, pathPrefix?: string): boolean
-export function matchesHidden(entry: ReviewEntry, includeHidden: boolean): boolean
-export function matchesMediaOnly(entry: ReviewEntry, mediaOnly: boolean): boolean
-export function matchesSourceRoots(entry: ReviewEntry, sourceRoots: string[]): boolean
+export function filterReviewEntries(entries: ReviewEntry[], filters: ReviewFilters): ReviewEntry[];
+export function matchesScope(entry: ReviewEntry, scope: ReviewScope): boolean;
+export function matchesMinSize(entry: ReviewEntry, minSizeBytes?: number): boolean;
+export function matchesAgeBuckets(entry: ReviewEntry, ageBuckets: ReviewAgeBucket[]): boolean;
+export function matchesExtensions(entry: ReviewEntry, extensions: string[]): boolean;
+export function matchesType(entry: ReviewEntry, inferredTypes: string[]): boolean;
+export function matchesPathPrefix(entry: ReviewEntry, pathPrefix?: string): boolean;
+export function matchesHidden(entry: ReviewEntry, includeHidden: boolean): boolean;
+export function matchesMediaOnly(entry: ReviewEntry, mediaOnly: boolean): boolean;
+export function matchesSourceRoots(entry: ReviewEntry, sourceRoots: string[]): boolean;
 ```
 
 ### 3.2 Sorting module
@@ -327,10 +330,10 @@ Suggested functions:
 
 ```ts
 export function sortReviewEntries(
-  entries: ReviewEntry[],
-  sortBy: ReviewSortField,
-  sortOrder: ReviewSortOrder,
-): ReviewEntry[]
+	entries: ReviewEntry[],
+	sortBy: ReviewSortField,
+	sortOrder: ReviewSortOrder,
+): ReviewEntry[];
 ```
 
 Add stable fallback ordering:
@@ -351,10 +354,10 @@ Suggested functions:
 
 ```ts
 export function groupReviewEntries(
-  entries: ReviewEntry[],
-  groupBy: ReviewGroupField,
-  rootSize: number,
-): ReviewGroup[]
+	entries: ReviewEntry[],
+	groupBy: ReviewGroupField,
+	rootSize: number,
+): ReviewGroup[];
 ```
 
 Grouping requirements:
@@ -391,7 +394,7 @@ Define built-ins:
 Add function:
 
 ```ts
-export function applyPreset(state: ReviewViewState, presetId: string): ReviewViewState
+export function applyPreset(state: ReviewViewState, presetId: string): ReviewViewState;
 ```
 
 ---
@@ -405,19 +408,19 @@ Extend `src/state.ts` so `useFileSystem` returns review-specific data and action
 New returned properties should include:
 
 ```ts
-reviewState
-reviewEntries
-reviewGroups
-reviewVisibleRows
-setReviewPreset
-setReviewSort
-setReviewGroup
-updateReviewFilters
-resetReviewFilters
-moveReviewSelection
-toggleReviewGroupExpanded
-openSelectedInFlat
-openSelectedInTree
+reviewState;
+reviewEntries;
+reviewGroups;
+reviewVisibleRows;
+setReviewPreset;
+setReviewSort;
+setReviewGroup;
+updateReviewFilters;
+resetReviewFilters;
+moveReviewSelection;
+toggleReviewGroupExpanded;
+openSelectedInFlat;
+openSelectedInTree;
 ```
 
 ### 4.2 Visible row model for grouped UI
@@ -432,17 +435,17 @@ Suggested types:
 
 ```ts
 export type ReviewVisibleRow =
-  | { kind: 'group'; group: ReviewGroup }
-  | { kind: 'entry'; groupKey?: string; entry: ReviewEntry };
+	| { kind: 'group'; group: ReviewGroup }
+	| { kind: 'entry'; groupKey?: string; entry: ReviewEntry };
 ```
 
 Suggested function:
 
 ```ts
 export function buildVisibleReviewRows(
-  groups: ReviewGroup[],
-  expandedGroups: Record<string, boolean>,
-): ReviewVisibleRow[]
+	groups: ReviewGroup[],
+	expandedGroups: Record<string, boolean>,
+): ReviewVisibleRow[];
 ```
 
 This makes cursor navigation straightforward.
@@ -593,16 +596,16 @@ It should vary by mode more explicitly:
 Suggested new actions:
 
 ```ts
-REVIEW_MODE
-REVIEW_PRESET_NEXT
-REVIEW_PRESET_PREV
-REVIEW_FILTERS
-REVIEW_GROUP_NEXT
-REVIEW_GROUP_TOGGLE
-REVIEW_SCOPE_CYCLE
-OPEN_IN_FLAT
-OPEN_IN_TREE
-RESET_REVIEW_FILTERS
+REVIEW_MODE;
+REVIEW_PRESET_NEXT;
+REVIEW_PRESET_PREV;
+REVIEW_FILTERS;
+REVIEW_GROUP_NEXT;
+REVIEW_GROUP_TOGGLE;
+REVIEW_SCOPE_CYCLE;
+OPEN_IN_FLAT;
+OPEN_IN_TREE;
+RESET_REVIEW_FILTERS;
 ```
 
 Possible default mappings:
@@ -629,8 +632,8 @@ If Review Mode introduces enough new controls, consider mode-specific help secti
 Implement in `src/state.ts`:
 
 ```ts
-openSelectedInFlat()
-openSelectedInTree()
+openSelectedInFlat();
+openSelectedInTree();
 ```
 
 Rules:
