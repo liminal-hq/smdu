@@ -17,15 +17,15 @@ This folder contains project documentation and the static GitHub Pages site sour
 
 ## Quick Links
 
-- `architecture/README.md`
-- `architecture/smdu_architecture_deconstruction.md`
-- `architecture/smdu_terminal_io_event_model.md`
-- `architecture/smdu_ink_event_pipeline_paper.md`
-- `architecture/smdu_svg_prompt_gallery.md`
-- `review-mode/smdu_review_mode_spec.md`
-- `review-mode/smdu_review_mode_implementation_plan.md`
-- `site/readme.md`
-- `site/index.html`
+- [`architecture/README.md`](./architecture/README.md)
+- [`architecture/smdu_architecture_deconstruction.md`](./architecture/smdu_architecture_deconstruction.md)
+- [`architecture/smdu_terminal_io_event_model.md`](./architecture/smdu_terminal_io_event_model.md)
+- [`architecture/smdu_ink_event_pipeline_paper.md`](./architecture/smdu_ink_event_pipeline_paper.md)
+- [`architecture/smdu_svg_prompt_gallery.md`](./architecture/smdu_svg_prompt_gallery.md)
+- [`review-mode/smdu_review_mode_spec.md`](./review-mode/smdu_review_mode_spec.md)
+- [`review-mode/smdu_review_mode_implementation_plan.md`](./review-mode/smdu_review_mode_implementation_plan.md)
+- [`site/readme.md`](./site/readme.md)
+- [`site/index.html`](./site/index.html)
 
 ## Notes
 
