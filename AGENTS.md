@@ -102,6 +102,7 @@
 - **Mandatory Testing:** Make sure the unit tests are run after changes to the code.
 - **Verification:** Always verify code changes by running relevant tests.
 - **Build Check:** Run `pnpm build` to surface any TypeScript errors.
+- **Format Check:** Run `pnpm format:check` before opening or updating a PR, and run `pnpm format` if any files fail formatting.
 
 ## Documentation
 
