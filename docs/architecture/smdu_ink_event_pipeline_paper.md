@@ -6,17 +6,17 @@ Every function name, line reference, and call chain in this document has been ve
 
 ## Visual Overview
 
-[Open SVG: resize event pipeline](./smdu_ink_event_pipeline.svg)
+[Open SVG: resize event pipeline](./images/smdu_ink_event_pipeline.svg)
 
-![resize event pipeline](./smdu_ink_event_pipeline.svg)
+![resize event pipeline](./images/smdu_ink_event_pipeline.svg)
 
 ---
 
 ## 1) The Signal Chain: Terminal to Node.js
 
-[Open SVG: PTY signal chain](./smdu_pty_signal_chain.svg)
+[Open SVG: PTY signal chain](./images/smdu_pty_signal_chain.svg)
 
-![PTY signal chain](./smdu_pty_signal_chain.svg)
+![PTY signal chain](./images/smdu_pty_signal_chain.svg)
 
 A resize event begins entirely outside Node.js. The path from user action to application code crosses four distinct boundaries before any JavaScript executes.
 
@@ -80,9 +80,9 @@ No domain logic executes at this layer. It is purely event routing.
 
 ## 3) Ink Internal Runtime: The Four-Stage Pipeline
 
-[Open SVG: Ink render stages](./smdu_ink_render_stages.svg)
+[Open SVG: Ink render stages](./images/smdu_ink_render_stages.svg)
 
-![Ink render stages](./smdu_ink_render_stages.svg)
+![Ink render stages](./images/smdu_ink_render_stages.svg)
 
 This is the most complex part of the pipeline. Ink performs four distinct stages to transform a resize event into updated terminal output. Each stage is a concrete function call with specific responsibilities.
 
@@ -382,9 +382,9 @@ When `smdu` calls `setRows()` or `setCols()`, React schedules a re-render. On th
 
 ## 6) Dual Resize Handling
 
-[Open SVG: dual resize paths](./smdu_dual_resize_paths.svg)
+[Open SVG: dual resize paths](./images/smdu_dual_resize_paths.svg)
 
-![dual resize paths](./smdu_dual_resize_paths.svg)
+![dual resize paths](./images/smdu_dual_resize_paths.svg)
 
 A distinctive feature of this architecture is that resize events trigger two parallel handling paths from the same event.
 
@@ -411,9 +411,9 @@ Both paths converge at the reconciler. The final frame written to the terminal r
 
 ## 7) The Return Path: Write-Back to Terminal
 
-[Open SVG: resize lab experiment](./smdu_resize_lab_experiment.svg)
+[Open SVG: resize lab experiment](./images/smdu_resize_lab_experiment.svg)
 
-![resize lab experiment](./smdu_resize_lab_experiment.svg)
+![resize lab experiment](./images/smdu_resize_lab_experiment.svg)
 
 The pipeline is not one-directional. After all processing, bytes flow back to the terminal through `stdout.write()`.
 

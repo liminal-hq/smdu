@@ -4,7 +4,7 @@ This document deconstructs `smdu` as implemented in `src/` on March 9, 2026.
 
 ## Visual Map
 
-![Colourful smdu architecture map](./smdu_internal_architecture.svg)
+![Colourful smdu architecture map](./images/smdu_internal_architecture.svg)
 
 ## 1) System Overview
 
