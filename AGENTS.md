@@ -60,6 +60,14 @@
 - Use `skip-changelog` only when a change should be excluded from generated release notes.
 - Keep labels accurate as scope changes during review.
 
+## Pull Request Review Comments
+
+**Requirement:** When working on feedback in a PR, reply on the review threads after updates are applied.
+
+- Post a brief follow-up comment on each addressed thread summarising what changed.
+- If a suggestion is not applied, explain why in-thread with concise reasoning.
+- Resolve threads (or request reviewer confirmation) only after commenting.
+
 ## Git Workflow
 
 **Requirement:** Do not push changes (especially force pushes) to the repository unless explicitly requested by the user.
