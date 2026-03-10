@@ -1,21 +1,33 @@
-# Pages site
+# Docs Index
 
-This folder hosts project documentation. The static GitHub Pages site lives in a subfolder.
+This folder contains project documentation and the static GitHub Pages site source.
 
-## Structure
+## Folder Map
 
-- `distribution-strategy.md` captures release and packaging plans.
-- `architecture/smdu_architecture_deconstruction.md` documents the runtime architecture and module relationships.
-- `architecture/images/smdu_internal_architecture.svg` is a detailed colourful system architecture illustration.
-- `architecture/smdu_terminal_io_event_model.md` is the deep-dive on terminal read/write flows and event boundaries.
-- `architecture/images/smdu_terminal_event_lifecycle.svg` shows event generation, boundaries, and response lifecycle in a marker style.
-- `architecture/images/smdu_terminal_protocol_surface.svg` maps control sequences and terminal side-effects (bell, alt-screen, cursor, ANSI diff writes).
-- `architecture/images/smdu_terminal_event_constellation.svg` adds a playful constellation motif for event sources and response loops.
-- `architecture/images/smdu_terminal_escape_sequence_map.svg` provides a sketch-map motif for escape-sequence families and ownership.
-- `architecture/images/smdu_resize_event_comic_flow.svg` is a left-to-right comic-style deep visual of a resize event moving through Ink internals into `smdu`.
-- `architecture/smdu_svg_prompt_gallery.md` records design prompts for created SVGs in gallery format.
-- `site/index.html` is the main landing page for GitHub Pages.
+- `architecture/`
+  deep architecture docs, event-model write-ups, and SVG diagrams.
+- `review-mode/`
+  review-mode specification and implementation planning docs.
+- `releases/`
+  release notes and versioned release summaries.
+- `integration-runs/`
+  internal run artefacts and integration execution notes.
+- `site/`
+  static GitHub Pages source files.
+
+## Quick Links
+
+- `architecture/README.md`
+- `architecture/smdu_architecture_deconstruction.md`
+- `architecture/smdu_terminal_io_event_model.md`
+- `architecture/smdu_ink_event_pipeline_paper.md`
+- `architecture/smdu_svg_prompt_gallery.md`
+- `review-mode/smdu_review_mode_spec.md`
+- `review-mode/smdu_review_mode_implementation_plan.md`
+- `site/readme.md`
+- `site/index.html`
 
 ## Notes
 
-- Keep site content static and edit `site/index.html` directly.
+- Edit `site/index.html` for page content updates.
+- Keep links in this file relative to the `docs/` folder.
