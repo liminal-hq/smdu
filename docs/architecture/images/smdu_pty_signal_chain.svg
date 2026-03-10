@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">PTY Signal Chain: SIGWINCH to stdout resize</title>
+  <desc id="desc">Detailed breakdown of the OS signal path from user terminal resize action through SIGWINCH delivery, PTY driver dimension update, libuv detection, and WriteStream resize event emission.</desc>
+
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="0.8">
+      <stop offset="0%" stop-color="#1a0a2e"/>
+      <stop offset="100%" stop-color="#0d1b2a"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="0 0;0.02 0.01;0 0" dur="24s" repeatCount="indefinite"/>
+    </linearGradient>
+    <pattern id="g1" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="0.8" fill="#ffffff0a"/>
+    </pattern>
+    <linearGradient id="s1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6b9d"/><stop offset="100%" stop-color="#c44569"/>
+    </linearGradient>
+    <linearGradient id="s2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff9a56"/><stop offset="100%" stop-color="#d4730c"/>
+    </linearGradient>
+    <linearGradient id="s3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#56c4e8"/><stop offset="100%" stop-color="#2a8aaa"/>
+    </linearGradient>
+    <linearGradient id="s4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a18cd1"/><stop offset="100%" stop-color="#7b5ea7"/>
+    </linearGradient>
+    <linearGradient id="s5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd700"/><stop offset="100%" stop-color="#c4a200"/>
+    </linearGradient>
+    <marker id="a1" viewBox="0 0 12 8" refX="10" refY="4" markerWidth="12" markerHeight="8" orient="auto">
+      <path d="M0 0 L12 4 L0 8 L2 4 Z" fill="#ffd700"/>
+    </marker>
+    <filter id="sh1">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#00000050"/>
+    </filter>
+    <filter id="gl1">
+      <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .h1 { font: 800 30px "Bangers", "Impact", "Arial Black", sans-serif; fill: #ffd700; letter-spacing: 2px; }
+      .h2 { font: 600 13px "Segoe UI", "Helvetica Neue", sans-serif; fill: #b8d4e3; }
+      .st { font: 800 16px "Bangers", "Impact", sans-serif; fill: #fff; letter-spacing: 1px; }
+      .cd { font: 700 12px "Consolas", "SF Mono", monospace; fill: #1a1a2e; }
+      .cdl { font: 600 11px "Consolas", "SF Mono", monospace; fill: #3a3a5e; }
+      .nt { font: 600 11px "Segoe UI", "Helvetica Neue", sans-serif; }
+      .lg { font: 600 11px "Segoe UI", "Helvetica Neue", sans-serif; fill: #708090; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="520" fill="url(#bg1)"/>
+  <rect width="1200" height="520" fill="url(#g1)"/>
+
+  <!-- Ambient -->
+  <g opacity="0.08">
+    <circle cx="100" cy="100" r="120" fill="#ff6b9d"><animate attributeName="r" values="120;135;120" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="1100" cy="420" r="100" fill="#56c4e8"><animate attributeName="r" values="100;112;100" dur="20s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <text x="40" y="42" class="h1">PTY SIGNAL CHAIN</text>
+  <text x="370" y="40" class="h2">How a terminal resize becomes a Node.js event, step by step</text>
+
+  <!-- Pipeline track -->
+  <path d="M60 280 L1140 280" stroke="#ffd70030" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle r="4" fill="#ffd700" opacity="0.7">
+    <animateMotion dur="5s" repeatCount="indefinite" path="M60 280 L1140 280"/>
+  </circle>
+
+  <!-- ── Stage 1: User action ── -->
+  <g filter="url(#sh1)">
+    <rect x="40" y="80" width="190" height="360" rx="14" fill="#1a1020" stroke="url(#s1)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="40" y="80" width="190" height="36" rx="14" fill="url(#s1)"/>
+    <rect x="40" y="102" width="190" height="14" fill="url(#s1)"/>
+    <text x="60" y="104" class="st">USER ACTION</text>
+
+    <g transform="translate(135, 170)" filter="url(#gl1)">
+      <polygon points="0,-22 6,-8 22,-12 10,0 22,12 6,8 0,22 -6,8 -22,12 -10,0 -22,-12 -6,-8" fill="#ff6b9d" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" values="0;12;0" dur="4s" repeatCount="indefinite"/>
+      </polygon>
+    </g>
+
+    <rect x="56" y="210" width="158" height="30" rx="6" fill="#fff0f5" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="68" y="230" class="cd">Drag window edge</text>
+    <rect x="56" y="252" width="158" height="30" rx="6" fill="#fff0f5" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="68" y="272" class="cd">or WM tiling snap</text>
+    <rect x="56" y="294" width="158" height="30" rx="6" fill="#fff0f5" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="68" y="314" class="cd">or tmux resize</text>
+
+    <text x="56" y="370" class="nt" style="fill:#ff9dc4;">Terminal emulator</text>
+    <text x="56" y="386" class="nt" style="fill:#ff9dc4;">detects new pixel</text>
+    <text x="56" y="402" class="nt" style="fill:#ff9dc4;">dimensions and maps</text>
+    <text x="56" y="418" class="nt" style="fill:#ff9dc4;">to col/row grid.</text>
+  </g>
+
+  <!-- Arrow 1->2 -->
+  <path d="M232 280 L268 280" stroke="#ffd700" stroke-width="3" fill="none" marker-end="url(#a1)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- ── Stage 2: OS Signal ── -->
+  <g filter="url(#sh1)">
+    <rect x="278" y="80" width="190" height="360" rx="14" fill="#1a1810" stroke="url(#s2)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="278" y="80" width="190" height="36" rx="14" fill="url(#s2)"/>
+    <rect x="278" y="102" width="190" height="14" fill="url(#s2)"/>
+    <text x="298" y="104" class="st">OS KERNEL</text>
+
+    <rect x="294" y="140" width="158" height="48" rx="6" fill="#fff8ed" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="306" y="160" class="cd">ioctl(fd, TIOCSWINSZ,</text>
+    <text x="306" y="176" class="cd">  {cols, rows})</text>
+
+    <path d="M373 190 L373 208" stroke="#e8850c" stroke-width="2"/>
+
+    <rect x="294" y="212" width="158" height="30" rx="6" fill="#fff8ed" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="306" y="232" class="cd">SIGWINCH delivered</text>
+
+    <path d="M373 244 L373 262" stroke="#e8850c" stroke-width="2"/>
+
+    <rect x="294" y="266" width="158" height="46" rx="6" fill="#fff3dc" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="306" y="286" class="cd">Signal targets the</text>
+    <text x="306" y="302" class="cd">foreground process</text>
+
+    <text x="294" y="356" class="nt" style="fill:#f0c878;">PTY master/slave pair.</text>
+    <text x="294" y="372" class="nt" style="fill:#f0c878;">Kernel updates the</text>
+    <text x="294" y="388" class="nt" style="fill:#f0c878;">winsize struct on the</text>
+    <text x="294" y="404" class="nt" style="fill:#f0c878;">slave TTY device.</text>
+  </g>
+
+  <!-- Arrow 2->3 -->
+  <path d="M470 280 L506 280" stroke="#ffd700" stroke-width="3" fill="none" marker-end="url(#a1)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="0.4s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- ── Stage 3: libuv ── -->
+  <g filter="url(#sh1)">
+    <rect x="516" y="80" width="190" height="360" rx="14" fill="#0a1a1e" stroke="url(#s3)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="516" y="80" width="190" height="36" rx="14" fill="url(#s3)"/>
+    <rect x="516" y="102" width="190" height="14" fill="url(#s3)"/>
+    <text x="536" y="104" class="st">LIBUV + NODE</text>
+
+    <rect x="532" y="140" width="158" height="46" rx="6" fill="#e0f7fa" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="544" y="160" class="cd">uv_signal_start(</text>
+    <text x="544" y="176" class="cd">  handle, SIGWINCH)</text>
+
+    <path d="M611 188 L611 206" stroke="#36d1dc" stroke-width="2"/>
+
+    <rect x="532" y="210" width="158" height="46" rx="6" fill="#e0f7fa" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="544" y="230" class="cd">Event loop wakes</text>
+    <text x="544" y="246" class="cd">signal callback fires</text>
+
+    <path d="M611 258 L611 276" stroke="#36d1dc" stroke-width="2"/>
+
+    <rect x="532" y="280" width="158" height="46" rx="6" fill="#d4f5f0" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="544" y="300" class="cd">ReadStream queries</text>
+    <text x="544" y="316" class="cd">new TTY dimensions</text>
+
+    <text x="532" y="370" class="nt" style="fill:#5ec4d0;">libuv's signal handler</text>
+    <text x="532" y="386" class="nt" style="fill:#5ec4d0;">integrates with Node's</text>
+    <text x="532" y="402" class="nt" style="fill:#5ec4d0;">event loop. Non-blocking.</text>
+  </g>
+
+  <!-- Arrow 3->4 -->
+  <path d="M708 280 L744 280" stroke="#ffd700" stroke-width="3" fill="none" marker-end="url(#a1)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- ── Stage 4: WriteStream ── -->
+  <g filter="url(#sh1)">
+    <rect x="754" y="80" width="190" height="360" rx="14" fill="#18102a" stroke="url(#s4)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="754" y="80" width="190" height="36" rx="14" fill="url(#s4)"/>
+    <rect x="754" y="102" width="190" height="14" fill="url(#s4)"/>
+    <text x="774" y="104" class="st">WRITESTREAM</text>
+
+    <rect x="770" y="140" width="158" height="46" rx="6" fill="#f0e6ff" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="782" y="160" class="cd">stdout.columns =</text>
+    <text x="782" y="176" class="cd">  newCols</text>
+
+    <path d="M849 188 L849 206" stroke="#a18cd1" stroke-width="2"/>
+
+    <rect x="770" y="210" width="158" height="46" rx="6" fill="#f0e6ff" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="782" y="230" class="cd">stdout.rows =</text>
+    <text x="782" y="246" class="cd">  newRows</text>
+
+    <path d="M849 258 L849 276" stroke="#a18cd1" stroke-width="2"/>
+
+    <rect x="770" y="280" width="158" height="30" rx="6" fill="#ece0ff" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="782" y="300" class="cd" style="font-weight:800;">emit('resize')</text>
+
+    <text x="770" y="356" class="nt" style="fill:#b08ee0;">Properties updated</text>
+    <text x="770" y="372" class="nt" style="fill:#b08ee0;">BEFORE event fires.</text>
+    <text x="770" y="388" class="nt" style="fill:#b08ee0;">Listeners can read</text>
+    <text x="770" y="404" class="nt" style="fill:#b08ee0;">new values immediately.</text>
+  </g>
+
+  <!-- Arrow 4->5 -->
+  <path d="M946 280 L982 280" stroke="#ffd700" stroke-width="3" fill="none" marker-end="url(#a1)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- ── Stage 5: Listeners ── -->
+  <g filter="url(#sh1)">
+    <rect x="992" y="80" width="172" height="360" rx="14" fill="#0e1a10" stroke="url(#s5)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="992" y="80" width="172" height="36" rx="14" fill="url(#s5)"/>
+    <rect x="992" y="102" width="172" height="14" fill="url(#s5)"/>
+    <text x="1012" y="104" class="st">LISTENERS</text>
+
+    <rect x="1006" y="148" width="144" height="56" rx="6" fill="#e8f5e9" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="1018" y="168" class="cd" style="font-weight:800;">Ink.resized()</text>
+    <text x="1018" y="186" class="cdl">internal handler</text>
+    <text x="1018" y="198" class="cdl">from constructor</text>
+
+    <rect x="1006" y="220" width="144" height="56" rx="6" fill="#e8f5e9" stroke="#1a1a2e" stroke-width="1.5"/>
+    <text x="1018" y="240" class="cd" style="font-weight:800;">smdu components</text>
+    <text x="1018" y="258" class="cdl">useStdout() hook</text>
+    <text x="1018" y="270" class="cdl">per component</text>
+
+    <rect x="1006" y="300" width="144" height="80" rx="8" fill="#1a3a1e" stroke="#ffd700" stroke-width="1.5"/>
+    <text x="1018" y="320" class="nt" style="fill:#a0d8a4;">Both fire on same</text>
+    <text x="1018" y="336" class="nt" style="fill:#a0d8a4;">event loop tick.</text>
+    <text x="1018" y="356" class="nt" style="fill:#a0d8a4;">Ink always registers</text>
+    <text x="1018" y="372" class="nt" style="fill:#a0d8a4;">first (constructor).</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(40, 486)">
+    <line x1="0" y1="0" x2="24" y2="0" stroke="#ffd700" stroke-width="3"/>
+    <text x="30" y="4" class="lg">Signal / event flow</text>
+    <circle cx="180" cy="0" r="3" fill="#ffd700" opacity="0.7"/>
+    <text x="190" y="4" class="lg">Animated pulse</text>
+    <text x="320" y="4" class="lg">Source: Node.js TTY module, libuv uv_signal, POSIX SIGWINCH</text>
+  </g>
+</svg>

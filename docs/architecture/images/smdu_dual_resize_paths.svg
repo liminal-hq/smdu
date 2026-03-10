@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 600" role="img" aria-labelledby="title desc">
+  <title id="title">Dual Resize Handling: Ink Root Layout vs smdu Component Budgets</title>
+  <desc id="desc">Visual showing how terminal resize triggers two parallel handling paths: Ink recomputes root Yoga layout while smdu independently refines per-component row and column budgets, then both converge at the reconciler commit.</desc>
+
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0%" stop-color="#0d1b2a"/>
+      <stop offset="100%" stop-color="#1a0a2e"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="0 0;0.02 0.01;0 0" dur="22s" repeatCount="indefinite"/>
+    </linearGradient>
+    <pattern id="g3" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="0.7" fill="#ffffff0a"/>
+    </pattern>
+    <linearGradient id="inkG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#36d1dc"/><stop offset="100%" stop-color="#1e8a93"/>
+    </linearGradient>
+    <linearGradient id="smduG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a18cd1"/><stop offset="100%" stop-color="#7b5ea7"/>
+    </linearGradient>
+    <linearGradient id="mergeG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#56ab2f"/><stop offset="100%" stop-color="#3d8b1e"/>
+    </linearGradient>
+    <linearGradient id="srcG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6b9d"/><stop offset="100%" stop-color="#c44569"/>
+    </linearGradient>
+    <marker id="a3c" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 4 L0 8 L2 4 Z" fill="#36d1dc"/>
+    </marker>
+    <marker id="a3p" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 4 L0 8 L2 4 Z" fill="#a18cd1"/>
+    </marker>
+    <marker id="a3g" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 4 L0 8 L2 4 Z" fill="#56ab2f"/>
+    </marker>
+    <marker id="a3y" viewBox="0 0 12 8" refX="10" refY="4" markerWidth="12" markerHeight="8" orient="auto">
+      <path d="M0 0 L12 4 L0 8 L2 4 Z" fill="#ffd700"/>
+    </marker>
+    <filter id="sh3"><feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#00000050"/></filter>
+    <filter id="gl3"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>
+      .th { font: 800 28px "Bangers", "Impact", "Arial Black", sans-serif; fill: #ffd700; letter-spacing: 2px; }
+      .ts { font: 600 13px "Segoe UI", "Helvetica Neue", sans-serif; fill: #b8d4e3; }
+      .tl { font: 800 16px "Bangers", "Impact", sans-serif; fill: #fff; letter-spacing: 1px; }
+      .tl2 { font: 800 13px "Bangers", "Impact", sans-serif; letter-spacing: 1px; }
+      .cf { font: 700 11.5px "Consolas", "SF Mono", monospace; fill: #1a1a2e; }
+      .cl { font: 600 10.5px "Consolas", "SF Mono", monospace; fill: #3a3a5e; }
+      .tn { font: 600 11px "Segoe UI", "Helvetica Neue", sans-serif; }
+      .tg { font: 600 11px "Segoe UI", "Helvetica Neue", sans-serif; fill: #708090; }
+      .cx { stroke: #1a1a2e; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1100" height="600" fill="url(#bg3)"/>
+  <rect width="1100" height="600" fill="url(#g3)"/>
+
+  <g opacity="0.08">
+    <circle cx="150" cy="300" r="160" fill="#36d1dc"><animate attributeName="r" values="160;175;160" dur="18s" repeatCount="indefinite"/></circle>
+    <circle cx="950" cy="300" r="140" fill="#a18cd1"><animate attributeName="r" values="140;155;140" dur="22s" repeatCount="indefinite"/></circle>
+    <circle cx="550" cy="550" r="100" fill="#56ab2f"><animate attributeName="r" values="100;110;100" dur="20s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <text x="36" y="40" class="th">DUAL RESIZE HANDLING</text>
+  <text x="380" y="38" class="ts">Two parallel paths from the same stdout 'resize' event, converging at the reconciler</text>
+
+  <!-- ── Source event ── -->
+  <g filter="url(#sh3)">
+    <rect x="36" y="200" width="160" height="200" rx="14" fill="#1a1020" stroke="url(#srcG)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="36" y="200" width="160" height="34" rx="14" fill="url(#srcG)"/>
+    <rect x="36" y="222" width="160" height="12" fill="url(#srcG)"/>
+    <text x="56" y="222" class="tl" style="font-size:14px;">RESIZE EVENT</text>
+
+    <rect x="50" y="252" width="132" height="28" rx="6" class="cx" fill="#fff0f5"/>
+    <text x="62" y="272" class="cf">stdout emits</text>
+
+    <rect x="50" y="292" width="132" height="28" rx="6" class="cx" fill="#ffe0ec"/>
+    <text x="62" y="312" class="cf" style="font-weight:800;">'resize'</text>
+
+    <text x="52" y="366" class="tn" style="fill:#ff9dc4;">Both listeners</text>
+    <text x="52" y="382" class="tn" style="fill:#ff9dc4;">fire on same tick</text>
+  </g>
+
+  <!-- Fork arrows -->
+  <path d="M198 280 L260 280" stroke="#ffd700" stroke-width="2.5"/>
+  <path d="M260 280 L310 160" stroke="#36d1dc" stroke-width="3" marker-end="url(#a3c)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+  </path>
+  <path d="M260 280 L310 410" stroke="#a18cd1" stroke-width="3" marker-end="url(#a3p)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Fork burst -->
+  <g transform="translate(260, 280)" filter="url(#gl3)">
+    <polygon points="0,-16 4,-6 16,-8 7,0 16,8 4,6 0,16 -4,6 -16,8 -7,0 -16,-8 -4,-6" fill="#ffd700" opacity="0.6">
+      <animateTransform attributeName="transform" type="rotate" values="0;15;0" dur="3s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+
+  <!-- ══ PATH 1: INK ROOT LAYOUT ══ -->
+  <g filter="url(#sh3)">
+    <rect x="324" y="72" width="340" height="220" rx="14" fill="#0a1a1e" stroke="url(#inkG)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="324" y="72" width="340" height="34" rx="14" fill="url(#inkG)"/>
+    <rect x="324" y="94" width="340" height="12" fill="url(#inkG)"/>
+    <text x="344" y="94" class="tl" style="font-size:14px;">INK ROOT LAYOUT PATH</text>
+
+    <rect x="340" y="118" width="308" height="28" rx="6" class="cx" fill="#e0f7fa"/>
+    <text x="352" y="138" class="cf">Ink.resized() fires first</text>
+
+    <path d="M494 148 L494 158" stroke="#36d1dc" stroke-width="2"/>
+
+    <rect x="340" y="162" width="308" height="28" rx="6" class="cx" fill="#e0f7fa"/>
+    <text x="352" y="182" class="cf">calculateLayout() -> Yoga</text>
+
+    <path d="M494 192 L494 202" stroke="#36d1dc" stroke-width="2"/>
+
+    <rect x="340" y="206" width="308" height="28" rx="6" class="cx" fill="#d4f5f0"/>
+    <text x="352" y="226" class="cf">onRender() -> render() -> log()</text>
+
+    <text x="344" y="266" class="tn" style="fill:#5ec4d0;">Root tree layout. Component</text>
+    <text x="344" y="280" class="tn" style="fill:#5ec4d0;">positions recomputed by Yoga.</text>
+  </g>
+
+  <!-- ══ PATH 2: SMDU COMPONENT BUDGETS ══ -->
+  <g filter="url(#sh3)">
+    <rect x="324" y="320" width="340" height="240" rx="14" fill="#18102a" stroke="url(#smduG)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="324" y="320" width="340" height="34" rx="14" fill="url(#smduG)"/>
+    <rect x="324" y="342" width="340" height="12" fill="url(#smduG)"/>
+    <text x="344" y="342" class="tl" style="font-size:14px;">SMDU COMPONENT BUDGET PATH</text>
+
+    <rect x="340" y="368" width="308" height="28" rx="6" class="cx" fill="#f0e6ff"/>
+    <text x="352" y="388" class="cf">useStdout().stdout.rows</text>
+
+    <path d="M494 398 L494 408" stroke="#a18cd1" stroke-width="2"/>
+
+    <rect x="340" y="412" width="308" height="28" rx="6" class="cx" fill="#f0e6ff"/>
+    <text x="352" y="432" class="cf">setRows() / setCols() state</text>
+
+    <path d="M494 442 L494 452" stroke="#a18cd1" stroke-width="2"/>
+
+    <rect x="340" y="456" width="308" height="42" rx="6" class="cx" fill="#ece0ff"/>
+    <text x="352" y="476" class="cf">FileList / ReviewList /</text>
+    <text x="352" y="492" class="cf">StatusPanel height budgets</text>
+
+    <text x="344" y="530" class="tn" style="fill:#b08ee0;">Per-component refinement.</text>
+    <text x="344" y="546" class="tn" style="fill:#b08ee0;">Windowed row counts adapt.</text>
+  </g>
+
+  <!-- ══ CONVERGENCE ══ -->
+  <!-- Merge arrows -->
+  <path d="M666 200 L740 320" stroke="#36d1dc" stroke-width="3" marker-end="url(#a3g)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+  </path>
+  <path d="M666 460 L740 380" stroke="#a18cd1" stroke-width="3" marker-end="url(#a3g)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" begin="0.9s" repeatCount="indefinite"/>
+  </path>
+
+  <g filter="url(#sh3)">
+    <rect x="750" y="260" width="310" height="200" rx="14" fill="#0e1a10" stroke="url(#mergeG)" stroke-width="2.5" opacity="0.94"/>
+    <rect x="750" y="260" width="310" height="34" rx="14" fill="url(#mergeG)"/>
+    <rect x="750" y="282" width="310" height="12" fill="url(#mergeG)"/>
+    <text x="770" y="282" class="tl" style="font-size:14px;">CONVERGENCE POINT</text>
+
+    <rect x="766" y="308" width="278" height="28" rx="6" class="cx" fill="#e8f5e9"/>
+    <text x="778" y="328" class="cf">React re-render triggered</text>
+
+    <path d="M905 338 L905 348" stroke="#56ab2f" stroke-width="2"/>
+
+    <rect x="766" y="352" width="278" height="28" rx="6" class="cx" fill="#e8f5e9"/>
+    <text x="778" y="372" class="cf">resetAfterCommit()</text>
+
+    <path d="M905 382 L905 392" stroke="#56ab2f" stroke-width="2"/>
+
+    <rect x="766" y="396" width="278" height="28" rx="6" class="cx" fill="#c8e6c9"/>
+    <text x="778" y="416" class="cf" style="font-weight:800;">Ink writes final ANSI frame</text>
+
+    <text x="770" y="448" class="tn" style="fill:#7cc47f;">Both layout sources merge</text>
+  </g>
+
+  <!-- Final arrow out -->
+  <path d="M1062 360 L1080 360" stroke="#56ab2f" stroke-width="3" fill="none" marker-end="url(#a3g)"/>
+
+  <!-- Why dual note -->
+  <g>
+    <rect x="36" y="78" width="270" height="90" rx="10" fill="#0d1b2a" stroke="#ffd700" stroke-width="1.5" opacity="0.9"/>
+    <text x="50" y="100" class="tl2" style="fill:#ffd700;">WHY DUAL HANDLING?</text>
+    <text x="50" y="118" class="tn" style="fill:#b8d4e3;">Ink: root Yoga flexbox layout</text>
+    <text x="50" y="134" class="tn" style="fill:#b8d4e3;">smdu: windowed row budgets,</text>
+    <text x="50" y="150" class="tn" style="fill:#b8d4e3;">column-sensitive formatting</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(36, 578)">
+    <line x1="0" y1="0" x2="20" y2="0" stroke="#36d1dc" stroke-width="3"/>
+    <text x="26" y="4" class="tg">Ink path</text>
+    <line x1="100" y1="0" x2="120" y2="0" stroke="#a18cd1" stroke-width="3"/>
+    <text x="126" y="4" class="tg">smdu path</text>
+    <line x1="210" y1="0" x2="230" y2="0" stroke="#56ab2f" stroke-width="3"/>
+    <text x="236" y="4" class="tg">Converged output</text>
+    <text x="400" y="4" class="tg">Both paths execute on the same event loop tick before next frame</text>
+  </g>
+</svg>

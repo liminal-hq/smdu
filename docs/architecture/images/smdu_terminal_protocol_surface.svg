@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1080" role="img" aria-labelledby="title desc">
+  <title id="title">smdu Terminal Protocol Surface</title>
+  <desc id="desc">Marker-style protocol surface diagram for smdu terminal input parsing, ANSI output, and side effects such as alternate screen and bell.</desc>
+
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff2d8"/>
+      <stop offset="40%" stop-color="#e3e8ff"/>
+      <stop offset="100%" stop-color="#d4ffe8"/>
+      <animateTransform attributeName="gradientTransform" type="rotate" values="0 840 540;-7 840 540;0 840 540" dur="34s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <filter id="grain2" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="21" result="n"/>
+      <feComponentTransfer in="n" result="faint">
+        <feFuncA type="table" tableValues="0 0.07"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="faint" mode="multiply"/>
+    </filter>
+
+    <pattern id="pMint" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(17)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#0aa87f26" stroke-width="3.6"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#2fd8b228" stroke-width="2.8"/>
+    </pattern>
+
+    <pattern id="pSun" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(-15)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#ef8f1628" stroke-width="3.8"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#ffc64224" stroke-width="2.8"/>
+    </pattern>
+
+    <pattern id="pViolet" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(11)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#8a42c127" stroke-width="3.6"/>
+      <line x1="7" y1="0" x2="7" y2="14" stroke="#bf72ef24" stroke-width="2.8"/>
+    </pattern>
+
+    <marker id="aTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#0b9f74"/>
+    </marker>
+    <marker id="aOrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#d77700"/>
+    </marker>
+    <marker id="aPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7d35be"/>
+    </marker>
+
+    <style>
+      .title { font: 700 40px "Segoe Print", "Comic Sans MS", cursive; fill: #2f2740; }
+      .sub { font: 600 20px "Segoe Print", "Comic Sans MS", cursive; fill: #5f5a70; }
+      .h { font: 700 24px "Segoe Print", "Comic Sans MS", cursive; fill: #2d2f43; }
+      .t { font: 600 15px "Segoe Print", "Comic Sans MS", cursive; fill: #35384b; }
+      .mono { font: 700 14px "Consolas", "Menlo", monospace; fill: #21324a; }
+      .note { font: 700 15px "Segoe Print", "Comic Sans MS", cursive; fill: #6a3552; }
+      .boxA { fill: #edfff8; stroke: #0b9f74; stroke-width: 3; }
+      .boxB { fill: #fff8ef; stroke: #d77700; stroke-width: 3; }
+      .boxC { fill: #f7f1ff; stroke: #7d35be; stroke-width: 3; }
+      .boxD { fill: #eef5ff; stroke: #2f7ee8; stroke-width: 3; }
+      .flowA { fill: none; stroke: #0b9f74; stroke-width: 4; marker-end: url(#aTeal); }
+      .flowB { fill: none; stroke: #d77700; stroke-width: 4; marker-end: url(#aOrange); }
+      .flowC { fill: none; stroke: #7d35be; stroke-width: 4; marker-end: url(#aPurple); }
+      .dash { stroke-dasharray: 10 8; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1680" height="1080" fill="url(#bg2)"/>
+
+  <g opacity="0.25">
+    <circle cx="210" cy="860" r="220" fill="#6aa8ff">
+      <animate attributeName="cx" values="210;250;210" dur="28s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="860;820;860" dur="34s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1410" cy="200" r="180" fill="#ff8ec6">
+      <animate attributeName="cx" values="1410;1370;1410" dur="26s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="200;230;200" dur="31s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="830" cy="120" r="130" fill="#ffd062">
+      <animate attributeName="r" values="130;150;130" dur="24s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <rect x="54" y="140" width="1572" height="885" rx="32" ry="32" fill="#ffffffd9" filter="url(#grain2)"/>
+
+  <path d="M66 156 C142 120 256 140 334 160 C498 200 676 156 854 154 C1034 152 1202 118 1398 156 C1484 174 1550 226 1570 302 C1590 438 1586 590 1572 734 C1560 846 1532 926 1410 954 C1200 1002 980 954 760 958 C582 962 418 1002 234 978 C126 962 76 918 66 846 C50 700 56 546 56 398 C56 296 40 214 66 156 Z" fill="none" stroke="#27304d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M76 172 C152 138 262 158 338 176 C500 214 678 170 856 170 C1030 170 1198 132 1392 172 C1470 188 1530 236 1548 308 C1568 442 1566 590 1550 728 C1538 834 1512 906 1398 934 C1194 978 978 938 762 942 C586 946 426 986 246 964 C142 950 96 910 84 842 C70 700 74 552 74 404 C74 308 56 230 76 172 Z" fill="none" stroke="#ff64a3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+
+  <text x="72" y="74" class="title">smdu Terminal Read and Write Protocol Surface</text>
+  <text x="74" y="106" class="sub">Marker style with animated colour fields and protocol motifs</text>
+
+  <rect x="98" y="190" width="724" height="390" rx="24" ry="24" class="boxA"/>
+  <rect x="106" y="198" width="708" height="374" rx="20" ry="20" fill="url(#pMint)"/>
+  <text x="128" y="234" class="h">Read side: terminal to smdu</text>
+  <text x="128" y="264" class="t">1) PTY emits stdin byte chunks</text>
+  <text x="128" y="290" class="t">2) Ink internal App enables raw mode and reads chunks</text>
+  <text x="128" y="316" class="t">3) parseKeypress decodes escape sequences</text>
+  <text x="128" y="342" class="t">4) useInput emits key plus input payload</text>
+  <text x="128" y="368" class="t">5) smdu App routes actions and mutates state</text>
+  <text x="128" y="398" class="mono">stdin.setRawMode true  and  readable loop  and  parseKeypress</text>
+
+  <rect x="860" y="190" width="724" height="390" rx="24" ry="24" class="boxB"/>
+  <rect x="868" y="198" width="708" height="374" rx="20" ry="20" fill="url(#pSun)"/>
+  <text x="890" y="234" class="h">Write side: smdu to terminal</text>
+  <text x="890" y="264" class="t">1) React commit enters Ink reconciler</text>
+  <text x="890" y="290" class="t">2) Yoga computes layout at current width</text>
+  <text x="890" y="316" class="t">3) renderer writes Output operations</text>
+  <text x="890" y="342" class="t">4) output.get builds frame string</text>
+  <text x="890" y="368" class="t">5) log-update writes ANSI diffs to stdout</text>
+  <text x="890" y="398" class="mono">calculateLayout  and  renderNodeToOutput  and  stream.write</text>
+
+  <path d="M822 430 C842 430 848 430 860 430" class="flowA"/>
+
+  <rect x="98" y="614" width="1486" height="194" rx="24" ry="24" class="boxC"/>
+  <rect x="106" y="622" width="1470" height="178" rx="20" ry="20" fill="url(#pViolet)"/>
+  <text x="128" y="650" class="h">Control sequence surface and terminal side effects</text>
+
+  <text x="128" y="680" class="mono">CSI ?1049h</text>
+  <text x="278" y="680" class="t">alternate screen enter</text>
+  <text x="128" y="706" class="mono">CSI ?1049l</text>
+  <text x="278" y="706" class="t">alternate screen leave</text>
+  <text x="128" y="732" class="mono">BEL  (\u0007)</text>
+  <text x="278" y="732" class="t">timer completion bell</text>
+
+  <text x="856" y="680" class="mono">eraseLines  cursorUp  cursorTo  eraseEndLine</text>
+  <text x="856" y="706" class="t">Ink log-update diff writes</text>
+  <text x="856" y="732" class="mono">clearTerminal  and  cursor hide and show</text>
+  <text x="856" y="758" class="t">redraw safety and interactive cursor behaviour</text>
+
+  <rect x="98" y="840" width="1486" height="150" rx="24" ry="24" class="boxD"/>
+  <text x="128" y="874" class="h">Bells and whistles status</text>
+  <text x="128" y="902" class="t">Current build emits alternate screen and bell side effects, with ANSI cursor and erase diffs from Ink.</text>
+  <text x="128" y="928" class="t">Window title sequences (OSC 0 or OSC 2) are not emitted by default at present.</text>
+  <text x="128" y="954" class="note">Motif hint: title control could be added at CLI mount and unmount boundaries if needed.</text>
+
+  <path d="M450 580 C450 604 450 610 450 614" class="flowC"/>
+  <path d="M1220 580 C1220 604 1220 610 1220 614" class="flowB"/>
+  <path d="M842 808 C842 830 842 834 842 840" class="flowA dash"/>
+
+  <g transform="translate(1430 890)">
+    <rect x="0" y="0" width="120" height="62" rx="12" ry="12" fill="#ffe699" stroke="#d77700" stroke-width="3"/>
+    <text x="20" y="38" class="mono">BEL</text>
+  </g>
+  <g transform="translate(1300 890)">
+    <rect x="0" y="0" width="112" height="62" rx="12" ry="12" fill="#cde8ff" stroke="#2f7ee8" stroke-width="3"/>
+    <text x="16" y="38" class="mono">CSI</text>
+  </g>
+</svg>

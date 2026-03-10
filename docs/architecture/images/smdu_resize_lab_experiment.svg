@@ -1,0 +1,351 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc" style="background-color: #220033;">
+  <title id="title">The Resize Experiment: A Lab Rat's View of the Pipeline</title>
+  <desc id="desc">Lab-themed visualisation of the resize event pipeline as a chemistry experiment. A rat scientist watches the resize signal flow through connected lab glassware representing PTY, Node streams, Ink runtime, and smdu, with the processed frame returning to a terminal monitor.</desc>
+
+  <defs>
+    <!-- Halftone dot pattern (the-lab signature) -->
+    <pattern id="halftone" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="2" fill="#000000" opacity="0.2"/>
+    </pattern>
+
+    <!-- Hard comic shadow (no blur, offset only) -->
+    <filter id="comicShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feOffset in="SourceAlpha" dx="5" dy="5" result="off"/>
+      <feFlood flood-color="#000000" flood-opacity="0.6" result="flood"/>
+      <feComposite in="flood" in2="off" operator="in" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Glow filter for the resize particle -->
+    <filter id="particleGlow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Eye glow -->
+    <filter id="eyeGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <style>
+      .title { font: bold 48px Impact, sans-serif; fill: #ffcc00; stroke: black; stroke-width: 3; }
+      .subtitle { font: 20px "Comic Sans MS", cursive, sans-serif; fill: white; }
+      .label { font: bold 16px Impact, sans-serif; fill: #ffcc00; stroke: black; stroke-width: 1.5; }
+      .labelSm { font: bold 13px Impact, sans-serif; fill: #ffcc00; stroke: black; stroke-width: 1; }
+      .code { font: bold 12px "Consolas", "SF Mono", monospace; fill: #00ff00; }
+      .codeDim { font: 11px "Consolas", "SF Mono", monospace; fill: #00aa00; }
+      .bubble { font: 16px "Comic Sans MS", cursive, sans-serif; fill: #333; }
+      .note { font: 14px "Comic Sans MS", cursive, sans-serif; fill: white; opacity: 0.7; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="600" fill="#663399"/>
+  <rect width="1200" height="600" fill="url(#halftone)"/>
+
+  <!-- Diagonal light ray -->
+  <polygon points="900,0 1200,0 1200,250" fill="white" opacity="0.06"/>
+  <polygon points="0,400 0,600 400,600" fill="white" opacity="0.04"/>
+
+  <!-- ══════ TITLE BANNER ══════ -->
+  <g transform="translate(600, 52) rotate(-2)">
+    <!-- Splash shape behind title -->
+    <path d="M-320,-30 L330,-35 L340,25 L-310,30 Z" fill="#ff0055" stroke="black" stroke-width="3"/>
+    <text x="0" y="8" text-anchor="middle" class="title">THE RESIZE EXPERIMENT</text>
+  </g>
+  <text x="600" y="86" text-anchor="middle" class="subtitle">What happens when you drag a window edge</text>
+
+  <!-- ══════ LAB TABLE ══════ -->
+  <rect x="0" y="470" width="1200" height="130" fill="#2b2b2b" stroke="black" stroke-width="3"/>
+  <line x1="0" y1="470" x2="1200" y2="470" stroke="#444" stroke-width="4"/>
+  <!-- Table edge highlight -->
+  <line x1="0" y1="474" x2="1200" y2="474" stroke="#555" stroke-width="1"/>
+
+  <!-- ══════ TUBE CONNECTIONS (behind flasks) ══════ -->
+  <!-- Tube: flask 1 -> flask 2 -->
+  <path d="M225 370 C260 370 270 350 310 350" fill="none" stroke="#aaddff" stroke-width="6" opacity="0.4" stroke-linecap="round"/>
+  <path d="M225 370 C260 370 270 350 310 350" fill="none" stroke="black" stroke-width="8" opacity="0.15" stroke-linecap="round"/>
+
+  <!-- Tube: flask 2 -> flask 3 -->
+  <path d="M440 340 C480 340 500 320 540 320" fill="none" stroke="#aaddff" stroke-width="6" opacity="0.4" stroke-linecap="round"/>
+  <path d="M440 340 C480 340 500 320 540 320" fill="none" stroke="black" stroke-width="8" opacity="0.15" stroke-linecap="round"/>
+
+  <!-- Tube: flask 3 -> flask 4 -->
+  <path d="M700 310 C740 310 760 330 800 330" fill="none" stroke="#aaddff" stroke-width="6" opacity="0.4" stroke-linecap="round"/>
+  <path d="M700 310 C740 310 760 330 800 330" fill="none" stroke="black" stroke-width="8" opacity="0.15" stroke-linecap="round"/>
+
+  <!-- Flowing particle through tubes -->
+  <circle r="5" fill="#ffcc00" filter="url(#particleGlow)">
+    <animateMotion dur="8s" repeatCount="indefinite"
+      path="M160 400 C200 370 260 370 310 350 C360 340 400 340 440 340 C480 340 500 320 540 320 C600 310 660 310 700 310 C740 310 760 330 800 330 C840 340 870 350 900 380"/>
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="8s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- ══════ FLASK 1: PTY / SIGWINCH ══════ -->
+  <g transform="translate(160, 280)" filter="url(#comicShadow)">
+    <!-- Erlenmeyer flask -->
+    <path d="M-15,-80 L-15,-20 L-50,80 L50,80 L15,-20 L15,-80 Z"
+          fill="#663399" opacity="0.3" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Liquid -->
+    <path d="M-40,40 L-50,80 L50,80 L40,40 Z" fill="#ff0055" opacity="0.6"/>
+    <!-- Bubbles -->
+    <circle cx="-10" cy="50" r="4" fill="#ff0055" opacity="0.5">
+      <animate attributeName="cy" values="50;-40" dur="2.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0" dur="2.2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="12" cy="60" r="3" fill="#ff0055" opacity="0.4">
+      <animate attributeName="cy" values="60;-30" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="0" cy="55" r="5" fill="#ff3377" opacity="0.3">
+      <animate attributeName="cy" values="55;-50" dur="2.8s" begin="1.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0" dur="2.8s" begin="1.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <text x="160" y="145" text-anchor="middle" class="label">SIGWINCH</text>
+  <text x="160" y="165" text-anchor="middle" class="labelSm">PTY SIGNAL</text>
+
+  <!-- ══════ FLASK 2: NODE STREAMS ══════ -->
+  <g transform="translate(380, 260)" filter="url(#comicShadow)">
+    <!-- Round-bottom flask -->
+    <rect x="-12" y="-90" width="24" height="40" fill="#663399" opacity="0.3" stroke="black" stroke-width="3" rx="2"/>
+    <circle cx="0" cy="0" r="50" fill="#663399" opacity="0.3" stroke="black" stroke-width="3"/>
+    <!-- Liquid -->
+    <path d="M-48,10 Q-50,50 0,50 Q50,50 48,10 Z" fill="#ffa500" opacity="0.5"/>
+    <!-- Bubbles -->
+    <circle cx="-8" cy="20" r="3" fill="#ffcc00" opacity="0.5">
+      <animate attributeName="cy" values="20;-60" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="10" cy="30" r="4" fill="#ffcc00" opacity="0.4">
+      <animate attributeName="cy" values="30;-50" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <text x="380" y="135" text-anchor="middle" class="label">STDOUT</text>
+  <text x="380" y="155" text-anchor="middle" class="labelSm">NODE STREAMS</text>
+
+  <!-- ══════ FLASK 3: INK RUNTIME (largest) ══════ -->
+  <g transform="translate(620, 240)" filter="url(#comicShadow)">
+    <!-- Large beaker -->
+    <rect x="-60" y="-100" width="120" height="180" fill="#663399" opacity="0.3" stroke="black" stroke-width="3" rx="4"/>
+    <!-- Spout -->
+    <path d="M60,-100 L75,-110" fill="none" stroke="black" stroke-width="3"/>
+    <!-- Graduations -->
+    <line x1="-55" y1="-60" x2="-40" y2="-60" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <line x1="-55" y1="-20" x2="-40" y2="-20" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <line x1="-55" y1="20" x2="-40" y2="20" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <line x1="-55" y1="60" x2="-40" y2="60" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <!-- Liquid (layered, showing the 4 stages) -->
+    <rect x="-56" y="40" width="112" height="36" fill="#00ff00" opacity="0.15"/>
+    <rect x="-56" y="20" width="112" height="20" fill="#36d1dc" opacity="0.2"/>
+    <rect x="-56" y="0" width="112" height="20" fill="#36d1dc" opacity="0.3"/>
+    <rect x="-56" y="-20" width="112" height="20" fill="#36d1dc" opacity="0.15"/>
+    <!-- Stage labels inside beaker -->
+    <text x="0" y="-8" text-anchor="middle" class="codeDim">Yoga layout</text>
+    <text x="0" y="14" text-anchor="middle" class="codeDim">render()</text>
+    <text x="0" y="36" text-anchor="middle" class="codeDim">Output.get()</text>
+    <text x="0" y="58" text-anchor="middle" class="codeDim">log-update diff</text>
+    <!-- Bubbles -->
+    <circle cx="-20" cy="50" r="4" fill="#36d1dc" opacity="0.5">
+      <animate attributeName="cy" values="50;-70" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="15" cy="60" r="3" fill="#00ff00" opacity="0.4">
+      <animate attributeName="cy" values="60;-60" dur="2.4s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0" dur="2.4s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="30" cy="40" r="5" fill="#36d1dc" opacity="0.3">
+      <animate attributeName="cy" values="40;-80" dur="3.5s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0" dur="3.5s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <text x="620" y="105" text-anchor="middle" class="label">INK RUNTIME</text>
+  <text x="620" y="125" text-anchor="middle" class="labelSm">THE BIG REACTION</text>
+
+  <!-- ══════ FLASK 4: smdu ══════ -->
+  <g transform="translate(870, 270)" filter="url(#comicShadow)">
+    <!-- Test tube -->
+    <rect x="-14" y="-80" width="28" height="120" fill="#663399" opacity="0.3" stroke="black" stroke-width="3" rx="14"/>
+    <!-- Liquid -->
+    <path d="M-14,10 L-14,40 Q-14,54 0,54 Q14,54 14,40 L14,10 Z" fill="#00ff00" opacity="0.5"/>
+    <!-- Bubbles -->
+    <circle cx="-3" cy="30" r="3" fill="#00ff00" opacity="0.5">
+      <animate attributeName="cy" values="30;-50" dur="1.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="5" cy="40" r="2" fill="#aaffaa" opacity="0.4">
+      <animate attributeName="cy" values="40;-40" dur="2.2s" begin="0.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0" dur="2.2s" begin="0.4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <text x="870" y="145" text-anchor="middle" class="label">SMDU</text>
+  <text x="870" y="165" text-anchor="middle" class="labelSm">APP RESPONSE</text>
+
+  <!-- ══════ OUTPUT MONITOR ══════ -->
+  <g transform="translate(1030, 280)" filter="url(#comicShadow)">
+    <!-- Monitor housing -->
+    <rect x="-70" y="-100" width="140" height="110" fill="#222" stroke="black" stroke-width="4" rx="6"/>
+    <!-- Screen -->
+    <rect x="-60" y="-90" width="120" height="90" fill="#003300" rx="3"/>
+    <!-- Terminal text -->
+    <text x="-50" y="-70" class="code" style="font-size:10px;">$ resize event</text>
+    <text x="-50" y="-56" class="code" style="font-size:10px;">SIGWINCH -> PTY</text>
+    <text x="-50" y="-42" class="code" style="font-size:10px;">Ink.resized()</text>
+    <text x="-50" y="-28" class="code" style="font-size:10px;">Yoga -> render</text>
+    <text x="-50" y="-14" class="code" style="font-size:10px;">stdout.write()</text>
+    <text x="-50" y="0" class="code" style="font-size:10px;">FRAME UPDATED _</text>
+    <!-- Blinking cursor -->
+    <rect x="30" y="-8" width="8" height="12" fill="#00ff00">
+      <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Monitor stand -->
+    <rect x="-20" y="10" width="40" height="8" fill="#333" stroke="black" stroke-width="2"/>
+    <path d="M-35,18 L35,18 L25,12 L-25,12 Z" fill="#444" stroke="black" stroke-width="2"/>
+  </g>
+  <text x="1030" y="145" text-anchor="middle" class="label">TERMINAL</text>
+  <text x="1030" y="165" text-anchor="middle" class="labelSm">FRAME OUTPUT</text>
+
+  <!-- ══════ RETURN PATH ARROW ══════ -->
+  <path d="M1030 400 C1030 440 1000 460 960 460 C800 460 400 455 160 445 C130 443 120 430 120 410"
+        fill="none" stroke="#ff0055" stroke-width="3" stroke-dasharray="12 6" opacity="0.6">
+    <animate attributeName="stroke-dashoffset" values="0;-36" dur="1.5s" repeatCount="indefinite"/>
+  </path>
+  <text x="560" y="456" text-anchor="middle" class="note">ANSI diff bytes written back to terminal</text>
+
+  <!-- ══════ SPEED LINES (action effect) ══════ -->
+  <g opacity="0.3">
+    <line x1="100" y1="350" x2="180" y2="350" stroke="#ffcc00" stroke-width="2" stroke-dasharray="8 6">
+      <animate attributeName="stroke-dashoffset" values="28;0" dur="0.5s" repeatCount="indefinite"/>
+    </line>
+    <line x1="250" y1="320" x2="330" y2="320" stroke="#ffcc00" stroke-width="2" stroke-dasharray="8 6">
+      <animate attributeName="stroke-dashoffset" values="28;0" dur="0.4s" repeatCount="indefinite"/>
+    </line>
+    <line x1="470" y1="300" x2="550" y2="300" stroke="#ffcc00" stroke-width="2" stroke-dasharray="8 6">
+      <animate attributeName="stroke-dashoffset" values="28;0" dur="0.45s" repeatCount="indefinite"/>
+    </line>
+    <line x1="730" y1="310" x2="810" y2="310" stroke="#ffcc00" stroke-width="2" stroke-dasharray="8 6">
+      <animate attributeName="stroke-dashoffset" values="28;0" dur="0.5s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- ══════ RAT SCIENTIST ══════ -->
+  <g transform="translate(60, 340)" filter="url(#comicShadow)">
+    <!-- Body -->
+    <path d="M-20,60 Q-30,30 -15,-10 Q0,-30 15,-10 Q30,30 20,60 Z" fill="#999" stroke="black" stroke-width="3"/>
+    <!-- Head -->
+    <circle cx="0" cy="-30" r="28" fill="#999" stroke="black" stroke-width="3"/>
+    <!-- Ears -->
+    <ellipse cx="-22" cy="-50" rx="14" ry="18" fill="#999" stroke="black" stroke-width="2.5"/>
+    <ellipse cx="-22" cy="-50" rx="8" ry="12" fill="#ffcccc"/>
+    <ellipse cx="22" cy="-50" rx="14" ry="18" fill="#999" stroke="black" stroke-width="2.5"/>
+    <ellipse cx="22" cy="-50" rx="8" ry="12" fill="#ffcccc"/>
+    <!-- Snout -->
+    <ellipse cx="0" cy="-18" rx="10" ry="7" fill="#ffcccc"/>
+    <circle cx="0" cy="-22" r="3" fill="#ff6688"/>
+    <!-- Eyes -->
+    <circle cx="-10" cy="-34" r="4" fill="white"/>
+    <circle cx="-10" cy="-34" r="2" fill="black"/>
+    <circle cx="10" cy="-34" r="4" fill="white"/>
+    <circle cx="10" cy="-34" r="2" fill="black"/>
+    <!-- Whiskers -->
+    <line x1="-10" y1="-20" x2="-35" y2="-28" stroke="black" stroke-width="1.5"/>
+    <line x1="-10" y1="-18" x2="-35" y2="-16" stroke="black" stroke-width="1.5"/>
+    <line x1="10" y1="-20" x2="35" y2="-28" stroke="black" stroke-width="1.5"/>
+    <line x1="10" y1="-18" x2="35" y2="-16" stroke="black" stroke-width="1.5"/>
+    <!-- Goggles -->
+    <rect x="-22" y="-42" width="18" height="14" fill="#aaddff" stroke="black" stroke-width="2" rx="4" opacity="0.7"/>
+    <rect x="4" y="-42" width="18" height="14" fill="#aaddff" stroke="black" stroke-width="2" rx="4" opacity="0.7"/>
+    <line x1="-4" y1="-35" x2="4" y2="-35" stroke="black" stroke-width="2"/>
+    <line x1="-22" y1="-35" x2="-30" y2="-38" stroke="black" stroke-width="2"/>
+    <line x1="22" y1="-35" x2="30" y2="-38" stroke="black" stroke-width="2"/>
+    <!-- Glare on goggles -->
+    <rect x="-18" y="-40" width="5" height="3" fill="white" opacity="0.5" rx="1"/>
+    <rect x="8" y="-40" width="5" height="3" fill="white" opacity="0.5" rx="1"/>
+    <!-- Lab coat collar -->
+    <path d="M-15,-5 L-20,15 L0,10 L20,15 L15,-5" fill="white" stroke="black" stroke-width="2"/>
+    <!-- Hands gripping table -->
+    <circle cx="-25" cy="65" r="6" fill="#ffcccc" stroke="black" stroke-width="2"/>
+    <circle cx="25" cy="65" r="6" fill="#ffcccc" stroke="black" stroke-width="2"/>
+    <!-- Tail -->
+    <path d="M10,60 Q40,80 30,100 Q20,115 35,120" fill="none" stroke="#ffaaaa" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- ══════ SPEECH BUBBLE ══════ -->
+  <g filter="url(#comicShadow)">
+    <path d="M100,220 Q95,190 120,180 L300,180 Q320,180 320,200 L320,250 Q320,270 300,270 L160,270 L120,300 L140,270 L120,270 Q100,270 100,250 Z"
+          fill="white" stroke="black" stroke-width="3"/>
+    <text x="130" y="215" class="bubble">The experiment is</text>
+    <text x="130" y="238" class="bubble">working perfectly!</text>
+    <text x="130" y="261" class="bubble" style="font-size:13px; fill:#666;">*adjusts goggles*</text>
+  </g>
+
+  <!-- ══════ SMALL RAT ASSISTANT (on table, near monitor) ══════ -->
+  <g transform="translate(940, 420)">
+    <!-- Tiny rat silhouette watching the monitor -->
+    <path d="M0,0 Q-8,-15 -5,-25 Q0,-30 5,-25 Q8,-15 0,0 Z" fill="black" stroke="black" stroke-width="2"/>
+    <!-- Ears -->
+    <circle cx="-5" cy="-28" r="4" fill="black" stroke="black" stroke-width="1.5"/>
+    <circle cx="5" cy="-28" r="4" fill="black" stroke="black" stroke-width="1.5"/>
+    <!-- Glowing eye -->
+    <circle cx="2" cy="-22" r="2" fill="#ff0000" filter="url(#eyeGlow)">
+      <animate attributeName="opacity" values="1;0.4;1" dur="0.3s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Tail -->
+    <path d="M-3,0 Q-15,10 -10,20" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- ══════ PAW PRINTS on table ══════ -->
+  <g opacity="0.15" fill="#654321">
+    <circle cx="500" cy="490" r="4"/>
+    <circle cx="496" cy="484" r="2"/><circle cx="504" cy="484" r="2"/>
+    <circle cx="493" cy="480" r="1.5"/><circle cx="507" cy="480" r="1.5"/>
+
+    <circle cx="540" cy="495" r="4"/>
+    <circle cx="536" cy="489" r="2"/><circle cx="544" cy="489" r="2"/>
+    <circle cx="533" cy="485" r="1.5"/><circle cx="547" cy="485" r="1.5"/>
+
+    <circle cx="780" cy="488" r="4"/>
+    <circle cx="776" cy="482" r="2"/><circle cx="784" cy="482" r="2"/>
+    <circle cx="773" cy="478" r="1.5"/><circle cx="787" cy="478" r="1.5"/>
+  </g>
+
+  <!-- ══════ FLOATING LABELS (collectible style bob) ══════ -->
+  <g>
+    <!-- 30 FPS badge floating above Ink flask -->
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0,0; 0,-6; 0,0" dur="2.5s" repeatCount="indefinite"/>
+      <rect x="580" y="390" width="80" height="26" fill="#ffcc00" stroke="black" stroke-width="2.5" rx="6"/>
+      <text x="620" y="409" text-anchor="middle" style="font: bold 13px Impact, sans-serif; fill: black;">30 FPS CAP</text>
+    </g>
+
+    <!-- ANSI DIFF badge floating near monitor -->
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0,0; 0,-5; 0,0" dur="2.2s" repeatCount="indefinite"/>
+      <rect x="990" y="400" width="82" height="26" fill="#00ff00" stroke="black" stroke-width="2.5" rx="6"/>
+      <text x="1031" y="419" text-anchor="middle" style="font: bold 12px Impact, sans-serif; fill: black;">ANSI DIFF</text>
+    </g>
+  </g>
+
+  <!-- ══════ BOTTOM NOTE ══════ -->
+  <text x="600" y="560" text-anchor="middle" class="note" style="opacity:0.5; font-size:12px;">
+    Companion to: The Resize Event Pipeline paper | Inspired by liminal-hq/the-lab
+  </text>
+
+  <!-- ══════ Tiny paw signature ══════ -->
+  <g transform="translate(1160, 555)" opacity="0.3" fill="#654321">
+    <circle cx="0" cy="0" r="5"/>
+    <circle cx="-5" cy="-7" r="2.5"/><circle cx="5" cy="-7" r="2.5"/>
+    <circle cx="-8" cy="-3" r="2"/><circle cx="8" cy="-3" r="2"/>
+  </g>
+</svg>

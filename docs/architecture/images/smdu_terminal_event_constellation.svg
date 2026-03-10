@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">smdu Event Constellation</title>
+  <desc id="desc">Playful motif diagram showing terminal events as a constellation around Ink and smdu state response loops.</desc>
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f2040"/>
+      <stop offset="60%" stop-color="#2a1b4e"/>
+      <stop offset="100%" stop-color="#123a58"/>
+      <animateTransform attributeName="gradientTransform" type="rotate" values="0 720 450;4 720 450;0 720 450" dur="30s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <marker id="arrStar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#ffe08a"/>
+    </marker>
+
+    <style>
+      .title { font: 700 38px "Segoe Print", "Comic Sans MS", cursive; fill: #f9edff; }
+      .sub { font: 600 18px "Segoe Print", "Comic Sans MS", cursive; fill: #d7d7ff; }
+      .label { font: 600 16px "Segoe Print", "Comic Sans MS", cursive; fill: #f0f7ff; }
+      .small { font: 600 14px "Segoe Print", "Comic Sans MS", cursive; fill: #d9e7ff; }
+      .orbit { fill: none; stroke: #ffffff3a; stroke-width: 2.2; stroke-dasharray: 8 8; }
+      .edge { fill: none; stroke: #ffe08a; stroke-width: 2.8; marker-end: url(#arrStar); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1440" height="900" fill="url(#sky)"/>
+
+  <g opacity="0.7">
+    <circle cx="130" cy="90" r="2.4" fill="#fff"/>
+    <circle cx="240" cy="160" r="1.8" fill="#fff"/>
+    <circle cx="410" cy="84" r="2.1" fill="#fff"/>
+    <circle cx="620" cy="132" r="2.8" fill="#fff"/>
+    <circle cx="830" cy="96" r="2.2" fill="#fff"/>
+    <circle cx="1080" cy="160" r="2" fill="#fff"/>
+    <circle cx="1260" cy="120" r="2.6" fill="#fff"/>
+    <circle cx="118" cy="290" r="1.9" fill="#fff"/>
+    <circle cx="312" cy="330" r="2.3" fill="#fff"/>
+    <circle cx="470" cy="260" r="2.1" fill="#fff"/>
+    <circle cx="680" cy="312" r="2.5" fill="#fff"/>
+    <circle cx="920" cy="280" r="2.1" fill="#fff"/>
+    <circle cx="1124" cy="344" r="2" fill="#fff"/>
+    <circle cx="1302" cy="292" r="2.4" fill="#fff"/>
+    <circle cx="200" cy="520" r="2.3" fill="#fff"/>
+    <circle cx="356" cy="590" r="1.8" fill="#fff"/>
+    <circle cx="540" cy="544" r="2.3" fill="#fff"/>
+    <circle cx="760" cy="602" r="2.6" fill="#fff"/>
+    <circle cx="1020" cy="564" r="2" fill="#fff"/>
+    <circle cx="1240" cy="612" r="2.5" fill="#fff"/>
+  </g>
+
+  <text x="58" y="66" class="title">smdu Event Constellation</text>
+  <text x="60" y="96" class="sub">Motif map of event stars orbiting the Ink and smdu response core</text>
+
+  <circle cx="720" cy="470" r="205" class="orbit"/>
+  <circle cx="720" cy="470" r="280" class="orbit"/>
+
+  <circle cx="720" cy="470" r="110" fill="#3c5ef0b0" stroke="#93b4ff" stroke-width="3"/>
+  <text x="674" y="462" class="label">Ink Core</text>
+  <text x="640" y="486" class="small">layout + render + write</text>
+
+  <circle cx="1020" cy="470" r="95" fill="#ef4da5b0" stroke="#ffc2e4" stroke-width="3"/>
+  <text x="986" y="464" class="label">smdu</text>
+  <text x="962" y="488" class="small">state and actions</text>
+
+  <circle cx="390" cy="300" r="74" fill="#1bbf84b8" stroke="#a8ffe0" stroke-width="3"/>
+  <text x="342" y="296" class="label">keypress</text>
+  <text x="340" y="320" class="small">stdin bytes</text>
+
+  <circle cx="448" cy="642" r="74" fill="#f2a223b5" stroke="#ffe0a2" stroke-width="3"/>
+  <text x="406" y="638" class="label">resize</text>
+  <text x="392" y="662" class="small">stdout event</text>
+
+  <circle cx="960" cy="280" r="74" fill="#7a4df2b8" stroke="#d8c6ff" stroke-width="3"/>
+  <text x="914" y="276" class="label">scan updates</text>
+  <text x="918" y="300" class="small">progress and partial</text>
+
+  <circle cx="1110" cy="700" r="74" fill="#33b0f2b8" stroke="#c3ebff" stroke-width="3"/>
+  <text x="1076" y="696" class="label">timer</text>
+  <text x="1050" y="720" class="small">ticks and bell</text>
+
+  <path d="M452 334 C540 388 618 430 640 442" class="edge"/>
+  <path d="M502 612 C598 560 640 530 656 512" class="edge"/>
+  <path d="M922 332 C860 390 816 430 784 444" class="edge"/>
+  <path d="M1080 662 C1020 606 930 544 812 500" class="edge"/>
+  <path d="M812 470 C882 470 920 470 930 470" class="edge"/>
+
+  <text x="84" y="860" class="small">Legend: each star is an event source; arrows show trigger flow into Ink render and smdu state response loops.</text>
+</svg>
