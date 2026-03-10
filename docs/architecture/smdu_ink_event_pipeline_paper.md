@@ -154,8 +154,8 @@ The `onRender` method is throttled at 30 FPS by default:
 const maxFps = options.maxFps ?? 30;
 const renderThrottleMs = maxFps > 0 ? Math.ceil(1000 / maxFps) : 0;
 this.rootNode.onRender = throttle(this.onRender, renderThrottleMs, {
-  leading: true,
-  trailing: true
+	leading: true,
+	trailing: true,
 });
 ```
 
@@ -192,7 +192,7 @@ This function recursively walks the Ink component tree. For each node it:
 
 The `get()` method transforms all queued write operations into a final string:
 
-1. Initialises a 2D character grid (height rows * width columns)
+1. Initialises a 2D character grid (height rows \* width columns)
 2. Processes all operations sequentially, placing characters at their computed positions
 3. Applies clip regions that were pushed with `output.clip()`
 4. Applies text transformers (colour functions) to text lines
@@ -208,7 +208,7 @@ The final stage minimises terminal I/O by computing the difference between the n
 
 ```javascript
 // Simplified logic:
-if (output === previousOutput) return;  // skip identical frames
+if (output === previousOutput) return; // skip identical frames
 eraseLines(previousLineCount);
 stdout.write(output + '\n');
 previousOutput = output;
@@ -246,15 +246,15 @@ Ink hides the cursor during active rendering and shows it on teardown:
 
 During the entire resize-to-render cycle, Ink may emit these control sequences to `stdout`:
 
-| Sequence | When | Purpose |
-|----------|------|---------|
-| `eraseLines(N)` | Every frame | Clear previous output before writing new |
-| `cursorUp(N)` | Every frame | Position cursor for line-level updates |
-| `cursorTo(col)` | Incremental mode | Position within a line |
-| `cursorNextLine` | Incremental mode | Advance to next line |
-| `eraseEndLine` | Incremental mode | Clear trailing stale content |
-| `clearTerminal` | Edge case | Full reset when output exceeds rows |
-| `cliCursor.hide/show` | Mount/unmount | Prevent cursor flicker during renders |
+| Sequence              | When             | Purpose                                  |
+| --------------------- | ---------------- | ---------------------------------------- |
+| `eraseLines(N)`       | Every frame      | Clear previous output before writing new |
+| `cursorUp(N)`         | Every frame      | Position cursor for line-level updates   |
+| `cursorTo(col)`       | Incremental mode | Position within a line                   |
+| `cursorNextLine`      | Incremental mode | Advance to next line                     |
+| `eraseEndLine`        | Incremental mode | Clear trailing stale content             |
+| `clearTerminal`       | Edge case        | Full reset when output exceeds rows      |
+| `cliCursor.hide/show` | Mount/unmount    | Prevent cursor flicker during renders    |
 
 `smdu` does not emit any of these. Ink owns all terminal protocol mechanics.
 
@@ -286,7 +286,12 @@ Provides direct access to the `stdout` stream and a `write()` function. For resi
 ### 4.2 useInput()
 
 ```javascript
-useInput((input, key) => { /* handler */ }, { isActive });
+useInput(
+	(input, key) => {
+		/* handler */
+	},
+	{ isActive },
+);
 ```
 
 Source: `hooks/use-input.js`, reads from `StdinContext`.
@@ -345,12 +350,12 @@ When the resize event reaches `smdu` through the `useStdout()` hook, the applica
 const { stdout } = useStdout();
 
 useEffect(() => {
-  const handler = () => {
-    setRows(stdout.rows);
-    setCols(stdout.columns);
-  };
-  stdout.on('resize', handler);
-  return () => stdout.off('resize', handler);
+	const handler = () => {
+		setRows(stdout.rows);
+		setCols(stdout.columns);
+	};
+	stdout.on('resize', handler);
+	return () => stdout.off('resize', handler);
 }, [stdout]);
 ```
 
@@ -440,13 +445,13 @@ From the user's perspective, the terminal UI redraws at the new size. The file l
 
 The resize pipeline demonstrates clean separation across the stack:
 
-| Layer | Responsibility | Owner |
-|-------|---------------|-------|
-| OS/PTY | Signal delivery, dimension tracking | Kernel |
-| Node.js | Stream events, EventEmitter dispatch | Runtime |
-| Ink runtime | Layout, render, diff, terminal protocol | Ink |
-| Ink hooks | API abstraction, context providers | Ink |
-| smdu | Domain layout budgets, state management | Application |
+| Layer       | Responsibility                          | Owner       |
+| ----------- | --------------------------------------- | ----------- |
+| OS/PTY      | Signal delivery, dimension tracking     | Kernel      |
+| Node.js     | Stream events, EventEmitter dispatch    | Runtime     |
+| Ink runtime | Layout, render, diff, terminal protocol | Ink         |
+| Ink hooks   | API abstraction, context providers      | Ink         |
+| smdu        | Domain layout budgets, state management | Application |
 
 ### 8.2 Protocol safety
 
@@ -466,25 +471,25 @@ The dual-path architecture means resize behaviour can be tested at multiple leve
 
 ### Ink internal files
 
-| File | Role |
-|------|------|
-| `ink/build/ink.js` | Ink class: resize handler, layout, render orchestration |
-| `ink/build/reconciler.js` | React reconciler: `resetAfterCommit`, node lifecycle |
-| `ink/build/renderer.js` | Render entry: creates Output, calls renderNodeToOutput |
-| `ink/build/render-node-to-output.js` | Tree walker: Yoga positions to Output writes |
-| `ink/build/output.js` | Output class: 2D buffer, clip, get() materialisation |
-| `ink/build/log-update.js` | Diff engine: standard and incremental modes |
-| `ink/build/dom.js` | Node factory: Yoga node creation, tree manipulation |
-| `ink/build/components/App.js` | Root component: cursor, raw mode, input reading |
-| `ink/build/hooks/use-stdout.js` | Hook: StdoutContext access |
-| `ink/build/hooks/use-input.js` | Hook: input parsing and dispatch |
-| `ink/build/hooks/use-app.js` | Hook: exit control |
+| File                                 | Role                                                    |
+| ------------------------------------ | ------------------------------------------------------- |
+| `ink/build/ink.js`                   | Ink class: resize handler, layout, render orchestration |
+| `ink/build/reconciler.js`            | React reconciler: `resetAfterCommit`, node lifecycle    |
+| `ink/build/renderer.js`              | Render entry: creates Output, calls renderNodeToOutput  |
+| `ink/build/render-node-to-output.js` | Tree walker: Yoga positions to Output writes            |
+| `ink/build/output.js`                | Output class: 2D buffer, clip, get() materialisation    |
+| `ink/build/log-update.js`            | Diff engine: standard and incremental modes             |
+| `ink/build/dom.js`                   | Node factory: Yoga node creation, tree manipulation     |
+| `ink/build/components/App.js`        | Root component: cursor, raw mode, input reading         |
+| `ink/build/hooks/use-stdout.js`      | Hook: StdoutContext access                              |
+| `ink/build/hooks/use-input.js`       | Hook: input parsing and dispatch                        |
+| `ink/build/hooks/use-app.js`         | Hook: exit control                                      |
 
 ### smdu application files
 
-| File | Role |
-|------|------|
-| `src/cli.tsx` | Entry point: alternate screen, render() call |
-| `src/App.tsx` | Orchestrator: resize listener, state management |
-| `src/state.ts` | State engine: useFileSystem hook |
-| `src/components/*` | Presentation: layout-sensitive rendering |
+| File               | Role                                            |
+| ------------------ | ----------------------------------------------- |
+| `src/cli.tsx`      | Entry point: alternate screen, render() call    |
+| `src/App.tsx`      | Orchestrator: resize listener, state management |
+| `src/state.ts`     | State engine: useFileSystem hook                |
+| `src/components/*` | Presentation: layout-sensitive rendering        |
