@@ -3,34 +3,8 @@
 // (c) Copyright 2026 Liminal HQ, Scott Morris
 // SPDX-License-Identifier: MIT
 
+import { getFileTypeCategory } from '../fileTypeColours.js';
 import type { ReviewAgeBucket, ReviewEntry, ReviewFilters, ReviewScope } from './types.js';
-
-const MEDIA_EXTENSIONS = new Set<string>([
-	'.3gp',
-	'.aac',
-	'.aiff',
-	'.asf',
-	'.avi',
-	'.flac',
-	'.flv',
-	'.m4a',
-	'.m4v',
-	'.mkv',
-	'.mov',
-	'.mp3',
-	'.mp4',
-	'.mpeg',
-	'.mpg',
-	'.oga',
-	'.ogg',
-	'.ogv',
-	'.opus',
-	'.ts',
-	'.wav',
-	'.webm',
-	'.wma',
-	'.wmv',
-]);
 
 const normaliseExtension = (value: string): string => {
 	const trimmed = value.trim().toLowerCase();
@@ -87,7 +61,8 @@ export const matchesHidden = (entry: ReviewEntry, includeHidden: boolean): boole
 export const matchesMediaOnly = (entry: ReviewEntry, mediaOnly: boolean): boolean => {
 	if (!mediaOnly) return true;
 	if (entry.kind !== 'file') return false;
-	return MEDIA_EXTENSIONS.has(entry.extension);
+	const sampleName = entry.extension ? `sample${entry.extension}` : entry.basename;
+	return getFileTypeCategory(sampleName, false) === 'media';
 };
 
 export const matchesSourceRoots = (entry: ReviewEntry, sourceRoots: string[]): boolean => {

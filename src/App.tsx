@@ -429,6 +429,47 @@ export const App: React.FC<AppProps> = ({
 		if (showReviewFilters) {
 			if (checkInput(input, key, ACTIONS.REVIEW_FILTERS) || key.escape) {
 				setShowReviewFilters(false);
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_PRESET_NEXT)) {
+				cycleReviewPreset();
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_GROUP_NEXT)) {
+				cycleReviewGroup();
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_SCOPE_CYCLE)) {
+				cycleReviewScope();
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.TOGGLE_HIDDEN)) {
+				toggleReviewIncludeHidden();
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MEDIA_TOGGLE)) {
+				toggleReviewMediaOnly();
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MIN_SIZE_CYCLE)) {
+				cycleReviewMinSize();
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_AGE_BUCKET_CYCLE)) {
+				cycleReviewAgeBucket();
+				return;
+			}
+
+			if (viewMode === 'review' && checkInput(input, key, ACTIONS.RESET_REVIEW_FILTERS)) {
+				resetReviewFilters();
+				return;
 			}
 			return;
 		}

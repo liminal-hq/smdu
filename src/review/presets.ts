@@ -3,7 +3,7 @@
 // (c) Copyright 2026 Liminal HQ, Scott Morris
 // SPDX-License-Identifier: MIT
 
-import type { ReviewPreset, ReviewViewState } from './types.js';
+import type { ReviewFilters, ReviewPreset, ReviewViewState } from './types.js';
 
 export const REVIEW_PRESETS: ReviewPreset[] = [
 	{
@@ -72,6 +72,18 @@ export const REVIEW_PRESETS: ReviewPreset[] = [
 
 export const DEFAULT_REVIEW_PRESET_ID = 'largest-files';
 
+const createPresetBaseFilters = (includeHidden: boolean): ReviewFilters => ({
+	scope: 'files',
+	minSizeBytes: undefined,
+	ageBuckets: [],
+	extensions: [],
+	inferredTypes: [],
+	pathPrefix: undefined,
+	mediaOnly: false,
+	includeHidden,
+	sourceRoots: [],
+});
+
 export const getReviewPresetById = (presetId: string): ReviewPreset | undefined =>
 	REVIEW_PRESETS.find((preset) => preset.id === presetId);
 
@@ -86,6 +98,7 @@ export const cycleReviewPresetId = (presetId: string, direction: 1 | -1): string
 export const applyPreset = (state: ReviewViewState, presetId: string): ReviewViewState => {
 	const preset = getReviewPresetById(presetId);
 	if (!preset) return state;
+	const baseFilters = createPresetBaseFilters(state.filters.includeHidden);
 
 	return {
 		...state,
@@ -94,7 +107,7 @@ export const applyPreset = (state: ReviewViewState, presetId: string): ReviewVie
 		sortOrder: preset.sortOrder,
 		groupBy: preset.groupBy,
 		filters: {
-			...state.filters,
+			...baseFilters,
 			...preset.filters,
 		},
 		selectionIndex: 0,
