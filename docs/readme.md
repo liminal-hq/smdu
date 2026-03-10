@@ -24,6 +24,10 @@ This folder contains project documentation and the static GitHub Pages site sour
 - [`architecture/smdu_svg_prompt_gallery.md`](./architecture/smdu_svg_prompt_gallery.md)
 - [`review-mode/smdu_review_mode_spec.md`](./review-mode/smdu_review_mode_spec.md)
 - [`review-mode/smdu_review_mode_implementation_plan.md`](./review-mode/smdu_review_mode_implementation_plan.md)
+- [`releases/v0.0.1.md`](./releases/v0.0.1.md)
+- [`releases/v0.0.2.md`](./releases/v0.0.2.md)
+- [`releases/v0.0.3.md`](./releases/v0.0.3.md)
+- [`releases/v0.0.4.md`](./releases/v0.0.4.md)
 - [`site/readme.md`](./site/readme.md)
 - [`site/index.html`](./site/index.html)
 

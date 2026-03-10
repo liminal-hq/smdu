@@ -74,11 +74,35 @@
 
 - Do not squash-merge PRs unless the user explicitly requests squash for that PR.
 
+## Release Workflow
+
+**Requirement:** Follow this workflow for every patch/minor/major release prep.
+
+- Determine the next release version from existing tags and published releases before preparing changes (for example, if `v0.0.3` exists, the next patch is `v0.0.4`).
+- Create a dedicated release prep branch using `chore/release-v<version>` naming (for example, `chore/release-v0.0.4`).
+- Keep release metadata aligned:
+  - update `package.json` `version`
+  - ensure `man/smdu.1` version/date stays in sync with the release when applicable
+  - add/update `docs/releases/v<version>.md`
+  - keep `docs/readme.md` release links current
+- Use release-note structure consistent with existing files in `docs/releases/`:
+  - include clear sections (for example: What’s New, UX Highlights, Fixes and Reliability, Quality)
+  - use `-` bullet markers for list items
+- Validate release prep changes before opening a PR:
+  - run `pnpm test`
+  - run `pnpm build`
+- Open a PR with:
+  - a human-readable title (no Conventional Commit prefix)
+  - release-note category label(s) (`docs`, `chore`, `fix`, `feat`, etc.) plus `release` scope label when relevant
+- After merge, publish via Git tag that matches the release workflow trigger (`v*`) in `.github/workflows/release.yml`.
+- Do not push release branches or tags unless explicitly requested by the user.
+
 ## Testing
 
 - **Mandatory Testing:** Make sure the unit tests are run after changes to the code.
 - **Verification:** Always verify code changes by running relevant tests.
 - **Build Check:** Run `pnpm build` to surface any TypeScript errors.
+- **Format Check:** Run `pnpm format:check` before opening or updating a PR, and run `pnpm format` if any files fail formatting.
 
 ## Documentation
 
