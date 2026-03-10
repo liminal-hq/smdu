@@ -14,14 +14,7 @@ import { groupReviewEntries } from './review/group.js';
 import { applyPreset, cycleReviewPresetId } from './review/presets.js';
 import { buildVisibleReviewRows } from './review/rows.js';
 import { sortReviewEntries } from './review/sort.js';
-import {
-	ReviewEntry,
-	ReviewGroupField,
-	ReviewScope,
-	ReviewSortField,
-	ReviewViewState,
-	ReviewVisibleRow,
-} from './review/types.js';
+import { ReviewGroupField, ReviewScope, ReviewSortField, ReviewViewState } from './review/types.js';
 
 export type SortField = 'name' | 'size' | 'count';
 export type SortOrder = 'asc' | 'desc';
@@ -49,12 +42,14 @@ const REVIEW_SORT_ORDER: ReviewSortField[] = [
 
 const REVIEW_GROUP_ORDER: ReviewGroupField[] = ['none', 'type', 'parent', 'age', 'source'];
 const REVIEW_SCOPE_ORDER: ReviewScope[] = ['files', 'directories', 'both'];
+const MEBIBYTE = 1024 * 1024;
+const GIBIBYTE = 1024 * 1024 * 1024;
 const REVIEW_MIN_SIZE_ORDER: Array<number | undefined> = [
 	undefined,
-	100 * 1024 * 1024,
-	1024 * 1024 * 1024,
-	4 * 1024 * 1024 * 1024,
-	10 * 1024 * 1024 * 1024,
+	100 * MEBIBYTE,
+	1 * GIBIBYTE,
+	4 * GIBIBYTE,
+	10 * GIBIBYTE,
 ];
 const REVIEW_AGE_FILTER_ORDER: Array<ReviewViewState['filters']['ageBuckets']> = [
 	[],

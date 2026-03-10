@@ -412,6 +412,10 @@ export const App: React.FC<AppProps> = ({
 	}, [selectedFile]);
 
 	useInput((input, key) => {
+		const isReviewMode = viewMode === 'review';
+		const checkReviewInput = (action: (typeof ACTIONS)[keyof typeof ACTIONS]) =>
+			isReviewMode && checkInput(input, key, action);
+
 		if (showHelp) {
 			if (checkInput(input, key, ACTIONS.HELP) || key.escape) {
 				setShowHelp(false);
@@ -432,42 +436,42 @@ export const App: React.FC<AppProps> = ({
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_PRESET_NEXT)) {
+			if (checkReviewInput(ACTIONS.REVIEW_PRESET_NEXT)) {
 				cycleReviewPreset();
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_GROUP_NEXT)) {
+			if (checkReviewInput(ACTIONS.REVIEW_GROUP_NEXT)) {
 				cycleReviewGroup();
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_SCOPE_CYCLE)) {
+			if (checkReviewInput(ACTIONS.REVIEW_SCOPE_CYCLE)) {
 				cycleReviewScope();
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.TOGGLE_HIDDEN)) {
+			if (checkReviewInput(ACTIONS.TOGGLE_HIDDEN)) {
 				toggleReviewIncludeHidden();
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MEDIA_TOGGLE)) {
+			if (checkReviewInput(ACTIONS.REVIEW_MEDIA_TOGGLE)) {
 				toggleReviewMediaOnly();
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MIN_SIZE_CYCLE)) {
+			if (checkReviewInput(ACTIONS.REVIEW_MIN_SIZE_CYCLE)) {
 				cycleReviewMinSize();
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_AGE_BUCKET_CYCLE)) {
+			if (checkReviewInput(ACTIONS.REVIEW_AGE_BUCKET_CYCLE)) {
 				cycleReviewAgeBucket();
 				return;
 			}
 
-			if (viewMode === 'review' && checkInput(input, key, ACTIONS.RESET_REVIEW_FILTERS)) {
+			if (checkReviewInput(ACTIONS.RESET_REVIEW_FILTERS)) {
 				resetReviewFilters();
 				return;
 			}
@@ -518,7 +522,7 @@ export const App: React.FC<AppProps> = ({
 			return;
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_FILTERS)) {
+		if (checkReviewInput(ACTIONS.REVIEW_FILTERS)) {
 			setShowReviewFilters(true);
 			return;
 		}
@@ -632,43 +636,43 @@ export const App: React.FC<AppProps> = ({
 			}
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_PRESET_NEXT)) {
+		if (checkReviewInput(ACTIONS.REVIEW_PRESET_NEXT)) {
 			cycleReviewPreset();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_GROUP_NEXT)) {
+		if (checkReviewInput(ACTIONS.REVIEW_GROUP_NEXT)) {
 			cycleReviewGroup();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_GROUP_TOGGLE)) {
+		if (checkReviewInput(ACTIONS.REVIEW_GROUP_TOGGLE)) {
 			toggleReviewGroupExpanded();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_SCOPE_CYCLE)) {
+		if (checkReviewInput(ACTIONS.REVIEW_SCOPE_CYCLE)) {
 			cycleReviewScope();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MIN_SIZE_CYCLE)) {
+		if (checkReviewInput(ACTIONS.REVIEW_MIN_SIZE_CYCLE)) {
 			cycleReviewMinSize();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_AGE_BUCKET_CYCLE)) {
+		if (checkReviewInput(ACTIONS.REVIEW_AGE_BUCKET_CYCLE)) {
 			cycleReviewAgeBucket();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.REVIEW_MEDIA_TOGGLE)) {
+		if (checkReviewInput(ACTIONS.REVIEW_MEDIA_TOGGLE)) {
 			toggleReviewMediaOnly();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.OPEN_IN_FLAT)) {
+		if (checkReviewInput(ACTIONS.OPEN_IN_FLAT)) {
 			openSelectedInFlat();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.OPEN_IN_TREE)) {
+		if (checkReviewInput(ACTIONS.OPEN_IN_TREE)) {
 			openSelectedInTree();
 		}
 
-		if (viewMode === 'review' && checkInput(input, key, ACTIONS.RESET_REVIEW_FILTERS)) {
+		if (checkReviewInput(ACTIONS.RESET_REVIEW_FILTERS)) {
 			resetReviewFilters();
 		}
 		if (checkInput(input, key, ACTIONS.RESCAN)) {
