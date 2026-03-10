@@ -198,9 +198,9 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 	const panelWidth = Math.max(10, width ?? stdout?.columns ?? process.stdout.columns ?? 30);
 	const panelHeight = Math.max(3, height ?? stdout?.rows ?? process.stdout.rows ?? 10);
 	const contentWidth = Math.max(0, panelWidth - 2);
-	const sortLabel = sortBy === 'name' ? 'Name' : 'Size';
+	const sortLabel = sortBy === 'name' ? 'Name' : sortBy === 'count' ? 'Count' : 'Size';
 	const orderLabel = sortOrder === 'asc' ? 'asc' : 'desc';
-	const viewLabel = viewMode === 'tree' ? 'Tree' : 'Flat';
+	const viewLabel = viewMode === 'tree' ? 'Tree' : viewMode === 'review' ? 'Review' : 'Flat';
 	const hiddenLabel = showHiddenFiles ? 'On' : 'Off';
 	const heatmapLabel = heatmapEnabled ? 'On' : 'Off';
 	const legendLabel = fileTypeColoursEnabled ? (showLegend ? 'On' : 'Off') : 'N/A';

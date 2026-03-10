@@ -9,7 +9,7 @@ interface FooterProps {
 	theme: Theme;
 	units: 'iec' | 'si';
 	isScanning?: boolean;
-	mode?: 'default' | 'settings' | 'help' | 'info';
+	mode?: 'default' | 'review' | 'settings' | 'help' | 'info';
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -56,6 +56,8 @@ export const Footer: React.FC<FooterProps> = ({
 		rightTextContent = 'Close: Esc or ?';
 	} else if (mode === 'info') {
 		rightTextContent = 'Close: Esc or i';
+	} else if (mode === 'review') {
+		rightTextContent = 'Review: m g u f . M z a o/O x';
 	} else {
 		// Default
 		// "Help: ? Info: i Panel: p Timer: T/t Rescan: R"

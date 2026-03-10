@@ -16,9 +16,10 @@ SMDU is a modern, terminal-based disk usage analyser inspired by `ncdu`, built w
 - **File Type Colours:** Colour-codes files by category (including `Text`, `Scripts`, `Executables/Libraries`, `Disk Images`, and `Archives`) with an optional legend.
 - **Heatmap Size Bars:** Green-to-red gradient for size bars (toggle with `H`).
 - **Hidden Files Toggle:** Show or hide dotfiles with `.`.
+- **Review Mode:** A third analysis-first view for ranked, filterable review of descendants under the current root.
 - **Header:** Shows the current path with a subtle divider and a right-aligned `smdu v<version>` label.
 - **Planned:** List view (name-only entries).
-- **View Modes:** Flat (ncdu-style, default) and Tree.
+- **View Modes:** Flat (ncdu-style, default), Tree, and Review.
 - **Help Modal:** Press `?` to view keybindings.
 - **Information Panel:** Press `i` to view extended details for the selected item, including symlink destination state.
 - **Directory/Link Type Cues:** Directories and symbolic links use dedicated colours in the file browser when file type colours are enabled.
@@ -159,11 +160,22 @@ Settings available:
 - **n**: Sort by name.
 - **s**: Sort by size.
 - **C**: Sort by file count.
-- **v**: Toggle view mode (flat/tree).
-- **.**: Toggle hidden files.
+- **v**: Toggle view mode (flat/tree/review).
+- **.**: Toggle hidden files (global in flat/tree, review-local in Review mode).
 - **L**: Toggle the file type legend.
 - **H**: Toggle heatmap size bars.
 - **p**: Toggle the status panel.
+- **f**: Open/close Review filters modal (Review mode).
+- **m**: Cycle Review presets.
+- **g**: Cycle Review grouping.
+- **G**: Collapse/expand selected Review group.
+- **u**: Cycle Review scope (files/directories/both).
+- **z**: Cycle Review minimum size filter.
+- **a**: Cycle Review age-bucket filter.
+- **M**: Toggle Review media-only filter.
+- **o**: Open selected Review item in Flat view.
+- **O**: Open selected Review item in Tree view.
+- **x**: Reset Review filters.
 - **T**: Start a focus timer (cycles 5/10/15/30 minutes).
 - **t**: Toggle focus timer display (shows the timer pane even when idle).
 - **c**: Cancel the focus timer.

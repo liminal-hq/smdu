@@ -29,6 +29,7 @@ interface FileListProps {
 	fileTypeColoursEnabled: boolean;
 	showLegend: boolean;
 	heatmapEnabled: boolean;
+	entryPointPath?: string | null;
 	availableColumns?: number;
 	extraBottomRows?: number;
 }
@@ -128,6 +129,7 @@ export const FileList: React.FC<FileListProps> = ({
 	fileTypeColoursEnabled,
 	showLegend,
 	heatmapEnabled,
+	entryPointPath,
 	availableColumns,
 	extraBottomRows = 0,
 }) => {
@@ -289,6 +291,7 @@ export const FileList: React.FC<FileListProps> = ({
 			{visibleFiles.map((file, index) => {
 				const globalIndex = start + index;
 				const isSelected = globalIndex === selectedIndex;
+				const isEntryPoint = !isSelected && entryPointPath === file.path;
 
 				// Percentage and Bar base
 				const percentage =
@@ -338,7 +341,13 @@ export const FileList: React.FC<FileListProps> = ({
 							<Box width={columnLayout.nameColumns}>
 								<Text
 									backgroundColor={isSelected ? theme.colours.highlight : undefined}
-									color={isSelected ? theme.colours.selectedText : entryColour}
+									color={
+										isSelected
+											? theme.colours.selectedText
+											: isEntryPoint
+												? theme.colours.accent
+												: entryColour
+									}
 									wrap="truncate-end"
 								>
 									{entryLabel}

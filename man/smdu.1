@@ -7,6 +7,7 @@ smdu \- See My Disk Usage - A clone of ncdu
 .SH DESCRIPTION
 .B smdu
 is a TUI disk usage analyser inspired by \fBncdu\fR(1). It recursively scans directories to calculate file sizes and displays them in an interactive file tree. The header shows the current path with a right-aligned \fBsmdu\fR version label. It features various view modes, sorting options, theming, and a focus timer.
+Review mode adds an analysis-first view with ranked and grouped descendants under the current root.
 .SH OPTIONS
 .TP
 .BR \-t ", " \-\-theme " \fItheme\fR"
@@ -62,10 +63,10 @@ Sort by size (toggle Ascending/Descending).
 Sort by file count (toggle Ascending/Descending).
 .TP
 .B v
-Toggle view mode (Flat vs Tree).
+Toggle view mode (Flat vs Tree vs Review).
 .TP
 .B .
-Toggle hidden files (dotfiles).
+Toggle hidden files (dotfiles). In Review mode, this toggles Review-local hidden filtering.
 .TP
 .B L
 Toggle file type legend.
@@ -75,6 +76,40 @@ Toggle heatmap colours for size bars.
 .TP
 .B p
 Toggle the right-side status panel (sort/view state plus selected-file properties).
+.SS Review Mode Controls
+.TP
+.B f
+Open/close Review filters modal.
+.TP
+.B m
+Cycle Review presets.
+.TP
+.B g
+Cycle Review grouping field.
+.TP
+.B G
+Collapse/expand the selected Review group.
+.TP
+.B u
+Cycle Review scope (files/directories/both).
+.TP
+.B z
+Cycle Review minimum size filter.
+.TP
+.B a
+Cycle Review age-bucket filter.
+.TP
+.B M
+Toggle Review media-only filter.
+.TP
+.B o
+Open selected Review entry in Flat view (open parent and preselect child).
+.TP
+.B O
+Open selected Review entry in Tree view (open parent and preselect child).
+.TP
+.B x
+Reset Review filters.
 .SS Timer
 .TP
 .B T
