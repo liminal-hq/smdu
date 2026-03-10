@@ -82,7 +82,7 @@
 - Create a dedicated release prep branch using `chore/release-v<version>` naming (for example, `chore/release-v0.0.4`).
 - Keep release metadata aligned:
   - update `package.json` `version`
-  - ensure `man/smdu.1` version/date stays in sync with the release when applicable
+  - ensure `man/smdu.1` version/date stays in sync with every release
   - add/update `docs/releases/v<version>.md`
   - keep `docs/readme.md` release links current
 - Use release-note structure consistent with existing files in `docs/releases/`:
@@ -94,7 +94,8 @@
 - Open a PR with:
   - a human-readable title (no Conventional Commit prefix)
   - release-note category label(s) (`docs`, `chore`, `fix`, `feat`, etc.) plus `release` scope label when relevant
-- After merge, publish via Git tag that matches the release workflow trigger (`v*`) in `.github/workflows/release.yml`.
+- After merge, publish via an **annotated** Git tag that matches the release workflow trigger (`v*`) in `.github/workflows/release.yml`.
+- When creating the release tag message, include a concise summary derived from `docs/releases/v<version>.md` so the tag history preserves release context.
 - Do not push release branches or tags unless explicitly requested by the user.
 
 ## Testing
