@@ -72,6 +72,8 @@
 
 **Requirement:** Do not push changes (especially force pushes) to the repository unless explicitly requested by the user.
 
+- Do not squash-merge PRs unless the user explicitly requests squash for that PR.
+
 ## Testing
 
 - **Mandatory Testing:** Make sure the unit tests are run after changes to the code.
