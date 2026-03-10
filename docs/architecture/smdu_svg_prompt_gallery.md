@@ -4,9 +4,9 @@ This gallery tracks the design prompts used to create SVG architecture visuals.
 
 ## Internal Architecture
 
-[Open SVG: internal architecture](./images/smdu_internal_architecture.svg)
+![internal architecture preview](./images/smdu_internal_architecture.svg)
 
-[![internal architecture preview](./smdu_internal_architecture.svg)](./images/smdu_internal_architecture.svg)
+[Open SVG: internal architecture](./images/smdu_internal_architecture.svg)
 
 **Prompt**
 
@@ -32,9 +32,9 @@ Style direction:
 
 ## Terminal Event Lifecycle
 
-[Open SVG: terminal event lifecycle](./images/smdu_terminal_event_lifecycle.svg)
+![terminal event lifecycle preview](./images/smdu_terminal_event_lifecycle.svg)
 
-[![terminal event lifecycle preview](./smdu_terminal_event_lifecycle.svg)](./images/smdu_terminal_event_lifecycle.svg)
+[Open SVG: terminal event lifecycle](./images/smdu_terminal_event_lifecycle.svg)
 
 **Prompt**
 
@@ -56,9 +56,9 @@ Mood:
 
 ## Terminal Protocol Surface
 
-[Open SVG: terminal protocol surface](./images/smdu_terminal_protocol_surface.svg)
+![terminal protocol surface preview](./images/smdu_terminal_protocol_surface.svg)
 
-[![terminal protocol surface preview](./smdu_terminal_protocol_surface.svg)](./images/smdu_terminal_protocol_surface.svg)
+[Open SVG: terminal protocol surface](./images/smdu_terminal_protocol_surface.svg)
 
 **Prompt**
 
@@ -80,9 +80,9 @@ Style:
 
 ## Event Constellation
 
-[Open SVG: event constellation](./images/smdu_terminal_event_constellation.svg)
+![event constellation preview](./images/smdu_terminal_event_constellation.svg)
 
-[![event constellation preview](./smdu_terminal_event_constellation.svg)](./images/smdu_terminal_event_constellation.svg)
+[Open SVG: event constellation](./images/smdu_terminal_event_constellation.svg)
 
 **Prompt**
 
@@ -104,9 +104,9 @@ Style:
 
 ## Escape Sequence Sketch Map
 
-[Open SVG: escape sequence sketch map](./images/smdu_terminal_escape_sequence_map.svg)
+![escape sequence sketch map preview](./images/smdu_terminal_escape_sequence_map.svg)
 
-[![escape sequence sketch map preview](./smdu_terminal_escape_sequence_map.svg)](./images/smdu_terminal_escape_sequence_map.svg)
+[Open SVG: escape sequence sketch map](./images/smdu_terminal_escape_sequence_map.svg)
 
 **Prompt**
 
@@ -127,9 +127,9 @@ Visual style:
 
 ## Resize Event Comic Flow
 
-[Open SVG: resize event comic flow](./images/smdu_resize_event_comic_flow.svg)
+![resize event comic flow preview](./images/smdu_resize_event_comic_flow.svg)
 
-[![resize event comic flow preview](./smdu_resize_event_comic_flow.svg)](./images/smdu_resize_event_comic_flow.svg)
+[Open SVG: resize event comic flow](./images/smdu_resize_event_comic_flow.svg)
 
 **Prompt**
 
@@ -154,9 +154,9 @@ Style direction:
 
 ## Ink Event Pipeline (source-verified)
 
-[Open SVG: ink event pipeline](./images/smdu_ink_event_pipeline.svg)
-
 ![ink event pipeline](./images/smdu_ink_event_pipeline.svg)
+
+[Open SVG: ink event pipeline](./images/smdu_ink_event_pipeline.svg)
 
 **Prompt**
 
@@ -186,9 +186,9 @@ Additional requirement:
 
 ## PTY Signal Chain
 
-[Open SVG: PTY signal chain](./images/smdu_pty_signal_chain.svg)
-
 ![PTY signal chain](./images/smdu_pty_signal_chain.svg)
+
+[Open SVG: PTY signal chain](./images/smdu_pty_signal_chain.svg)
 
 **Prompt**
 
@@ -205,9 +205,9 @@ pipeline track, comic-book burst effects, and source-level detail in each stage.
 
 ## Ink Render Stages
 
-[Open SVG: Ink render stages](./images/smdu_ink_render_stages.svg)
-
 ![Ink render stages](./images/smdu_ink_render_stages.svg)
+
+[Open SVG: Ink render stages](./images/smdu_ink_render_stages.svg)
 
 **Prompt**
 
@@ -225,9 +225,9 @@ Style: same dark tech-forward palette, animated pipeline pulse, consistent card 
 
 ## Dual Resize Paths
 
-[Open SVG: dual resize paths](./images/smdu_dual_resize_paths.svg)
-
 ![dual resize paths](./images/smdu_dual_resize_paths.svg)
+
+[Open SVG: dual resize paths](./images/smdu_dual_resize_paths.svg)
 
 **Prompt**
 
@@ -247,9 +247,9 @@ matching each owner (cyan for Ink, purple for smdu, green for converged output).
 
 ## Resize Lab Experiment
 
-[Open SVG: resize lab experiment](./images/smdu_resize_lab_experiment.svg)
-
 ![resize lab experiment](./images/smdu_resize_lab_experiment.svg)
+
+[Open SVG: resize lab experiment](./images/smdu_resize_lab_experiment.svg)
 
 **Prompt**
 
