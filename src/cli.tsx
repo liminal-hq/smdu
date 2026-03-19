@@ -21,19 +21,7 @@ program
 	.option('-u, --units <units>', 'Display units (iec, si)')
 	.option('--no-fullscreen', 'Do not use alternate screen buffer')
 	.action((paths: string[], options) => {
-		const pathStr = paths.length > 0 ? paths[0] : process.cwd();
-
-		if (paths.length > 1) {
-			console.error(
-				'Error: smdu only supports scanning one path at a time.\n' +
-					`Received ${paths.length} paths: ${paths.join(', ')}\n\n` +
-					'If you used a glob (e.g. smdu cat*), the shell expanded it into multiple arguments.\n' +
-					'Quote the path to pass it literally: smdu "cat*"\n\n' +
-					'Multi-path scanning is tracked in https://github.com/liminal-hq/smdu/issues/95',
-			);
-			process.exitCode = 1;
-			return;
-		}
+		const startPaths = paths.length > 0 ? paths : [process.cwd()];
 
 		const useFullscreen = options.fullscreen !== false;
 		const hasTty = process.stdout.isTTY;
@@ -61,7 +49,7 @@ program
 
 		const instance = render(
 			<App
-				startPath={pathStr}
+				startPaths={startPaths}
 				themeName={options.theme}
 				units={options.units}
 				onSuspend={handleSuspend}
