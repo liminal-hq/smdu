@@ -319,8 +319,7 @@ export const FileList: React.FC<FileListProps> = ({
 				const barFilledStr = '#'.repeat(barFilled);
 				const barEmptyStr = '.'.repeat(barEmpty);
 
-				const effectiveScanRoot =
-					scanRootPath === '<multi>' ? rootPath : scanRootPath;
+				const effectiveScanRoot = scanRootPath === '<multi>' ? rootPath : scanRootPath;
 				const basePath = viewMode === 'flat' ? effectiveScanRoot : rootPath;
 				const relativePath =
 					basePath === '<multi>' ? file.name : path.relative(basePath, file.path) || file.name;
