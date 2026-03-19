@@ -228,6 +228,15 @@ export const StatusPanel: React.FC<StatusPanelProps> = ({
 		{ label: 'Created', value: formatDate(selectedFileBirthtime), priority: 2 },
 		{ label: 'Modified', value: formatDate(selectedFileMtime), priority: 3 },
 		{ label: 'Perms', value: permissions, priority: 4 },
+		...(selectedFile?.isSymbolicLink
+			? [
+					{
+						label: 'Target',
+						value: selectedFile.linkTarget ?? 'unknown',
+						priority: 5,
+					},
+				]
+			: []),
 	];
 	const propertyRows = [...properties]
 		.sort((a, b) => a.priority - b.priority)
