@@ -1,6 +1,6 @@
 {
 	"name": "smdu",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "See My Disk Usage - A clone of ncdu",
 	"main": "dist/cli.js",
 	"type": "module",
