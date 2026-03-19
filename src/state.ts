@@ -356,10 +356,24 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 
 	const goUp = useCallback(() => {
 		if (currentNode?.parent) {
-			setCurrentNode(currentNode.parent);
-			setSelectionIndex(0);
+			const parent = currentNode.parent;
+
+			// Compute the parent's file list to find the position of the node
+			// we're leaving, so the cursor lands back where the user left off.
+			let parentFiles: FileNode[];
+			if (viewMode === 'tree') {
+				parentFiles = flattenTree(parent);
+			} else {
+				const list = parent.children ? [...parent.children] : [];
+				const visible = showHiddenFiles ? list : list.filter((c) => !c.isHidden);
+				parentFiles = visible.sort(compareNodes);
+			}
+
+			const idx = parentFiles.findIndex((c) => c.path === currentNode.path);
+			setCurrentNode(parent);
+			setSelectionIndex(idx >= 0 ? idx : 0);
 		}
-	}, [currentNode]);
+	}, [compareNodes, currentNode, flattenTree, showHiddenFiles, viewMode]);
 
 	const toggleSort = useCallback(
 		(field: SortField) => {

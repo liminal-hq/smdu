@@ -16,14 +16,24 @@ program
 	.name('smdu')
 	.description('See My Disk Usage - A clone of ncdu')
 	.version(VERSION, '-v, --version')
-	.argument('[path]', 'Path to scan', process.cwd())
+	.argument('[paths...]', 'Path to scan')
 	.option('-t, --theme <theme>', 'Theme (default, classic, dracula)')
 	.option('-u, --units <units>', 'Display units (iec, si)')
 	.option('--no-fullscreen', 'Do not use alternate screen buffer')
-	.action((pathStr, options) => {
-		// When argument is optional and has default, pathStr is the value.
-		// If user provides a path, it's in pathStr.
-		// If not, it's process.cwd().
+	.action((paths: string[], options) => {
+		const pathStr = paths.length > 0 ? paths[0] : process.cwd();
+
+		if (paths.length > 1) {
+			console.error(
+				'Error: smdu only supports scanning one path at a time.\n' +
+					`Received ${paths.length} paths: ${paths.join(', ')}\n\n` +
+					'If you used a glob (e.g. smdu cat*), the shell expanded it into multiple arguments.\n' +
+					'Quote the path to pass it literally: smdu "cat*"\n\n' +
+					'Multi-path scanning is tracked in https://github.com/liminal-hq/smdu/issues/95',
+			);
+			process.exitCode = 1;
+			return;
+		}
 
 		const useFullscreen = options.fullscreen !== false;
 		const hasTty = process.stdout.isTTY;
@@ -33,8 +43,29 @@ program
 			process.stdout.write('\u001b[?1049h');
 		}
 
+		const handleSuspend = () => {
+			if (shouldUseAltBuffer) {
+				process.stdout.write('\u001b[?1049l');
+			}
+			process.stdin.setRawMode?.(false);
+			process.kill(process.pid, 'SIGTSTP');
+		};
+
+		process.on('SIGCONT', () => {
+			process.stdin.setRawMode?.(true);
+			process.stdin.resume();
+			if (shouldUseAltBuffer) {
+				process.stdout.write('\u001b[?1049h');
+			}
+		});
+
 		const instance = render(
-			<App startPath={pathStr} themeName={options.theme} units={options.units} />,
+			<App
+				startPath={pathStr}
+				themeName={options.theme}
+				units={options.units}
+				onSuspend={handleSuspend}
+			/>,
 		);
 
 		if (shouldUseAltBuffer) {
