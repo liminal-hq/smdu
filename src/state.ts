@@ -65,6 +65,15 @@ const REVIEW_AGE_FILTER_ORDER: Array<ReviewViewState['filters']['ageBuckets']> =
 export const findNodeByPath = (root: FileNode, targetPath: string): FileNode | null => {
 	if (root.path === targetPath) return root;
 
+	// Virtual root: search each child subtree
+	if (root.isVirtualRoot && root.children) {
+		for (const child of root.children) {
+			const found = findNodeByPath(child, targetPath);
+			if (found) return found;
+		}
+		return null;
+	}
+
 	if (!targetPath.startsWith(root.path)) return null;
 
 	const relative = path.relative(root.path, targetPath);
@@ -577,7 +586,7 @@ export const useFileSystem = (initialNode: FileNode | null, showHiddenFiles = fa
 		if (!currentNode) return null;
 
 		const fileToDelete = selectedNode;
-		if (!fileToDelete) return null;
+		if (!fileToDelete || fileToDelete.isVirtualRoot) return null;
 
 		try {
 			await fs.promises.rm(fileToDelete.path, { recursive: true, force: true });
