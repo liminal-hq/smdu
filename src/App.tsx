@@ -42,6 +42,7 @@ interface AppProps {
 	startPath: string;
 	themeName?: string; // Flag overrides config
 	units?: string; // Flag overrides config
+	onSuspend?: () => void;
 }
 
 enum ViewState {
@@ -65,6 +66,7 @@ export const App: React.FC<AppProps> = ({
 	startPath,
 	themeName: initialThemeName,
 	units: initialUnits,
+	onSuspend,
 }) => {
 	const { exit } = useApp();
 	const { stdout } = useStdout();
@@ -580,6 +582,11 @@ export const App: React.FC<AppProps> = ({
 				startTimer(TIMER_MINUTES[nextIndex]);
 				return nextIndex;
 			});
+			return;
+		}
+
+		if (input === 'z' && key.ctrl && onSuspend) {
+			onSuspend();
 			return;
 		}
 
