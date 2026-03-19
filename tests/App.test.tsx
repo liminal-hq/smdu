@@ -115,7 +115,7 @@ describe('App Integration', () => {
 	});
 
 	test('renders file list after scan', async () => {
-		const { lastFrame } = render(<App startPath="/root" />);
+		const { lastFrame } = render(<App startPaths={['/root']} />);
 
 		let output = lastFrame();
 		// Wait for scan to complete (App uses useEffect)
@@ -134,7 +134,7 @@ describe('App Integration', () => {
 	// test stack in ink-testing-library, which causes flaky false negatives in this suite.
 	// Keep this test as documentation of intended behaviour until upstream input handling stabilizes.
 	test.skip('navigates selection', async () => {
-		const { lastFrame, stdin } = render(<App startPath="/root" />);
+		const { lastFrame, stdin } = render(<App startPaths={['/root']} />);
 
 		// Wait for load
 		await new Promise((r) => setTimeout(r, 100)); // Simplified wait
@@ -156,7 +156,7 @@ describe('App Integration', () => {
 	// in the current ink-testing-library setup and can fail nondeterministically.
 	// We keep the scenario here so expected delete UX remains explicit for future re-enablement.
 	test.skip('deletes a file', async () => {
-		const { lastFrame, stdin } = render(<App startPath="/root" />);
+		const { lastFrame, stdin } = render(<App startPaths={['/root']} />);
 		await new Promise((r) => setTimeout(r, 100));
 
 		// Move to file1.txt (index 1)

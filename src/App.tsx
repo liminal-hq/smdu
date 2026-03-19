@@ -39,7 +39,7 @@ import fs from 'fs';
 import { filesize } from 'filesize';
 
 interface AppProps {
-	startPath: string;
+	startPaths: string[];
 	themeName?: string; // Flag overrides config
 	units?: string; // Flag overrides config
 	onSuspend?: () => void;
@@ -63,11 +63,15 @@ interface SelectedFileMetadata {
 const TIMER_MINUTES = [5, 10, 15, 30];
 
 export const App: React.FC<AppProps> = ({
-	startPath,
+	startPaths,
 	themeName: initialThemeName,
 	units: initialUnits,
 	onSuspend,
 }) => {
+	const displayLabel =
+		startPaths.length === 1
+			? startPaths[0]
+			: startPaths.map((p) => path.basename(path.resolve(p))).join(', ');
 	const { exit } = useApp();
 	const { stdout } = useStdout();
 	const [totalRows, setTotalRows] = useState(() => stdout?.rows ?? process.stdout.rows ?? 24);
@@ -109,7 +113,7 @@ export const App: React.FC<AppProps> = ({
 	const [spinnerIndex, setSpinnerIndex] = useState(0);
 	const spinnerFrames = ['|', '/', '-', '\\'];
 	const [scanStatus, setScanStatus] = useState<ScanProgress>({
-		currentPath: startPath,
+		currentPath: startPaths[0] ?? '',
 		directories: 0,
 		files: 0,
 		bytes: 0,
@@ -228,40 +232,92 @@ export const App: React.FC<AppProps> = ({
 		[updateRootNode],
 	);
 
+	const createVirtualRoot = useCallback(
+		(children: FileNode[]): FileNode => {
+			const virtualRoot: FileNode = {
+				name: displayLabel,
+				path: '<multi>',
+				size: children.reduce((sum, c) => sum + c.size, 0),
+				fileCount: children.reduce((sum, c) => sum + c.fileCount, 0),
+				isDirectory: true,
+				isHidden: false,
+				mtime: new Date(),
+				children,
+				isVirtualRoot: true,
+			};
+			for (const child of children) {
+				child.parent = virtualRoot;
+			}
+			return virtualRoot;
+		},
+		[displayLabel],
+	);
+
 	const scanRef = useCallback(() => {
 		const runScan = async () => {
 			try {
-				const absolutePath = path.resolve(startPath);
+				const absolutePaths = startPaths.map((p) => path.resolve(p));
 				const controller = new AbortController();
 				scanAbortRef.current = controller;
 				setIsScanning(true);
 				setLoading(true);
 				rootNodeRef.current = null;
-				setRootNode(null); // Release memory of old tree immediately
-				// Allow a small delay for state update and potential GC
+				setRootNode(null);
 				await new Promise((resolve) => setTimeout(resolve, 50));
-				const progressState: ScanProgress = {
-					currentPath: absolutePath,
+
+				const progressPerPath: ScanProgress[] = absolutePaths.map((p) => ({
+					currentPath: p,
 					directories: 0,
 					files: 0,
 					bytes: 0,
 					errors: 0,
+				}));
+				setScanStatus(progressPerPath[0]);
+
+				const mergeProgress = (index: number, progress: ScanProgress) => {
+					progressPerPath[index] = progress;
+					const merged: ScanProgress = {
+						currentPath: progress.currentPath,
+						directories: progressPerPath.reduce((s, p) => s + p.directories, 0),
+						files: progressPerPath.reduce((s, p) => s + p.files, 0),
+						bytes: progressPerPath.reduce((s, p) => s + p.bytes, 0),
+						errors: progressPerPath.reduce((s, p) => s + p.errors, 0),
+					};
+					handleScanProgress(merged);
 				};
-				setScanStatus(progressState);
-				const root = await scanDirectory(
-					absolutePath,
-					undefined,
-					handleScanProgress,
-					progressState,
-					controller.signal,
-					handlePartialUpdate,
+
+				const isMultiPath = absolutePaths.length > 1;
+				const partialRoots: (FileNode | null)[] = absolutePaths.map(() => null);
+
+				const handleMultiPartial = (index: number, root: FileNode) => {
+					partialRoots[index] = root;
+					const available = partialRoots.filter(Boolean) as FileNode[];
+					if (available.length > 0) {
+						handlePartialUpdate(createVirtualRoot(available));
+					}
+				};
+
+				const roots = await Promise.all(
+					absolutePaths.map((absPath, i) =>
+						scanDirectory(
+							absPath,
+							undefined,
+							(progress) => mergeProgress(i, progress),
+							progressPerPath[i],
+							controller.signal,
+							isMultiPath ? (root) => handleMultiPartial(i, root) : handlePartialUpdate,
+						),
+					),
 				);
+
 				if (partialUpdateTimerRef.current) {
 					clearTimeout(partialUpdateTimerRef.current);
 					partialUpdateTimerRef.current = null;
 				}
 				pendingRootRef.current = null;
-				updateRootNode(root);
+
+				const finalRoot = roots.length === 1 ? roots[0] : createVirtualRoot(roots);
+				updateRootNode(finalRoot);
 				setLoading(false);
 				setIsScanning(false);
 			} catch (err) {
@@ -278,7 +334,14 @@ export const App: React.FC<AppProps> = ({
 			}
 		};
 		runScan();
-	}, [startPath, exit, handleScanProgress, handlePartialUpdate, updateRootNode]);
+	}, [
+		startPaths,
+		exit,
+		handleScanProgress,
+		handlePartialUpdate,
+		updateRootNode,
+		createVirtualRoot,
+	]);
 
 	useEffect(() => {
 		scanRef();
@@ -612,7 +675,7 @@ export const App: React.FC<AppProps> = ({
 		}
 
 		if (checkInput(input, key, ACTIONS.DELETE)) {
-			if (selectedFile) {
+			if (selectedFile && !selectedFile.isVirtualRoot) {
 				setShowConfirmDelete(true);
 			}
 		}
@@ -739,12 +802,12 @@ export const App: React.FC<AppProps> = ({
 
 		return (
 			<Box height={totalRows} width="100%" flexDirection="column">
-				<Header path={startPath} theme={theme} viewMode={viewMode} />
+				<Header path={displayLabel} theme={theme} viewMode={viewMode} />
 				<Box flexGrow={1} flexDirection="column">
 					<Text color={theme.colours.line}>{divider}</Text>
 					<Box flexDirection="column" paddingX={1} paddingY={1}>
 						<Text color={theme.colours.text}>
-							Scanning {startPath}... {spinnerFrames[spinnerIndex]}
+							Scanning {displayLabel}... {spinnerFrames[spinnerIndex]}
 						</Text>
 						<Text color={theme.colours.muted} wrap="truncate-end">
 							Current: {scanStatus.currentPath}
@@ -772,11 +835,13 @@ export const App: React.FC<AppProps> = ({
 		);
 	}
 
+	const headerPath = currentNode.isVirtualRoot ? displayLabel : currentNode.path;
+
 	if (showConfirmDelete) {
 		const selectedFile = selectedNode;
 		return (
 			<Box flexDirection="column" height={totalRows} width="100%">
-				<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
+				<Header path={headerPath} theme={theme} viewMode={viewMode} />
 				<Box flexGrow={1} justifyContent="center" alignItems="center">
 					<ConfirmDelete
 						fileName={selectedFile?.name || 'item'}
@@ -839,7 +904,7 @@ export const App: React.FC<AppProps> = ({
 	const effectiveSelectedFile = selectedFile ?? undefined;
 	return (
 		<Box flexDirection="column" height={totalRows} width="100%">
-			<Header path={currentNode.path} theme={theme} viewMode={viewMode} />
+			<Header path={headerPath} theme={theme} viewMode={viewMode} />
 
 			<Box flexGrow={1} overflowY="hidden">
 				<Box flexDirection="row" width="100%">

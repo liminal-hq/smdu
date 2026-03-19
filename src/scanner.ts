@@ -22,6 +22,7 @@ export interface FileNode {
 	mtime: Date;
 	linkTarget?: string;
 	linkError?: string;
+	isVirtualRoot?: boolean;
 }
 
 export interface ScanProgress {
